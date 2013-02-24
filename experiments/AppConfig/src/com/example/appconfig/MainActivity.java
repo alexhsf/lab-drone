@@ -1,14 +1,16 @@
 package com.example.appconfig;
 
-import com.example.appconfig.ConfigActivity;
 import com.example.appconfig.R;
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
@@ -16,6 +18,22 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+	}
+
+	protected void onStart() {
+		super.onStart();
+		showPreferences();
+	}
+	
+	private void showPreferences() {
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+	    StringBuilder builder = new StringBuilder();
+	    builder.append("Application preferences:");
+	    builder.append("\n" + sharedPrefs.getString("pref_ssid", ""));
+	    builder.append("\n" + sharedPrefs.getString("pref_altitude", "-1"));
+	    builder.append("\n" + sharedPrefs.getString("pref_vertical_speed", "NULL"));
+	    TextView settingsTextView = (TextView) findViewById(R.id.main_text);
+	    settingsTextView.setText(builder.toString());
 	}
 
 	@Override
@@ -32,20 +50,11 @@ public class MainActivity extends Activity {
             NavUtils.navigateUpFromSameTask(this);
             return true;
 		case R.id.action_settings:
-			Intent intent = new Intent(this, ConfigActivity.class);
+			Intent intent = new Intent(this, PreferencesActivity.class);
 			startActivity(intent);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	
-//	public void onSettingsClick(View view) {
-//        // Do something in response to button
-//    	Intent intent = new Intent(this, ConfigActivity.class);
-//    	EditText editText = (EditText) findViewById(R.id.edit_message);
-//    	String message = editText.getText().toString();
-//    	intent.putExtra(EXTRA_MESSAGE, message);
-//    	startActivity(intent);
-//	}
 }
