@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AppConfig</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+	<string name="enter_ssid">Drone SSID</string>
+	<string name="enter_max_altitude">Max altitude (m)</string>
+	<string name="enter_max_vertical_speed">Max vert speed (m/s)</string>
+	<string name="enter_max_yaw">Max yaw (degrees)</string>
+	<string name="enter_max_tilt">Max tilt (degrees)</string>
+	<string name="flat_trim">Perform Flat Trim</string>
+	<string name="select_hull">Hull Type</string>
+	<string name="select_flight_location">Flight Location</string>
+    <string-array name="in_out_door_array">
+        <item>Indoor</item>
+        <item>Outdoor</item>
+	</string-array>
+	
+	<string name="ok">OK</string>
+</resources>
