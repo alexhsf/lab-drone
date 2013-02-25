@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AppConfig</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+	<string name="enter_ssid">Drone SSID</string>
+	<string name="enter_max_altitude">Max altitude (m)</string>
+	<string name="enter_max_vertical_speed">Max vert speed (m/s)</string>
+	<string name="enter_max_yaw">Max yaw (degrees)</string>
+	<string name="enter_max_tilt">Max tilt (degrees)</string>
+	<string name="flat_trim">Perform Flat Trim</string>
+	<string name="select_hull">Hull Type</string>
+	<string name="select_flight_location">Flight Location</string>
+    <string-array name="in_out_door_array">
+        <item>Indoor</item>
+        <item>Outdoor</item>
+	</string-array>
+	
+	<string name="ok">OK</string>
+	
+	<string name="set_drone_preferences">Set the Drone preferences</string>
+	<string name="pref_ssid">SSID of the drone</string>
+	<string name="pref_ssid_summ">App will use this SSID to connect with the Drone via WiFi</string>
+	<string name="pref_altitude">Max altitude (m)</string>
+	<string name="pref_altitude_summ">Maximum allowed height of the drone (m)</string>
+	<string name="pref_vertical_speed">Max vert speed (m/s)</string>
+	<string name="pref_vertical_speed_summ">Maximum allowed vertical speed of the drone</string>
+	<string name="pref_max_yaw">Max yaw (degrees)</string>
+	<string name="pref_max_yaw_summ">Maximum yaw of the drone</string>
+	<string name="pref_max_tilt">Max tilt (degrees)</string>
+	<string name="pref_max_tilt_summ">Maximum tilt of the drone</string>
+	<string name="pref_hull_type">Hull Type</string>
+	<string name="pref_hull_type_summ">Hull Type that is mounted on the drone</string>
+	<string name="pref_flight_location">Flight Location</string>
+	<string name="pref_flight_location_summ">Flight Location of the drone</string>
+	
+</resources>
