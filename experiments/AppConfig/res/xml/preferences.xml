@@ -10,25 +10,29 @@
         android:key="pref_altitude"
         android:title="@string/pref_altitude"
         android:summary="@string/pref_altitude_summ"
-        android:defaultValue="3"  />
+        android:defaultValue="3" 
+        android:inputType="number|numberDecimal" />
     
     <EditTextPreference
         android:key="pref_vertical_speed"
         android:title="@string/pref_vertical_speed"
         android:summary="@string/pref_vertical_speed_summ"
-        android:defaultValue="4"  />
+        android:defaultValue="4" 
+        android:inputType="number|numberDecimal" />
     
     <EditTextPreference
         android:key="pref_max_yaw"
         android:title="@string/pref_max_yaw"
         android:summary="@string/pref_max_yaw_summ"
-        android:defaultValue="5"  />
+        android:defaultValue="5" 
+        android:inputType="number|numberDecimal" />
     
     <EditTextPreference
         android:key="pref_max_tilt"
         android:title="@string/pref_max_tilt"
         android:summary="@string/pref_max_tilt_summ"
-        android:defaultValue="6"  />
+        android:defaultValue="6" 
+        android:inputType="number|numberDecimal" />
     
     <ListPreference 
         android:key="pref_hull_type"
