@@ -7,10 +7,14 @@
     <string name="gravity_device">Gravity Device</string>
     <string name="acceleration_device">Acceleration Device</string>
     <string name="magnetic_field_device">Magnetic Field Device</string>
+    <string name="linear_acceleration_device">Linear Acceleration Device</string>
+    <string name="rotation_vector_device">Rotation Vector Device</string>
     <string name="light_device">Light Device</string>
     <string name="proximity_device">Proximity Device</string>
     <string name="label_x">X</string>
     <string name="label_y">Y</string>
     <string name="label_z">Z</string>
+    <string name="buttonReadSensors">Read Sensor Values</string>
+    <string name="title_activity_read_sensors">Reading Sensor Values</string>
     
 </resources>

@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollView1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:scrollbarAlwaysDrawVerticalTrack="true" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/acceleration_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:paddingTop="10dp"
+            android:text="@string/acceleration_device" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/accelerationLabelX"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="5dp"
+                android:text="@string/label_x"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/accelleration_x"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:layout_marginBottom="-4dp"
+                android:paddingLeft="5dp"
+                android:paddingTop="-8dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="-8dp"
+                android:clickable="false"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+
+            <TextView
+                android:id="@+id/accelerationLabelY"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="5dp"
+                android:text="@string/label_y" />
+
+            <EditText
+                android:id="@+id/accelleration_y"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+
+            <TextView
+                android:id="@+id/accelerationLabelZ"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="5dp"
+                android:text="@string/label_z" />
+
+            <EditText
+                android:id="@+id/accelleration_z"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/gravity_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="@string/gravity_device" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/gravityLabelX"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:paddingLeft="5dp"
+                android:text="@string/label_x" />
+
+            <EditText
+                android:id="@+id/gravity_x"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+
+            <TextView
+                android:id="@+id/gravityLabelY"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:paddingLeft="5dp"
+                android:text="@string/label_y" />
+
+            <EditText
+                android:id="@+id/gravity_y"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+
+            <TextView
+                android:id="@+id/gravityLabelZ"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:paddingLeft="5dp"
+                android:text="@string/label_z" />
+
+            <EditText
+                android:id="@+id/gravity_z"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/magnetic_field_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="@string/magnetic_field_device" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/magneticFieldLabelX"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:paddingLeft="5dp"
+                android:text="@string/label_x" />
+
+            <EditText
+                android:id="@+id/magnetic_field_x"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+
+            <TextView
+                android:id="@+id/magneticFieldLabelY"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:paddingLeft="5dp"
+                android:text="@string/label_y" />
+
+            <EditText
+                android:id="@+id/magnetic_field_y"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+
+            <TextView
+                android:id="@+id/magneticFieldLabelZ"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:paddingLeft="5dp"
+                android:text="@string/label_z" />
+
+            <EditText
+                android:id="@+id/magnetic_field_z"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/linear_acceleration_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="@string/linear_acceleration_device" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/linearAccelerationLabelX"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:paddingLeft="5dp"
+                android:text="@string/label_x" />
+
+            <EditText
+                android:id="@+id/linear_acceleration_x"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+
+            <TextView
+                android:id="@+id/linearAccelerationLabelY"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:paddingLeft="5dp"
+                android:text="@string/label_y" />
+
+            <EditText
+                android:id="@+id/linear_acceleration_y"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+
+            <TextView
+                android:id="@+id/linearAccelerationLabelZ"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:paddingLeft="5dp"
+                android:text="@string/label_z" />
+
+            <EditText
+                android:id="@+id/linear_acceleration_z"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/rotation_vector_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="@string/rotation_vector_device" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/rotationVectorLabelX"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:paddingLeft="5dp"
+                android:text="@string/label_x" />
+
+            <EditText
+                android:id="@+id/rotation_vector_x"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+
+            <TextView
+                android:id="@+id/rotationVectorLabelY"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:paddingLeft="5dp"
+                android:text="@string/label_y" />
+
+            <EditText
+                android:id="@+id/rotation_vector_y"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+
+            <TextView
+                android:id="@+id/rotationVectorLabelZ"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:paddingLeft="5dp"
+                android:text="@string/label_z" />
+
+            <EditText
+                android:id="@+id/rotation_vector_z"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/light_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="@string/light_device" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <EditText
+                android:id="@+id/light_x"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/proximity_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="@string/proximity_device" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <EditText
+                android:id="@+id/proximity_x"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:clickable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:focusable="false"
+                android:longClickable="false"
+                android:textSize="@dimen/value_textsize" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>
