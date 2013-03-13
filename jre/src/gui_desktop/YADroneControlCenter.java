@@ -18,7 +18,6 @@ package gui_desktop;
 
 import com.shigeodayo.ardrone.ARDrone;
 
-
 /**
  * sample program for Java application
  * @author shigeo
@@ -41,7 +40,7 @@ public class YADroneControlCenter
 			System.out.println("connect drone navdata");
 			ardrone.connectNav();
 			System.out.println("connect drone video");
-			ardrone.connectVideo();
+			ardrone.connectVideo(new XugglerDecoder());
 			System.out.println("start drone");
 			ardrone.start();
 			

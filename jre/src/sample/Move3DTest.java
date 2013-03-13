@@ -1,5 +1,7 @@
 package sample;
 
+import gui_desktop.XugglerDecoder;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.InputEvent;
@@ -40,7 +42,7 @@ public class Move3DTest extends JFrame {
 		System.out.println("connect drone navdata");
 		ardrone.connectNav();
 		System.out.println("connect drone video");
-		ardrone.connectVideo();
+		ardrone.connectVideo(new XugglerDecoder());
 		System.out.println("start drone");
 		ardrone.start();
 		

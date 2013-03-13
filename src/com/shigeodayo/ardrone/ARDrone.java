@@ -33,6 +33,7 @@ import com.shigeodayo.ardrone.navdata.javadrone.NavData;
 import com.shigeodayo.ardrone.navdata.javadrone.NavDataListener;
 import com.shigeodayo.ardrone.utils.ARDroneUtils;
 import com.shigeodayo.ardrone.video.ImageListener;
+import com.shigeodayo.ardrone.video.VideoDecoder;
 import com.shigeodayo.ardrone.video.VideoManager;
 
 public class ARDrone implements ARDroneInterface{
@@ -84,11 +85,11 @@ public class ARDrone implements ARDroneInterface{
 
 	/** connect video */
 	@Override
-	public boolean connectVideo() {
+	public boolean connectVideo(VideoDecoder decoder) {
 		if(inetaddr==null){
 			inetaddr=getInetAddress(ipaddr);
 		}
-		videoManager=new VideoManager(inetaddr, manager);
+		videoManager=new VideoManager(inetaddr, manager, decoder);
 		videoManager.setImageListener(new ImageListener() {
 			@Override
 			public void imageUpdated(BufferedImage image) {
