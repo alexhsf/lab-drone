@@ -27,13 +27,21 @@ public class MainActivity extends Activity {
 	
 	private void showPreferences() {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-	    StringBuilder builder = new StringBuilder();
-	    builder.append("Application preferences:");
-	    builder.append("\n" + sharedPrefs.getString("pref_ssid", ""));
-	    builder.append("\n" + sharedPrefs.getString("pref_altitude", "-1"));
-	    builder.append("\n" + sharedPrefs.getString("pref_vertical_speed", "NULL"));
-	    TextView settingsTextView = (TextView) findViewById(R.id.main_text);
-	    settingsTextView.setText(builder.toString());
+		
+	    TextView textView = (TextView) findViewById(R.id.valueSsid);
+	    textView.setText(sharedPrefs.getString("pref_ssid", ""));
+	    textView = (TextView) findViewById(R.id.valueAltitude);
+	    textView.setText(sharedPrefs.getString("pref_altitude", ""));
+	    textView = (TextView) findViewById(R.id.valueVerticalSpeed);
+	    textView.setText(sharedPrefs.getString("pref_vertical_speed", ""));
+	    textView = (TextView) findViewById(R.id.valueMaxYaw);
+	    textView.setText(sharedPrefs.getString("pref_max_yaw", ""));
+	    textView = (TextView) findViewById(R.id.valueMaxTilt);
+	    textView.setText(sharedPrefs.getString("pref_max_tilt", ""));
+	    textView = (TextView) findViewById(R.id.valueHullType);
+	    textView.setText(sharedPrefs.getString("pref_hull_type", ""));
+	    textView = (TextView) findViewById(R.id.valueFlightLocation);
+	    textView.setText(sharedPrefs.getString("pref_flight_location", ""));
 	}
 
 	@Override
