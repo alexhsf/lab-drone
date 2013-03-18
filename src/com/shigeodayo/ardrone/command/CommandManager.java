@@ -28,6 +28,38 @@ import com.shigeodayo.ardrone.manager.AbstractManager;
 
 public class CommandManager extends AbstractManager{
 
+	public static final int H264_MIN_FPS = 15;
+	public static final int H264_MAX_FPS = 30;
+
+	public static final int H264_MIN_BITRATE = 250;
+	public static final int H264_MAX_BITRATE = 4000;
+
+	/* todo: enum? */
+	public static final int VBC_MODE_DISABLED = 0; // no video bitrate control
+	public static final int VBC_MODE_DYNAMIC = 1; // video bitrate control active
+	public static final int VBC_MANUAL = 2; // video bitrate control active
+
+	/* todo: enum? */
+	public static final int NULL_CODEC = 0x00;
+	public static final int UVLC_CODEC = 0x20; // codec_type value is used for START_CODE
+	public static final int P264_CODEC = 0x40;
+	public static final int MP4_360P_CODEC = 0x80;
+	public static final int H264_360P_CODEC = 0x81;
+	public static final int MP4_360P_H264_720P_CODEC = 0x82;
+	public static final int H264_720P_CODEC = 0x83;
+	public static final int MP4_360P_SLRS_CODEC = 0x84;
+	public static final int H264_360P_SLRS_CODEC = 0x85;
+	public static final int H264_720P_SLRS_CODEC = 0x86;
+	public static final int H264_AUTO_RESIZE_CODEC = 0x87; // resolution is adjusted according to bitrate
+	public static final int MP4_360P_H264_360P_CODEC = 0x88;
+
+	/* todo: enum? */
+	public static final int ZAP_CHANNEL_HORI = 0; // horizontal camera channel
+	public static final int ZAP_CHANNEL_VERT = 1; // vertical camera channel
+	public static final int ZAP_CHANNEL_LARGE_HORI_SMALL_VERT = 2; // horizontal camera with vertical camera picture inserted in the left-top corner
+    public static final int ZAP_CHANNEL_LARGE_VERT_SMALL_HORI = 3; // vertical camera with horizontal camera picture inserted in the left-top corner
+    public static final int ZAP_CHANNEL_NEXT = 4; // next available camera format
+
 	private static final String CR="\r";
 
 	private static final String SEQ = "$SEQ$";
@@ -48,47 +80,22 @@ public class CommandManager extends AbstractManager{
 		this.inetaddr=inetaddr;
 		initialize();
 	}
-	
-	
-	public void setHorizontalCamera() {
-		//command="AT*ZAP="+SEQ+",0";
-		command="AT*CONFIG="+SEQ+",\"video:video_channel\",\"0\"";
-		continuance=false;
-		//setCommand("AT*ZAP="+SEQ+",0", false);
-	}
 
-	
-	public void setVerticalCamera() {
-		//command="AT*ZAP="+SEQ+",1";
-		command="AT*CONFIG="+SEQ+",\"video:video_channel\",\"1\"";
-		continuance=false;
-		//setCommand("AT*ZAP="+SEQ+",1", false);
-	}
-
-	
-	public void setHorizontalCameraWithVertical() {
-		//command="AT*ZAP="+SEQ+",2";
-		command="AT*CONFIG="+SEQ+",\"video:video_channel\",\"2\"";
-		continuance=false;
-		//setCommand("AT*ZAP="+SEQ+",2", false);
-	}
-
-	
-	public void setVerticalCameraWithHorizontal() {
-		//command="AT*ZAP="+SEQ+",3";
-		command="AT*CONFIG="+SEQ+",\"video:video_channel\",\"3\"";
-		continuance=false;
-		//setCommand("AT*ZAP="+SEQ+",3", false);
-	}
-
-	
-	public void toggleCamera() {
-		//command="AT*ZAP="+SEQ+",4";
-		command="AT*CONFIG="+SEQ+",\"video:video_channel\",\"4\"";
-		continuance=false;
-		//setCommand("AT*ZAP="+SEQ+",4", false);
-	}
-
+    public void setVideoChannel(int channel) {
+        switch (channel) {
+            case ZAP_CHANNEL_HORI:
+            case ZAP_CHANNEL_VERT:
+            case ZAP_CHANNEL_LARGE_HORI_SMALL_VERT:
+            case ZAP_CHANNEL_LARGE_VERT_SMALL_HORI:
+            case ZAP_CHANNEL_NEXT:
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid camera channel mode");
+        }        
+        command="AT*CONFIG="+SEQ+",\"video:video_channel\",\"" + channel + "\"";
+        continuance=false;
+        //setCommand("AT*ZAP="+SEQ+",0", false);
+    }
 	
 	public void landing() {
 		System.out.println("*** Landing");
@@ -233,7 +240,74 @@ public class CommandManager extends AbstractManager{
 
 		this.speed=(float) (speed/100.0);
 	}
+
+	public void getDroneConfiguration()
+	{
+		command= "AT*CTRL="+SEQ+",5,0" + CR + "AT*CTRL="+SEQ+",4,0" + CR;
+		continuance=false;
+	}
+
+	public void setVideoCodecFps(int fps){
+		if (fps < H264_MIN_FPS)
+		{
+		    fps = H264_MIN_FPS;
+		}
+		else if (fps > H264_MAX_FPS)
+		{
+			fps = H264_MAX_FPS;
+		}
+		command="AT*CONFIG="+SEQ+",\"VIDEO:codec_fps\",\"" + fps + "\"" +CR+"AT*FTRIM="+SEQ;
+		continuance=false;
+	}
 	
+	/**
+	 * Sets the automatic bitrate control of the video stream. Possible values:
+	 *
+	 * @param mode: VBC_MODE_DISABLED / VBC_MODE_DYNAMIC / VBC_MANUAL
+	 */
+	public void setVideoBitrateControl(int mode) {
+	    if (mode != VBC_MODE_DISABLED && mode != VBC_MODE_DYNAMIC && mode != VBC_MANUAL) {
+	        throw new IllegalArgumentException("Invalid bitrate control mode");
+	    }
+	    command = "AT*CONFIG=" + SEQ + ",\"VIDEO:bitrate_control_mode\",\"" + mode + "\"" + CR + "AT*FTRIM=" + SEQ;
+	    continuance = false;
+	}
+
+	public void setVideoBitrate(int bitRate){
+		if (bitRate < H264_MIN_BITRATE)
+		{
+			bitRate = H264_MIN_BITRATE;
+		}
+		else if (bitRate > H264_MAX_BITRATE)
+		{
+			bitRate = H264_MAX_BITRATE;
+		}
+
+		command="AT*CONFIG="+SEQ+",\"VIDEO:bitrate\",\"" + bitRate + "\"" + CR + "AT*FTRIM="+SEQ;
+		continuance=false;
+	}
+
+	public void setVideoCodec(int codec){
+        switch (codec) {
+            case NULL_CODEC:
+            case UVLC_CODEC:
+            case P264_CODEC:
+            case MP4_360P_CODEC:
+            case H264_360P_CODEC:
+            case MP4_360P_H264_720P_CODEC:
+            case H264_720P_CODEC:
+            case MP4_360P_SLRS_CODEC:
+            case H264_360P_SLRS_CODEC:
+            case H264_720P_SLRS_CODEC:
+            case H264_AUTO_RESIZE_CODEC:
+            case MP4_360P_H264_360P_CODEC:
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid video codec");
+        }
+		command="AT*CONFIG="+SEQ+",\"VIDEO:video_codec\",\"" + codec + "\""+CR+"AT*FTRIM="+SEQ;
+		continuance=false;
+	}
 
 	public void enableVideoData(){
 		command="AT*CONFIG="+SEQ+",\"general:video_enable\",\"TRUE\""+CR+"AT*FTRIM="+SEQ;
@@ -257,11 +331,6 @@ public class CommandManager extends AbstractManager{
 		return (int) (speed*100);
 	}
 	
-	public void disableAutomaticVideoBitrate(){
-		command="AT*CONFIG="+SEQ+",\"video:bitrate_ctrl_mode\",\"0\"";
-		continuance=false;
-	}
-
 	public void setMaxAltitude(int altitude){
 		command="AT*CONFIG="+SEQ+",\"control:altitude_max\",\""+altitude+"\"";
 		continuance=false;

@@ -51,7 +51,7 @@ public class StreamProxy implements Runnable
 		ticklePort(ARDroneUtils.VIDEO_PORT);
 		manager.enableVideoData();
 		ticklePort(ARDroneUtils.VIDEO_PORT);
-		manager.disableAutomaticVideoBitrate();
+		manager.setVideoBitrateControl(CommandManager.VBC_MODE_DISABLED);
 		
 		// Create server socket
 		try
