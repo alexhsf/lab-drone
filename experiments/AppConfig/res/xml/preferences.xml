@@ -10,13 +10,15 @@
         android:key="pref_altitude"
         android:title="@string/pref_altitude"
         android:summary="@string/pref_altitude_summ"
-        android:defaultValue="3"  />
+        android:defaultValue="3" 
+        android:numeric="integer" />
     
     <EditTextPreference
         android:key="pref_vertical_speed"
         android:title="@string/pref_vertical_speed"
         android:summary="@string/pref_vertical_speed_summ"
-        android:defaultValue="4"  />
+        android:defaultValue="4" 
+        android:numeric="decimal" />
     
     <EditTextPreference
         android:key="pref_max_yaw"
