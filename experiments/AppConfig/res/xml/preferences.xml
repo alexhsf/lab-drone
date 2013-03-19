@@ -24,13 +24,15 @@
         android:key="pref_max_yaw"
         android:title="@string/pref_max_yaw"
         android:summary="@string/pref_max_yaw_summ"
-        android:defaultValue="5"  />
+        android:defaultValue="5" 
+        android:inputType="number|numberDecimal" />
     
     <EditTextPreference
         android:key="pref_max_tilt"
         android:title="@string/pref_max_tilt"
         android:summary="@string/pref_max_tilt_summ"
-        android:defaultValue="6"  />
+        android:defaultValue="6" 
+        android:inputType="number|numberDecimal" />
     
     <ListPreference 
         android:key="pref_hull_type"
