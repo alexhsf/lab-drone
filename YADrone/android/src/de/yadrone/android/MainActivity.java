@@ -1,21 +1,18 @@
 package de.yadrone.android;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.shigeodayo.ardrone.ARDrone;
 
-public class MainActivity extends Activity {
+public class MainActivity extends BaseActivity {
 
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,31 +90,6 @@ public class MainActivity extends Activity {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.menu_main, menu);	    
 		return true;
-	}
-	
-	public boolean onOptionsItemSelected(MenuItem item) 
-	{
-		Intent i;
-	    switch (item.getItemId()) 
-	    {
-	    	case R.id.menuitem_control:
-		    	i = new Intent(this, ControlActivity.class);
-		    	i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		    	startActivity(i);
-		        return true;
-	    	case R.id.menuitem_navdata:
-	    		i = new Intent(this, NavDataActivity.class);
-	    		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	    		startActivity(i);
-		        return true;
-	    	case R.id.menuitem_video:
-	    		i = new Intent(this, VideoActivity.class);
-	    		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	    		startActivity(i);
-		        return true;
-		    default:
-		        return super.onOptionsItemSelected(item);
-	    }
 	}
 
     

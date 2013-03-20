@@ -1,11 +1,8 @@
 package de.yadrone.android;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,7 +12,7 @@ import android.widget.Toast;
 
 import com.shigeodayo.ardrone.ARDrone;
 
-public class ControlActivity extends Activity {
+public class ControlActivity extends BaseActivity {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -161,31 +158,6 @@ public class ControlActivity extends Activity {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.menu_control, menu);	    
 		return true;
-	}
-	
-	public boolean onOptionsItemSelected(MenuItem item) 
-	{
-		Intent i;
-	    switch (item.getItemId()) 
-	    {
-	    	case R.id.menuitem_navdata:
-	    		i = new Intent(this, NavDataActivity.class);
-	    		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	    		startActivity(i);
-		        return true;
-	    	case R.id.menuitem_main:
-	    		i = new Intent(this, MainActivity.class);
-	    		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	    		startActivity(i);
-		        return true;
-	    	case R.id.menuitem_video:
-	    		i = new Intent(this, VideoActivity.class);
-	    		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	    		startActivity(i);
-		        return true;
-		    default:
-		        return super.onOptionsItemSelected(item);
-	    }
 	}
 
     
