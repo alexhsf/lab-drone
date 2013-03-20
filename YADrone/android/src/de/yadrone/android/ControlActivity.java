@@ -30,7 +30,7 @@ public class ControlActivity extends Activity {
 	{
     	YADroneApplication app = (YADroneApplication)getApplication();
     	final ARDrone drone = app.getARDrone();
-
+    	
     	Button forward = (Button)findViewById(R.id.cmd_forward);
     	forward.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event)
@@ -168,18 +168,28 @@ public class ControlActivity extends Activity {
 		Intent i;
 	    switch (item.getItemId()) 
 	    {
-	    	case R.id.menuitem_navdata:
-	    		i = new Intent(this, NavDataActivity.class);
-	    		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	    		startActivity(i);
-		        return true;
 	    	case R.id.menuitem_main:
 	    		i = new Intent(this, MainActivity.class);
 	    		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	    		startActivity(i);
 		        return true;
-	    	case R.id.menuitem_video:
-	    		i = new Intent(this, VideoActivity.class);
+	    	case R.id.menuitem_navdata:
+	    		i = new Intent(this, NavDataActivity.class);
+	    		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	    		startActivity(i);
+		        return true;
+			case R.id.menuitem_video:
+				i = new Intent(this, VideoActivity.class);
+				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(i);
+		        return true;
+	    	case R.id.menuitem_flightplan:
+	    		i = new Intent(this, FlightPlanActivity.class);
+	    		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	    		startActivity(i);
+		        return true;
+	    	case R.id.menuitem_settings:
+	    		i = new Intent(this, DronePreferenceActivity.class);
 	    		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	    		startActivity(i);
 		        return true;

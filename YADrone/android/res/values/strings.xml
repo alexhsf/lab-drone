@@ -1,8 +1,40 @@
 <resources>
 
     <string name="app_name">YADroneAndroid</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">Settings</string>
     <string name="title_activity_yadrone">YADrone</string>
+    <string name="menu_main">Main</string>
+    <string name="menu_navdata">NavData</string>
+    <string name="menu_control">Control</string>
+    <string name="menu_flightplan">Flight plan</string>
+    <string name="menu_settings">Settings</string>
+    
+	<!-- DronePreferenceActivity -->
+	<string name="set_drone_preferences">Set the Drone preferences</string>
+	<string name="pref_ssid">SSID of the drone</string>
+	<string name="pref_ssid_summ">SSID of drone: %1$s</string>
+	<string name="pref_altitude">Max altitude (m)</string>
+	<string name="pref_altitude_summ">Height is limited to %1$s m</string>
+	<string name="pref_vertical_speed">Max vert speed (m/s)</string>
+	<string name="pref_vertical_speed_summ">Vertical speed is limited to %1$s m/s</string>
+	<string name="pref_max_yaw">Max yaw (degrees)</string>
+	<string name="pref_max_yaw_summ">Yaw is limited to %1$s degrees</string>
+	<string name="pref_max_tilt">Max tilt (degrees)</string>
+	<string name="pref_max_tilt_summ">Tilt is limited to %1$s degrees</string>
+	<string name="pref_hull_type">Hull Type</string>
+	<string name="pref_hull_type_summ">Mounted Hull Type is set to %1$s</string>
+	<string name="pref_flight_location">Flight Location</string>
+	<string name="pref_flight_location_summ">Flight Location is set to %1$s</string>
+    <string-array name="in_out_door_array">
+        <item>Indoor</item>
+        <item>Outdoor</item>
+	</string-array>
+    	
+    <!-- FlightPlanActivity -->
+    <string name="take_off_and_land">Take-off and Land</string>
+    <string name="take_off_spin_and_land">Take off, spin and land</string>
+    <string name="take_off_fly_2_meter_and_land">Take off, fly 2 meter and land</string>
+    <string name="take_off_fly_2m_spin_fly_back_and_land">Take off, fly 2m, spin, fly back and land</string>
+    <string name="menu_video">Video</string>
 
+    		
 </resources>

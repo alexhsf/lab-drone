@@ -20,35 +20,35 @@ public class VideoActivity extends Activity {
 
         YADroneApplication app = (YADroneApplication) getApplication();
         final ARDrone drone = app.getARDrone();
-        final CommandManager cmdManager = drone.getCommandManager();
-        
-        Thread t = new Thread(new Runnable() {
-
-			@Override
-			public void run()
-			{
-				new StreamProxy(cmdManager).start();
-				
-		        runOnUiThread(new Runnable() {
-
-					@Override
-					public void run()
-					{
-						VideoView video = (VideoView) findViewById(R.id.video);
-				        String url = "http://127.0.0.1:8888";
-				        Uri uri = Uri.parse(url); 
-				        
-				        video.setVideoURI(uri);
-				        video.start();
-						
-//						MediaPlayer urlPlayer = MediaPlayer.create(VideoActivity.this, Uri.parse("tcp://192.168.1.1:5555"));
-					}
-					
-				});		        
-			}
-        	
-        });
-        t.start();
+//        final CommandManager cmdManager = drone.getCommandManager();
+//        
+//        Thread t = new Thread(new Runnable() {
+//
+//			@Override
+//			public void run()
+//			{
+//				new StreamProxy(cmdManager).start();
+//				
+//		        runOnUiThread(new Runnable() {
+//
+//					@Override
+//					public void run()
+//					{
+//						VideoView video = (VideoView) findViewById(R.id.video);
+//				        String url = "http://127.0.0.1:8888";
+//				        Uri uri = Uri.parse(url); 
+//				        
+//				        video.setVideoURI(uri);
+//				        video.start();
+//						
+////						MediaPlayer urlPlayer = MediaPlayer.create(VideoActivity.this, Uri.parse("tcp://192.168.1.1:5555"));
+//					}
+//					
+//				});		        
+//			}
+//        	
+//        });
+//        t.start();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,6 +76,16 @@ public class VideoActivity extends Activity {
 	    		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	    		startActivity(i);
 		        return true;
+			case R.id.menuitem_flightplan:
+				i = new Intent(this, FlightPlanActivity.class);
+				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(i);
+				return true;
+			case R.id.menuitem_settings:
+				i = new Intent(this, DronePreferenceActivity.class);
+				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(i);
+				return true;
 		    default:
 		        return super.onOptionsItemSelected(item);
 	    }

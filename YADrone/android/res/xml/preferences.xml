@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="pref_ssid"
+        android:title="@string/pref_ssid"
+        android:summary="@string/pref_ssid_summ"
+        android:defaultValue="" />
+    
+    <EditTextPreference
+        android:key="pref_altitude"
+        android:title="@string/pref_altitude"
+        android:summary="@string/pref_altitude_summ"
+        android:defaultValue="3" 
+        android:numeric="integer" />
+    
+    <EditTextPreference
+        android:key="pref_vertical_speed"
+        android:title="@string/pref_vertical_speed"
+        android:summary="@string/pref_vertical_speed_summ"
+        android:defaultValue="4" 
+        android:numeric="decimal" />
+    
+    <EditTextPreference
+        android:key="pref_max_yaw"
+        android:title="@string/pref_max_yaw"
+        android:summary="@string/pref_max_yaw_summ"
+        android:defaultValue="5" 
+        android:inputType="number|numberDecimal" />
+    
+    <EditTextPreference
+        android:key="pref_max_tilt"
+        android:title="@string/pref_max_tilt"
+        android:summary="@string/pref_max_tilt_summ"
+        android:defaultValue="6" 
+        android:inputType="number|numberDecimal" />
+    
+    <ListPreference 
+        android:key="pref_hull_type"
+        android:title="@string/pref_hull_type"
+        android:summary="@string/pref_hull_type_summ"
+        android:entryValues="@array/in_out_door_array"
+        android:entries="@array/in_out_door_array" />
+
+    <ListPreference 
+        android:key="pref_flight_location"
+        android:title="@string/pref_flight_location"
+        android:summary="@string/pref_flight_location_summ"
+        android:entryValues="@array/in_out_door_array"
+        android:entries="@array/in_out_door_array" />
+
+</PreferenceScreen>
