@@ -1,13 +1,12 @@
 package de.yadrone.android;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-public class FlightPlanActivity extends Activity {
+public class FlightPlanActivity extends BaseActivity {
 
 	public FlightPlanActivity() {
     }

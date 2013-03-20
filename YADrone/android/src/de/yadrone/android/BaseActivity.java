@@ -1,7 +1,5 @@
 package de.yadrone.android;
 
-import com.shigeodayo.ardrone.navdata.DroneState;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.view.MenuItem;
@@ -13,7 +11,7 @@ public class BaseActivity extends Activity {
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-    	Class<? extends BaseActivity> ac = null;
+    	Class<? extends Activity> ac = null;
         switch (item.getItemId()) 
         {
             case R.id.menuitem_flightplan:

@@ -1,7 +1,5 @@
 package de.yadrone.android;
 
-import com.shigeodayo.ardrone.ARDrone;
-
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
