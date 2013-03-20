@@ -3,15 +3,15 @@
 
     <item android:id="@+id/menuitem_main"
           android:title="@string/menu_main" />
-
+    
     <item android:id="@+id/menuitem_navdata"
           android:title="@string/menu_navdata" />
     
     <item android:id="@+id/menuitem_control"
           android:title="@string/menu_control" />
     
-    <item android:id="@+id/menuitem_flightplan"
-          android:title="@string/menu_flightplan" />
+     <item android:id="@+id/menuitem_video"
+           android:title="@string/menu_video" />
     
     <item android:id="@+id/menuitem_settings"
           android:title="@string/menu_settings" />

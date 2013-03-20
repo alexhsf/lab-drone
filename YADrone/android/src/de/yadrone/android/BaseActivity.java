@@ -1,5 +1,7 @@
 package de.yadrone.android;
 
+import com.shigeodayo.ardrone.navdata.DroneState;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.view.MenuItem;
@@ -14,6 +16,12 @@ public class BaseActivity extends Activity {
     	Class<? extends BaseActivity> ac = null;
         switch (item.getItemId()) 
         {
+            case R.id.menuitem_flightplan:
+                ac = FlightPlanActivity.class;
+                break;
+            case R.id.menuitem_settings:
+                ac = DronePreferenceActivity.class;
+                break;
             case R.id.menuitem_navdata:
                 ac = NavDataActivity.class;
                 break;

@@ -27,7 +27,7 @@ public class ControlActivity extends BaseActivity {
 	{
     	YADroneApplication app = (YADroneApplication)getApplication();
     	final ARDrone drone = app.getARDrone();
-
+    	
     	Button forward = (Button)findViewById(R.id.cmd_forward);
     	forward.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event)

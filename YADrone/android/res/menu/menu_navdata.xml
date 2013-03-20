@@ -2,11 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/menuitem_main"
-          android:title="Main" />
+          android:title="@string/menu_main" />
     
     <item android:id="@+id/menuitem_control"
-          android:title="Control" />
+          android:title="@string/menu_control" />
     
     <item android:id="@+id/menuitem_video"
-          android:title="Video" />
+          android:title="@string/menu_video" />
+    
+    <item android:id="@+id/menuitem_flightplan"
+          android:title="@string/menu_flightplan" />
+    
+    <item android:id="@+id/menuitem_settings"
+          android:title="@string/menu_settings" />
+    
 </menu>
