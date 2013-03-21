@@ -315,8 +315,8 @@ public class CommandManager extends AbstractManager{
 		//setCommand("AT*CONFIG="+SEQ+",\"general:video_enable\",\"TRUE\""+CR+"AT*FTRIM="+SEQ, false);
 	}
 	
-	public void enableDemoData(){
-		command="AT*CONFIG="+SEQ+",\"general:navdata_demo\",\"TRUE\""+CR+"AT*FTRIM="+SEQ;
+	public void setExtendedNavData(boolean b){
+		command="AT*CONFIG="+SEQ+",\"general:navdata_demo\",\"" + "FALSE" + "\""+CR+"AT*FTRIM="+SEQ;
 		continuance=false;
 		//setCommand("AT*CONFIG="+SEQ+",\"general:navdata_demo\",\"TRUE\""+CR+"AT*FTRIM="+SEQ, false);
 	}
