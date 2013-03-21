@@ -16,8 +16,7 @@ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PRO
  */
 package com.shigeodayo.ardrone.video;
 
-import java.awt.image.BufferedImage;
 
 public interface ImageListener {
-	void imageUpdated(BufferedImage image);
+	void imageUpdated(Object image);
 }

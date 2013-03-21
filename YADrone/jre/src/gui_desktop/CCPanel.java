@@ -69,9 +69,9 @@ public class CCPanel extends JPanel implements ImageListener, NavDataListener
 		ardrone.addNavDataListener(this);
 	}
 
-	public void imageUpdated(BufferedImage image)
+	public void imageUpdated(Object image)
 	{
-		video.setImage(image);
+		video.setImage((BufferedImage)image);
 	}
 
 	public void navDataUpdated(NavData navData)

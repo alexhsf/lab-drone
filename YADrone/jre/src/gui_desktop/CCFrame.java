@@ -261,12 +261,12 @@ public class CCFrame extends JFrame implements NavDataListener, ImageListener
 	    return frame;
 	}
 	
-	public void imageUpdated(BufferedImage image)
+	public void imageUpdated(Object image)
 	{
 		if (statistics != null)
 			statistics.imageArrived();
 		if (video != null)
-			video.setImage(image);
+			video.setImage((BufferedImage)image);
 	}
 	
 	public void navDataUpdated(NavData navData)

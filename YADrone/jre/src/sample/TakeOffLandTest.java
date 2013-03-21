@@ -72,9 +72,9 @@ public class TakeOffLandTest extends JFrame{
 		
 		ardrone.addImageUpdateListener(new ImageListener(){
 			@Override
-			public void imageUpdated(BufferedImage image) {
+			public void imageUpdated(Object image) {
 				if(myPanel!=null){
-					myPanel.setImage(image);
+					myPanel.setImage((BufferedImage)image);
 					myPanel.repaint();
 				}
 			}

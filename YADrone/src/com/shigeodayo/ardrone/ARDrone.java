@@ -17,7 +17,6 @@ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PRO
  */
 package com.shigeodayo.ardrone;
 
-import java.awt.image.BufferedImage;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.StringTokenizer;
@@ -92,7 +91,7 @@ public class ARDrone implements ARDroneInterface{
 		videoManager=new VideoManager(inetaddr, manager, decoder);
 		videoManager.setImageListener(new ImageListener() {
 			@Override
-			public void imageUpdated(BufferedImage image) {
+			public void imageUpdated(Object image) {
 				if(imageListener!=null){
 					imageListener.imageUpdated(image);
 				}
