@@ -30,6 +30,8 @@ import com.shigeodayo.ardrone.utils.ARDroneUtils;
 
 public class NavDataManager extends AbstractManager{
 
+    private static final int MAX_PACKET_SIZE = 2048;
+    
 	private CommandManager manager=null;
 	
 	//listeners
@@ -81,7 +83,7 @@ public class NavDataManager extends AbstractManager{
 		while(!doStop){
 			try {
 				ticklePort(ARDroneUtils.NAV_PORT);
-				DatagramPacket packet=new DatagramPacket(new byte[1024], 1024, inetaddr, 5554);
+				DatagramPacket packet=new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE, inetaddr, 5554);
 
 				socket.receive(packet);
 				
