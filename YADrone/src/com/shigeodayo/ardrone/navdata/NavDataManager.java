@@ -66,8 +66,6 @@ public class NavDataManager extends AbstractManager{
 	@Override
 	public void run(){
 		ticklePort(ARDroneUtils.NAV_PORT);
-		manager.enableDemoData();
-		ticklePort(ARDroneUtils.NAV_PORT);
 		manager.sendControlAck();
 		
 		// Use the original ARDroneForP5 parser as well as the Javadrone parser. The latter parses the complete navdata record sent by the drone
