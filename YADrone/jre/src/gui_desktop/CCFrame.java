@@ -18,11 +18,13 @@ import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 
 import com.shigeodayo.ardrone.ARDrone;
+import com.shigeodayo.ardrone.navdata.AttitudeListener;
+import com.shigeodayo.ardrone.navdata.BatteryListener;
 import com.shigeodayo.ardrone.navdata.javadrone.NavData;
 import com.shigeodayo.ardrone.navdata.javadrone.NavDataListener;
 import com.shigeodayo.ardrone.video.ImageListener;
 
-public class CCFrame extends JFrame implements NavDataListener, ImageListener
+public class CCFrame extends JFrame implements NavDataListener, ImageListener, AttitudeListener, BatteryListener
 {
 	private VideoPanel video;
 	private BatteryPanel battery;
@@ -145,6 +147,8 @@ public class CCFrame extends JFrame implements NavDataListener, ImageListener
 		
 		drone.addImageUpdateListener(this);
 		drone.addNavDataListener(this);
+		drone.addAttitudeUpdateListener(this);
+		drone.addBatteryUpdateListener(this);
 	}
 
 	private void setAndKeepFocus(ConsolePanel console2)
@@ -273,13 +277,21 @@ public class CCFrame extends JFrame implements NavDataListener, ImageListener
 	{
 		if (statistics != null)
 			statistics.navDataArrived();
-		if (battery != null)
-			battery.setBatteryLevel(navData.getBattery());
-		if (attitude != null)
-			attitude.setAttitude(navData.getPitch(), navData.getRoll(), navData.getYaw(), (int)navData.getAltitude());
-		if (attitudeChart != null)
-			attitudeChart.setAttitude(navData.getPitch(), navData.getRoll(), navData.getYaw());
 		if (state != null)
 			state.setState(navData.toDetailString());
 	}
+
+    @Override
+    public void attitudeUpdated(float pitch, float roll, float yaw, int altitude) {
+        if (attitude != null)
+            attitude.setAttitude(pitch, roll, yaw, altitude);
+        if (attitudeChart != null)
+            attitudeChart.setAttitude(pitch, roll, yaw);
+    }
+
+    @Override
+    public void batteryLevelChanged(int percentage) {
+        if (battery != null)
+            battery.setBatteryLevel(percentage);
+    }
 }

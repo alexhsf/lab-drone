@@ -14,11 +14,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import com.shigeodayo.ardrone.ARDrone;
+import com.shigeodayo.ardrone.navdata.AttitudeListener;
+import com.shigeodayo.ardrone.navdata.BatteryListener;
 import com.shigeodayo.ardrone.navdata.javadrone.NavData;
 import com.shigeodayo.ardrone.navdata.javadrone.NavDataListener;
 import com.shigeodayo.ardrone.video.ImageListener;
 
-public class CCPanel extends JPanel implements ImageListener, NavDataListener
+public class CCPanel extends JPanel implements ImageListener, NavDataListener, AttitudeListener, BatteryListener
 {
 
 	private VideoPanel video;
@@ -67,6 +69,8 @@ public class CCPanel extends JPanel implements ImageListener, NavDataListener
 		
 		ardrone.addImageUpdateListener(this);
 		ardrone.addNavDataListener(this);
+        ardrone.addAttitudeUpdateListener(this);
+        ardrone.addBatteryUpdateListener(this);
 	}
 
 	public void imageUpdated(Object image)
@@ -76,8 +80,19 @@ public class CCPanel extends JPanel implements ImageListener, NavDataListener
 
 	public void navDataUpdated(NavData navData)
 	{
-		battery.setBatteryLevel(navData.getBattery());
-		attitude.setAttitude(navData.getPitch(), navData.getRoll(), navData.getYaw(), (int)navData.getAltitude());
 		state.setState(navData.toDetailString());
 	}
+
+    @Override
+    public void attitudeUpdated(float pitch, float roll, float yaw, int altitude) {
+        if (attitude != null)
+            attitude.setAttitude(pitch, roll, yaw, altitude);
+    }
+
+    @Override
+    public void batteryLevelChanged(int percentage) {
+        if (battery != null)
+            battery.setBatteryLevel(percentage);
+    }
+
 }
