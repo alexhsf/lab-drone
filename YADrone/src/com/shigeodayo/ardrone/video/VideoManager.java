@@ -30,14 +30,11 @@ public class VideoManager extends AbstractTCPManager {
 
     private ImageListener listener = null;
 
-    private ReadRawFileImage rrfi = null;
-
     public VideoManager(InetAddress inetaddr, CommandManager manager,
             VideoDecoder decoder) {
         this.inetaddr = inetaddr;
         this.manager = manager;
         this.decoder = decoder;
-        rrfi = new ReadRawFileImage();
     }
 
     public void setImageListener(ImageListener listener) {
