@@ -36,7 +36,7 @@ public class DroneCommandScheduler {
 		float speedX = deltaX / timespan;
 		float speedY = deltaY / timespan;
 		float speedZ = deltaZ / timespan;
-		float speedR = deltaR / timespan;
+		float speedR = 1000 * deltaR / timespan;
 		
 		float ratioX = speedX / yawSpeed;
 		float ratioY = speedY / rollSpeed;
@@ -63,7 +63,7 @@ public class DroneCommandScheduler {
 			speedX = deltaX / timespan;
 			speedY = deltaY / timespan;
 			speedZ = deltaZ / timespan;
-			speedR = deltaR / timespan;
+			speedR = 1000 * deltaR / timespan;
 		}
 		int relativeSpeedX = Math.round(100 * speedX / yawSpeed);
 		int relativeSpeedY = Math.round(100 * speedY / rollSpeed);

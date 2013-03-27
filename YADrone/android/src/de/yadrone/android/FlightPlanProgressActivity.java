@@ -1,22 +1,22 @@
 package de.yadrone.android;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+//import java.io.BufferedInputStream;
+//import java.io.File;
+//import java.io.FileInputStream;
+//import java.io.FileNotFoundException;
+//import java.io.IOException;
+//import java.io.InputStream;
+//import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+//import java.util.Collection;
+//import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
+//import java.util.ListIterator;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+//import org.json.JSONArray;
+//import org.json.JSONException;
+//import org.json.JSONObject;
+//import org.json.JSONTokener;
 
 import com.shigeodayo.ardrone.ARDrone;
 
@@ -36,8 +36,7 @@ public class FlightPlanProgressActivity extends BaseActivity {
 
 		// Get the flight plan from the intent
 		Intent intent = getIntent();
-		mFlightPlanUri = intent
-				.getStringExtra(FlightPlanActivity.FLIGHTPLAN_URI);
+		mFlightPlanUri = intent.getStringExtra(FlightPlanActivity.FLIGHTPLAN_URI);
 
     	YADroneApplication app = (YADroneApplication)getApplication();
     	final ARDrone drone = app.getARDrone();
@@ -49,15 +48,21 @@ public class FlightPlanProgressActivity extends BaseActivity {
 
     private void LoadFlightPlan() {
     	mDroneCommands = new ArrayList<DroneCommand>();
-    	mDroneCommands.add(new DroneCommandMove(mScheduler, 1,2,3,4,5));
-    	mDroneCommands.add(new DroneCommandMove(mScheduler, 6,7,8,9,10));
+    	mDroneCommands.add(new DroneCommandMove(mScheduler, 1000,0,0,0,5000));
+    	mDroneCommands.add(new DroneCommandMove(mScheduler, 1000,0,0,90,1000));
+    	mDroneCommands.add(new DroneCommandMove(mScheduler, 1000,1000,0, 90, 5000));
     }
 
 	private void FlyRoute() {
-		
-		for (DroneCommand command : mDroneCommands) {
+    	YADroneApplication app = (YADroneApplication)getApplication();
+    	final ARDrone drone = app.getARDrone();
+    	drone.takeOff();
+
+    	for (DroneCommand command : mDroneCommands) {
 			command.execute();
 		}
+    	
+    	drone.landing();
 	}
 
 //    private void LoadFlightPlan() {

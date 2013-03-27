@@ -57,7 +57,7 @@ public class FlightPlanActivity extends BaseActivity {
 	    }
 	}
 
-	public void OnButtonClick(View view)
+	public void onButtonClick(View view)
 	{
         // Do something in response to button
     	String flightPathUri;
