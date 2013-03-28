@@ -100,8 +100,6 @@ public class CommandManager extends AbstractManager {
 	private IntBuffer ib = null;
 
 	private boolean landing = true;
-	private boolean continuance = false;
-	private String command = null;
 
 	/** speed */
 	private float speed = 0.05f;// 0.01f - 1.0f
@@ -359,7 +357,7 @@ public class CommandManager extends AbstractManager {
 				if (c != null) {
 					Log.i("CommandManager thread", c.getCommand());
 					sendCommand(c.getCommand());
-					if (continuance && q.isEmpty()) {
+					if (c.isContinuance() && q.isEmpty()) {
 						q.add(c);
 					}
 				} else {
@@ -372,6 +370,7 @@ public class CommandManager extends AbstractManager {
 				if (seq % 5 == 0) {// <2000ms
 					sendCommand("AT*COMWDG=" + SEQ);
 				}
+				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

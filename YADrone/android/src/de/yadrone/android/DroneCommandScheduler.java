@@ -6,10 +6,10 @@ public class DroneCommandScheduler {
 	
 	private ARDrone drone;
 	private DroneMovement previousLocation;
-	private float verticalSpeed = 3; // in m/s
-	private float yawSpeed = 1;      // in m/s
-	private float rollSpeed = 2;     // in m/s
-	private float spinSpeed = 1.5f;  // degrees/s
+	private float verticalSpeed = 5; // in m/s
+	private float yawSpeed = 5;      // in m/s
+	private float rollSpeed = 5;     // in m/s
+	private float spinSpeed = 30f;  // degrees/s
 	
 	public DroneCommandScheduler(ARDrone drone) {
 		this.setDrone(drone);

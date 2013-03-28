@@ -43,14 +43,18 @@ public class FlightPlanProgressActivity extends BaseActivity {
 		mScheduler = new DroneCommandScheduler(drone);
 		
 		LoadFlightPlan();
-		FlyRoute();
+		new Thread() {
+			public void run() {
+				FlyRoute();
+			}
+		}.start();
 	}
 
     private void LoadFlightPlan() {
     	mDroneCommands = new ArrayList<DroneCommand>();
-    	mDroneCommands.add(new DroneCommandMove(mScheduler, 1000,0,0,0,5000));
-    	mDroneCommands.add(new DroneCommandMove(mScheduler, 1000,0,0,90,1000));
-    	mDroneCommands.add(new DroneCommandMove(mScheduler, 1000,1000,0, 90, 5000));
+    	mDroneCommands.add(new DroneCommandMove(mScheduler, 2000,    0, 0,  0, 10000));
+//    	mDroneCommands.add(new DroneCommandMove(mScheduler, 1000,    0, 0, 90, 1000));
+//    	mDroneCommands.add(new DroneCommandMove(mScheduler, 1000, 1000, 0, 90, 3000));
     }
 
 	private void FlyRoute() {
