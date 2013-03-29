@@ -24,8 +24,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import android.util.Log;
-
 import com.shigeodayo.ardrone.manager.AbstractManager;
 import com.shigeodayo.ardrone.utils.ARDroneUtils;
 
@@ -328,14 +326,12 @@ public class CommandManager extends AbstractManager {
 
 	private synchronized void sendCommand(String command) {
 		/**
-		 * Each command needs an individual sequence number (this also holds for
-		 * Hover/Stop commands) At first, only a placeholder is set for every
-		 * command and this placeholder is replaced with a real sequence number
-		 * below. Because one command string may contain chained commands (e.g.
-		 * "AT...AT...AT...) the replacement needs to be done individually for
-		 * every 'subcommand'
+		 * Each command needs an individual sequence number (this also holds for Hover/Stop commands) At first, only a
+		 * placeholder is set for every command and this placeholder is replaced with a real sequence number below.
+		 * Because one command string may contain chained commands (e.g. "AT...AT...AT...) the replacement needs to be
+		 * done individually for every 'subcommand'
 		 */
-		Log.v("YADrone", command);
+		System.out.println(command);
 		int seqIndex = -1;
 		while ((seqIndex = command.indexOf(SEQ)) != -1) {
 			command = command.substring(0, seqIndex) + (seq++) + command.substring(seqIndex + SEQ.length());
