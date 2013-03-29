@@ -4,7 +4,6 @@ import java.io.InputStream;
 
 import com.shigeodayo.ardrone.video.ImageListener;
 import com.shigeodayo.ardrone.video.VideoDecoder;
-
 import com.xuggle.xuggler.Global;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IContainer;

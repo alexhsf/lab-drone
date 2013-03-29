@@ -53,11 +53,11 @@ public class KeyboardCommandManager implements KeyListener, ISpeedListener
 	public void handleCommand(int key, int mod)
 	{
 		// just for debugging
-		if (key > 0)
-		{
-			System.out.println("KeyboardCommandManager: Keyboard input is disabled");
-			return;
-		}
+		//if (key > 0)
+		//{
+			//System.out.println("KeyboardCommandManager: Keyboard input is disabled");
+			//return;
+		//}
 		
 		boolean shiftflag = false;
 		if ((mod & InputEvent.SHIFT_DOWN_MASK) != 0)

@@ -6,6 +6,11 @@
 
 package com.shigeodayo.ardrone.navdata;
 
-public interface StateListener {
-	void stateChanged(DroneState state);
+import java.util.EventListener;
+
+public interface StateListener extends EventListener {
+	public void stateChanged(DroneState state);
+
+	public void controlStateChanged(ControlState state);
+
 }

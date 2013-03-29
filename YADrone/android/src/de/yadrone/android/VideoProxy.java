@@ -16,6 +16,9 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.shigeodayo.ardrone.command.CommandManager;
+import com.shigeodayo.ardrone.command.H264;
+import com.shigeodayo.ardrone.command.VideoBitRateMode;
+import com.shigeodayo.ardrone.command.VideoCodec;
 import com.shigeodayo.ardrone.utils.ARDroneUtils;
 
 public class VideoProxy {
@@ -29,7 +32,6 @@ public class VideoProxy {
 
     private static final int STREAMPORT = 8888;
     private static final int SERVERPORT = 8887;
-    private static final int CONTROL_COM_PORT = 5559;
 
     private static final InetAddress SERVERIPADDRESS;
     static {
@@ -49,54 +51,12 @@ public class VideoProxy {
 
     public VideoProxy(CommandManager manager) {
         manager.enableVideoData();
-        manager.setVideoCodecFps(CommandManager.H264_MIN_FPS);
-        manager.setVideoCodec(CommandManager.H264_360P_CODEC);
-        manager.setVideoBitrateControl(CommandManager.VBC_MANUAL);
-        manager.setVideoBitrate(CommandManager.H264_MAX_BITRATE);
-        
-        dumpDroneConfiguration(manager);
+        manager.setVideoCodecFps(H264.MIN_FPS);
+        manager.setVideoCodec(VideoCodec.H264_360P);
+        manager.setVideoBitrateControl(VideoBitRateMode.MANUAL);
+        manager.setVideoBitrate(H264.MAX_BITRATE);
      }
 
-    private void dumpDroneConfiguration(CommandManager manager)
-    {
-    	final int MAX_STREAM_DATA_SIZE = 1024;
-    	final int MAX_BUF_SIZE = 24 * 1024;
-     	String str = null;
-       	byte[] configBuffer = new byte[MAX_BUF_SIZE];
-   	    Socket controlSocket = null;
-        try {
-        	 // CONTROL_COM_PORT is used for receiving configuration data
-        	controlSocket = new Socket("192.168.1.1", CONTROL_COM_PORT);
-         	controlSocket.setSoTimeout(12000);
-         	
-            // request for drone configuration which is sent via port CONTROL_COM_PORT
-            manager.getDroneConfiguration();
-			//wait for configuration data to be all written to socket
-            try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		    Log.d(TAG, "Drone configuration file content");
-
-			InputStream inputStream = controlSocket.getInputStream();
-			// one read required for all configuration data 
-			int nrBytesRead = 0;
-	        nrBytesRead = inputStream.read(configBuffer, 0, MAX_BUF_SIZE);
-	        if (nrBytesRead != -1)
-	        {
-	        	// output: multiple rows of  "Parameter = value"
-				str = new String(configBuffer, 0, nrBytesRead, "ASCII"); 
-				Log.d(TAG, str);
-		    }
- 			// close the connection
-			controlSocket.close();
-       } catch (IOException e) {
-            e.printStackTrace();
-       }
-    }
-    
     public Uri getURI() {
         String url = "http://" + SERVERIPADDRESS + ":" + STREAMPORT;
         return Uri.parse(url);
@@ -327,8 +287,6 @@ public class VideoProxy {
                                 		      ((buffer[6] & 0xFF) << 16) | 
                                 		      ((buffer[5] & 0xFF) << 8)  | 
                                 		      (buffer[4] & 0xFF); 
-                                String msg = "PayLoadSize=" + payloadSize;
-                                Log.d(TAG, msg);
                                	// receive from ardrone and and send to video player                                 
                                while (payloadSize > MAX_PAYLOAD_DATA )
                                 {

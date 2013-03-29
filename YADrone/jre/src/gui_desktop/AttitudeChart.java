@@ -2,7 +2,6 @@ package gui_desktop;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.util.Date;
 
 import org.jfree.chart.JFreeChart;

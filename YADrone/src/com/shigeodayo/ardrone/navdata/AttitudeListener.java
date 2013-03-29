@@ -5,6 +5,12 @@
  */
 package com.shigeodayo.ardrone.navdata;
 
-public interface AttitudeListener {
-	void attitudeUpdated(float pitch, float roll, float yaw, int altitude);
+import java.util.EventListener;
+
+public interface AttitudeListener extends EventListener {
+	public void attitudeUpdated(float pitch, float roll, float yaw);
+
+	public void attitudeUpdated(float pitch, float roll);
+
+	public void windCompensation(float pitch, float roll);
 }

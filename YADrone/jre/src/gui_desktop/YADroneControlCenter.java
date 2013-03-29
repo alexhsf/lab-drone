@@ -34,13 +34,13 @@ public class YADroneControlCenter
 	private void initialize(){
 		try
 		{
-			ardrone=new ARDrone("192.168.1.1");
+			ardrone=new ARDrone("192.168.1.1", new XugglerDecoder());
 			System.out.println("connect drone controller");
 			ardrone.connect();
 			System.out.println("connect drone navdata");
 			ardrone.connectNav();
 			System.out.println("connect drone video");
-			ardrone.connectVideo(new XugglerDecoder());
+			ardrone.connectVideo();
 			System.out.println("start drone");
 			ardrone.start();
 			

@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.shigeodayo.ardrone.command.CommandManager;
+import com.shigeodayo.ardrone.command.VideoBitRateMode;
 import com.shigeodayo.ardrone.utils.ARDroneUtils;
 
 public class StreamProxy implements Runnable
@@ -51,7 +52,7 @@ public class StreamProxy implements Runnable
 		ticklePort(ARDroneUtils.VIDEO_PORT);
 		manager.enableVideoData();
 		ticklePort(ARDroneUtils.VIDEO_PORT);
-		manager.setVideoBitrateControl(CommandManager.VBC_MODE_DISABLED);
+		manager.setVideoBitrateControl(VideoBitRateMode.DISABLED);
 		
 		// Create server socket
 		try

@@ -17,13 +17,16 @@ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PRO
  */
 package com.shigeodayo.ardrone;
 
-import com.shigeodayo.ardrone.video.VideoDecoder;
+
 
 public interface ARDroneInterface {
 
+	
+	//TODO: cleanup, if kept, factory method should be created for ARDroneInterface
+	
 	//connection
 	public boolean connect();
-	public boolean connectVideo(VideoDecoder decoder);
+	public boolean connectVideo();
 	public boolean connectNav();
 	public void disconnect();
 

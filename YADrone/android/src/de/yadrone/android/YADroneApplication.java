@@ -13,11 +13,12 @@ public class YADroneApplication extends Application
 	
 	public void onCreate()
 	{
-		drone = new ARDrone("192.168.1.1");
+		drone = new ARDrone("192.168.1.1", null);
 	}
 
 	public ARDrone getARDrone()
 	{
 		return drone;
 	}
+
 }

@@ -1,10 +1,10 @@
 package com.shigeodayo.ardrone.video;
 
 import java.io.ByteArrayInputStream;
-//import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-//import java.io.DataOutputStream;
 import java.nio.ByteBuffer;
+//import java.io.ByteArrayOutputStream;
+//import java.io.DataOutputStream;
 //import java.security.AllPermission;
 
 //Copyright 2007-2011, PARROT SA, all rights reserved. 

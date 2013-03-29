@@ -6,8 +6,10 @@ import android.view.MenuInflater;
 import android.widget.TextView;
 
 import com.shigeodayo.ardrone.ARDrone;
-import com.shigeodayo.ardrone.navdata.javadrone.NavData;
-import com.shigeodayo.ardrone.navdata.javadrone.NavDataListener;
+import com.shigeodayo.ardrone.navdata.ControlState;
+import com.shigeodayo.ardrone.navdata.DroneState;
+import com.shigeodayo.ardrone.navdata.NavDataManager;
+import com.shigeodayo.ardrone.navdata.StateListener;
 
 public class NavDataActivity extends BaseActivity {
 
@@ -23,14 +25,22 @@ public class NavDataActivity extends BaseActivity {
 		YADroneApplication app = (YADroneApplication) getApplication();
 		ARDrone drone = app.getARDrone();
 
-		drone.addNavDataListener(new NavDataListener() {
-			public void navDataUpdated(final NavData navData) {
+		NavDataManager nm = drone.getNavDataManager();
+		nm.setStateListener(new StateListener() {
+			@Override
+			public void stateChanged(final DroneState state) {
 				runOnUiThread(new Runnable() {
 					public void run() {
-						text.setText(navData + "");
+						text.setText(state + "");
 					}
 				});
 			}
+
+			@Override
+			public void controlStateChanged(ControlState state) {
+				// TODO Auto-generated method stub
+			}
+
 		});
 	}
 
@@ -39,7 +49,9 @@ public class NavDataActivity extends BaseActivity {
 		YADroneApplication app = (YADroneApplication) getApplication();
 		ARDrone drone = app.getARDrone();
 
-		drone.removeNavDataListener();
+		NavDataManager nm;
+		nm = drone.getNavDataManager();
+		nm.setStateListener(null);
 	}
 
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -47,5 +59,5 @@ public class NavDataActivity extends BaseActivity {
 		inflater.inflate(R.menu.menu_navdata, menu);
 		return true;
 	}
-	
+
 }

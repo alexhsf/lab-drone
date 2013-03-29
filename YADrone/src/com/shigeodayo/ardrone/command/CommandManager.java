@@ -20,414 +20,332 @@ package com.shigeodayo.ardrone.command;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import android.util.Log;
 
 import com.shigeodayo.ardrone.manager.AbstractManager;
+import com.shigeodayo.ardrone.utils.ARDroneUtils;
 
-public class CommandManager extends AbstractManager{
+public class CommandManager extends AbstractManager {
 
-	public static final int H264_MIN_FPS = 15;
-	public static final int H264_MAX_FPS = 30;
+	// TODO replace by PriorityBlockingQueue
+	private BlockingQueue<QueueCommand> q;
 
-	public static final int H264_MIN_BITRATE = 250;
-	public static final int H264_MAX_BITRATE = 4000;
-
-	/* todo: enum? */
-	public static final int VBC_MODE_DISABLED = 0; // no video bitrate control
-	public static final int VBC_MODE_DYNAMIC = 1; // video bitrate control active
-	public static final int VBC_MANUAL = 2; // video bitrate control active
-
-	/* todo: enum? */
-	public static final int NULL_CODEC = 0x00;
-	public static final int UVLC_CODEC = 0x20; // codec_type value is used for START_CODE
-	public static final int P264_CODEC = 0x40;
-	public static final int MP4_360P_CODEC = 0x80;
-	public static final int H264_360P_CODEC = 0x81;
-	public static final int MP4_360P_H264_720P_CODEC = 0x82;
-	public static final int H264_720P_CODEC = 0x83;
-	public static final int MP4_360P_SLRS_CODEC = 0x84;
-	public static final int H264_360P_SLRS_CODEC = 0x85;
-	public static final int H264_720P_SLRS_CODEC = 0x86;
-	public static final int H264_AUTO_RESIZE_CODEC = 0x87; // resolution is adjusted according to bitrate
-	public static final int MP4_360P_H264_360P_CODEC = 0x88;
-
-	/* todo: enum? */
-	public static final int ZAP_CHANNEL_HORI = 0; // horizontal camera channel
-	public static final int ZAP_CHANNEL_VERT = 1; // vertical camera channel
-	public static final int ZAP_CHANNEL_LARGE_HORI_SMALL_VERT = 2; // horizontal camera with vertical camera picture inserted in the left-top corner
-    public static final int ZAP_CHANNEL_LARGE_VERT_SMALL_HORI = 3; // vertical camera with horizontal camera picture inserted in the left-top corner
-    public static final int ZAP_CHANNEL_NEXT = 4; // next available camera format
-
-	private static final String CR="\r";
+	private static final String CR = "\r";
 
 	private static final String SEQ = "$SEQ$";
 
-	private static int seq=1;
+	private static final String ATLAND = "AT*REF=" + SEQ + ",290717696";
+	private static final String ATRESET = "AT*REF=" + SEQ + ",290717952";
+	private static final String ATTAKEOFF = "AT*REF=" + SEQ + ",290718208";
 
-	private FloatBuffer fb=null;
-	private IntBuffer ib=null;
+	private static int seq = 1;
 
-	private boolean landing=true;
-	private boolean continuance=false;
-	private String command=null;
-	
 	/** speed */
-	private float speed=0.05f;//0.01f - 1.0f
-		
-	public CommandManager(InetAddress inetaddr){
-		this.inetaddr=inetaddr;
-		initialize();
+	private float speed = 0.05f;// 0.01f - 1.0f
+
+	public CommandManager(InetAddress inetaddr) {
+		super(inetaddr);
+		this.q = new ArrayBlockingQueue<QueueCommand>(100);
+		initARDrone();
 	}
 
-    public void setVideoChannel(int channel) {
-        switch (channel) {
-            case ZAP_CHANNEL_HORI:
-            case ZAP_CHANNEL_VERT:
-            case ZAP_CHANNEL_LARGE_HORI_SMALL_VERT:
-            case ZAP_CHANNEL_LARGE_VERT_SMALL_HORI:
-            case ZAP_CHANNEL_NEXT:
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid camera channel mode");
-        }        
-        command="AT*CONFIG="+SEQ+",\"video:video_channel\",\"" + channel + "\"";
-        continuance=false;
-        //setCommand("AT*ZAP="+SEQ+",0", false);
-    }
-	
+	public void resetCommunicationWatchDog() {
+		q.add(new QueueCommand(false, "AT*COMWDG=" + SEQ));
+	}
+
+	public void setVideoChannel(VideoChannel c) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"video:video_channel\",\"" + c.ordinal() + "\""));
+	}
+
 	public void landing() {
 		System.out.println("*** Landing");
-		command="AT*REF=" + SEQ + ",290717696";
-		continuance=false;
-		//setCommand("AT*REF=" + SEQ + ",290717696", false);
-		landing=true;		
+		q.add(new QueueCommand(false, ATLAND));
 	}
 
-	
+	public void trim() {
+		q.add(new QueueCommand(false, "AT*FTRIM=" + SEQ));
+	}
+
 	public void takeOff() {
 		System.out.println("*** Take off");
-		sendCommand("AT*FTRIM="+SEQ);
-		command="AT*REF=" + SEQ + ",290718208";
-		continuance=false;
-		//setCommand("AT*REF=" + SEQ + ",290718208", false);
-		landing=false;		
+		trim();
+		q.add(new QueueCommand(false, ATTAKEOFF));
 	}
 
-	
 	public void reset() {
 		System.out.println("*** Reset");
-		command="AT*REF="+SEQ+",290717952";
-		continuance=true;
-		//setCommand("AT*REF="+SEQ+",290717952", true);
-		landing=true;		
+		q.add(new QueueCommand(true, ATRESET));
 	}
 
-	
 	public void forward() {
-		command="AT*PCMD="+SEQ+",1,0,"+intOfFloat(-speed)+",0,0"+"\r"+"AT*REF=" + SEQ + ",290718208";
-		continuance=true;
-		//setCommand("AT*PCMD="+SEQ+",1,0,"+intOfFloat(-speed)+",0,0"+"\r"+"AT*REF=" + SEQ + ",290718208", true);
+		move(0f, -speed, 0f, 0f);
 	}
 
-	
 	public void forward(int speed) {
 		setSpeed(speed);
 		forward();
 	}
 
-	
 	public void backward() {
-		command="AT*PCMD="+SEQ+",1,0,"+intOfFloat(speed)+",0,0"+"\r"+"AT*REF=" + SEQ + ",290718208";
-		continuance=true;
+		move(0f, speed, 0f, 0f);
 	}
 
-	
 	public void backward(int speed) {
 		setSpeed(speed);
 		backward();
 	}
 
-	
 	public void spinRight() {
-		command="AT*PCMD=" + SEQ + ",1,0,0,0," + intOfFloat(speed)+"\r"+"AT*REF=" + SEQ + ",290718208";
-		continuance=true;
+		move(0f, 0f, 0f, speed);
 	}
 
-	
 	public void spinRight(int speed) {
 		setSpeed(speed);
 		spinRight();
 	}
 
-	
 	public void spinLeft() {
-		command="AT*PCMD=" + SEQ + ",1,0,0,0," + intOfFloat(-speed)+"\r"+"AT*REF=" + SEQ + ",290718208";
-		continuance=true;
+		move(0f, 0f, 0f, -speed);
 	}
 
-	
 	public void spinLeft(int speed) {
 		setSpeed(speed);
 		spinLeft();
 	}
 
-	
 	public void up() {
 		System.out.println("*** Up");
-		command="AT*PCMD="+SEQ+",1,"+intOfFloat(0)+","+intOfFloat(0)+","+intOfFloat(speed)+","+intOfFloat(0)+"\r"+"AT*REF="+SEQ+",290718208";
-		continuance=true;
+		move(0f, 0f, speed, 0f);
 	}
 
-	
 	public void up(int speed) {
 		setSpeed(speed);
 		up();
 	}
 
-	
 	public void down() {
 		System.out.println("*** Down");
-		command="AT*PCMD="+SEQ+",1,"+intOfFloat(0)+","+intOfFloat(0)+","+intOfFloat(-speed)+","+intOfFloat(0)+"\r"+"AT*REF="+SEQ+",290718208";
-		continuance=true;
+		move(0f, 0f, -speed, 0f);
 	}
 
-	
 	public void down(int speed) {
 		setSpeed(speed);
 		down();
 	}
 
-	
 	public void goRight() {
-		command="AT*PCMD="+SEQ+",1,"+intOfFloat(speed)+",0,0,0"+"\r"+"AT*REF=" + SEQ + ",290718208";
-		continuance=true;
+		move(speed, 0f, 0f, 0f);
 	}
 
-	
 	public void goRight(int speed) {
 		setSpeed(speed);
 		goRight();
 	}
 
-	
 	public void goLeft() {
-		command="AT*PCMD="+SEQ+",1,"+intOfFloat(-speed)+",0,0,0"+"\r"+"AT*REF=" + SEQ + ",290718208";
-		continuance=true;
+		move(-speed, 0f, 0f, 0f);
 	}
 
-	
 	public void goLeft(int speed) {
 		setSpeed(speed);
 		goLeft();
 	}
 
-	
-	
 	public void stop() {
 		System.out.println("*** Stop (Hover)");
-		command="AT*PCMD="+SEQ+",1,0,0,0,0";
-		continuance=true;
+		q.add(new QueueCommand(true, "AT*PCMD=" + SEQ + ",1,0,0,0,0"));
 	}
 
-	
 	public void setSpeed(int speed) {
-		if(speed>100)
-			speed=100;
-		else if(speed<1)
-			speed=1;
+		if (speed > 100)
+			speed = 100;
+		else if (speed < 1)
+			speed = 1;
 
-		this.speed=(float) (speed/100.0);
+		this.speed = (float) (speed / 100.0);
 	}
 
-	public void getDroneConfiguration()
-	{
-		command= "AT*CTRL="+SEQ+",5,0" + CR + "AT*CTRL="+SEQ+",4,0" + CR;
-		continuance=false;
+	public void getDroneConfiguration() {
+		q.add(new QueueCommand(false, "AT*CTRL=" + SEQ + ",5,0" + CR + "AT*CTRL=" + SEQ + ",4,0" + CR));
 	}
 
-	public void setVideoCodecFps(int fps){
-		if (fps < H264_MIN_FPS)
-		{
-		    fps = H264_MIN_FPS;
-		}
-		else if (fps > H264_MAX_FPS)
-		{
-			fps = H264_MAX_FPS;
-		}
-		command="AT*CONFIG="+SEQ+",\"VIDEO:codec_fps\",\"" + fps + "\"" +CR+"AT*FTRIM="+SEQ;
-		continuance=false;
+	public void setVideoCodecFps(int fps) {
+		fps = limit(fps, H264.MIN_FPS, H264.MAX_FPS);
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"VIDEO:codec_fps\",\"" + fps + "\"" + SEQ));
 	}
-	
+
 	/**
 	 * Sets the automatic bitrate control of the video stream. Possible values:
-	 *
-	 * @param mode: VBC_MODE_DISABLED / VBC_MODE_DYNAMIC / VBC_MANUAL
+	 * 
+	 * @param mode
+	 *            : VBC_MODE_DISABLED / VBC_MODE_DYNAMIC / VBC_MANUAL
 	 */
-	public void setVideoBitrateControl(int mode) {
-	    if (mode != VBC_MODE_DISABLED && mode != VBC_MODE_DYNAMIC && mode != VBC_MANUAL) {
-	        throw new IllegalArgumentException("Invalid bitrate control mode");
-	    }
-	    command = "AT*CONFIG=" + SEQ + ",\"VIDEO:bitrate_control_mode\",\"" + mode + "\"" + CR + "AT*FTRIM=" + SEQ;
-	    continuance = false;
+	public void setVideoBitrateControl(VideoBitRateMode mode) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"VIDEO:bitrate_control_mode\",\"" + mode.ordinal() + "\""));
 	}
 
-	public void setVideoBitrate(int bitRate){
-		if (bitRate < H264_MIN_BITRATE)
-		{
-			bitRate = H264_MIN_BITRATE;
-		}
-		else if (bitRate > H264_MAX_BITRATE)
-		{
-			bitRate = H264_MAX_BITRATE;
-		}
-
-		command="AT*CONFIG="+SEQ+",\"VIDEO:bitrate\",\"" + bitRate + "\"" + CR + "AT*FTRIM="+SEQ;
-		continuance=false;
+	public void setVideoBitrate(int rate) {
+		rate = limit(rate, H264.MIN_BITRATE, H264.MAX_BITRATE);
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"VIDEO:bitrate\",\"" + rate + "\""));
 	}
 
-	public void setVideoCodec(int codec){
-        switch (codec) {
-            case NULL_CODEC:
-            case UVLC_CODEC:
-            case P264_CODEC:
-            case MP4_360P_CODEC:
-            case H264_360P_CODEC:
-            case MP4_360P_H264_720P_CODEC:
-            case H264_720P_CODEC:
-            case MP4_360P_SLRS_CODEC:
-            case H264_360P_SLRS_CODEC:
-            case H264_720P_SLRS_CODEC:
-            case H264_AUTO_RESIZE_CODEC:
-            case MP4_360P_H264_360P_CODEC:
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid video codec");
-        }
-		command="AT*CONFIG="+SEQ+",\"VIDEO:video_codec\",\"" + codec + "\""+CR+"AT*FTRIM="+SEQ;
-		continuance=false;
+	public void setVideoCodec(VideoCodec c) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"VIDEO:video_codec\",\"" + c.getValue() + "\""));
 	}
 
-	public void enableVideoData(){
-		command="AT*CONFIG="+SEQ+",\"general:video_enable\",\"TRUE\""+CR+"AT*FTRIM="+SEQ;
-		continuance=false;
-		//setCommand("AT*CONFIG="+SEQ+",\"general:video_enable\",\"TRUE\""+CR+"AT*FTRIM="+SEQ, false);
-	}
-	
-	public void setExtendedNavData(boolean b){
-		command="AT*CONFIG="+SEQ+",\"general:navdata_demo\",\"" + "FALSE" + "\""+CR+"AT*FTRIM="+SEQ;
-		continuance=false;
-		//setCommand("AT*CONFIG="+SEQ+",\"general:navdata_demo\",\"TRUE\""+CR+"AT*FTRIM="+SEQ, false);
+	public void enableVideoData() {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"general:video_enable\",\"TRUE\""));
 	}
 
-	public void sendControlAck(){
-		command="AT*CTRL="+SEQ+",0";
-		continuance=false;
-		//setCommand("AT*CTRL="+SEQ+",0", false);
-	}
-	
-	public int getSpeed(){
-		return (int) (speed*100);
-	}
-	
-	public void setMaxAltitude(int altitude){
-		command="AT*CONFIG="+SEQ+",\"control:altitude_max\",\""+altitude+"\"";
-		continuance=false;
-	}
-	
-	public void setMinAltitude(int altitude){
-		command="AT*CONFIG="+SEQ+",\"control:altitude_min\",\""+altitude+"\"";
-		continuance=false;
+	public void setExtendedNavData(boolean b) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"general:navdata_demo\",\"" + String.valueOf(!b) + "\""));
 	}
 
-	/*
-	 * Thanks, Tarquínio.
-	 */
-	public void move3D(int speedX, int speedY, int speedZ, int speedSpin) {
-		if(speedX>100)
-			speedX=100;
-		else if(speedX<-100)
-			speedX=-100;
-		if(speedY>100)
-			speedY=100;
-		else if(speedY<-100)
-			speedY=-100;
-		if(speedZ>100)
-			speedZ=100;
-		else if(speedZ<-100)
-			speedZ=-100;
-		
-		command="AT*PCMD="+SEQ+",1,"+intOfFloat(-speedY/100.0f)+","+intOfFloat(-speedX/100.0f)+","+intOfFloat(-speedZ/100.0f)+","+intOfFloat(-speedSpin/100.0f)+"\r"+"AT*REF="+SEQ+",290718208";
-		continuance=true;
+	public void setNavDataOptions(int mask) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"general:navdata_options\",\"" + mask + "\""));
 	}
-	
+
+	public void setLedsAnimation(LEDAnimation anim, float freq, int duration) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"leds:leds_anim\",\"" + anim.ordinal() + ","
+				+ float2Int(freq) + "," + duration + "\""));
+	}
+
+	public void setDetectEnemyWithoutShell(boolean b) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"detect:enemy_colors\",\"" + (b ? "1" : "0") + "\""));
+	}
+
+	// TODO Developer guide uses hex representation in the command;
+	// is this necessary?
+	public void setGroundStripeColors(GroundStripeColor c) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"detect:enemy_colors\",\"" + c.getValue() + "\""));
+	}
+
+	public void setEnemyColors(EnemyColor c) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"detect:enemy_colors\",\"" + c.getValue() + "\""));
+	}
+
+	public void setVerticalDetectionType(int mask) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"detect:detect_type\",\"" + 10 + "\""));
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"detect:detections_select_v\",\"" + mask + "\""));
+	}
+
+	public void setHorizonalDetectionType(int mask) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"detect:detect_type\",\"" + 10 + "\""));
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"detect:detections_select_h\",\"" + mask + "\""));
+	}
+
+	public void setVerticalHsyncDetectionType(int mask) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"detect:detect_type\",\"" + 10 + "\""));
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"detect:detections_select_v_hsync\",\"" + mask + "\""));
+	}
+
+	public void setFlyingMode(FlyingMode mode) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"control:flying_mode\",\"" + mode.ordinal() + "\""));
+	}
+
+	public void sendControlAck() {
+		q.add(new QueueCommand(false, "AT*CTRL=" + SEQ + ",0"));
+	}
+
+	public int getSpeed() {
+		return (int) (speed * 100);
+	}
+
+	public void setMaxAltitude(int altitude) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"control:altitude_max\",\"" + altitude + "\""));
+	}
+
+	public void setMinAltitude(int altitude) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"control:altitude_min\",\"" + altitude + "\""));
+	}
+
+	public void animate(FlightAnimation a) {
+		q.add(new QueueCommand(false, "AT*CONFIG=" + SEQ + ",\"control:flight_anim\",\"" + a.ordinal() + "\""));
+	}
+
+	private int limit(int i, int min, int max) {
+		return (i > max ? max : (i < min ? min : i));
+	}
+
+	private float limit(float f, float min, float max) {
+		return (f > max ? max : (f < min ? min : f));
+	}
+
+	public void move(float lrtilt, float fbtilt, float vspeed, float aspeed) {
+		lrtilt = limit(lrtilt, -1f, 1f);
+		fbtilt = limit(fbtilt, -1f, 1f);
+		vspeed = limit(vspeed, -1f, 1f);
+		aspeed = limit(aspeed, -1f, 1f);
+		q.add(new QueueCommand(true, "AT*PCMD=" + SEQ + ",1," + float2Int(lrtilt) + "," + float2Int(fbtilt) + ","
+				+ float2Int(vspeed) + "," + float2Int(aspeed)));
+	}
+
+	public void move(int speedX, int speedY, int speedZ, int speedSpin) {
+		move(-speedY / 100.0f, -speedX / 100.0f, -speedZ / 100.0f, -speedSpin / 100.0f);
+	}
+
+	// AT*MISC undocumented, but needed to initialize
+	// see https://github.com/bklang/ARbDrone/wiki/UndocumentedCommands
+	private void sendMisc(int p1, int p2, int p3, int p4) {
+		q.add(new QueueCommand(false, "AT*MISC=" + SEQ + "," + p1 + "," + p2 + "," + p3 + "," + p4));
+	}
+
+	// AT*PMODE undocumented, but needed to initialize
+	// see https://github.com/bklang/ARbDrone/wiki/UndocumentedCommands
+	private void sendPMode(int mode) {
+		q.add(new QueueCommand(false, "AT*PMODE=" + SEQ + "," + mode));
+	}
+
 	@Override
 	public void run() {
-		initARDrone();
-		while(!doStop){
-			if(this.command!=null){
-				sendCommand();
-				if(!continuance){
-					command=null;
+		while (!doStop) {
+			QueueCommand c;
+			try {
+				c = q.poll(50, TimeUnit.MILLISECONDS);
+				if (c != null) {
+					sendCommand(c.getCommand());
+					if (c.isContinuance() && q.isEmpty()) {
+						q.add(c);
+					}
 				}
-			}else{
-				if(landing){
-					sendCommand("AT*PCMD="+SEQ+",1,0,0,0,0"+CR+"AT*REF="+SEQ+",290717696");
-				}else{
-					sendCommand("AT*PCMD="+SEQ+",1,0,0,0,0"+CR+"AT*REF="+SEQ+",290718208");
-				}
-			}
-			if(seq%5==0){//<2000ms
-				sendCommand("AT*COMWDG="+SEQ);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
-	
 
-	private void initialize(){
-		ByteBuffer bb=ByteBuffer.allocate(4);
-		fb=bb.asFloatBuffer();
-		ib=bb.asIntBuffer();
-	}
-	
-	private void initARDrone(){
-		sendCommand("AT*CONFIG="+SEQ+",\"general:navdata_demo\",\"TRUE\""+CR+"AT*FTRIM="+SEQ);//1
-		sendCommand("AT*PMODE="+SEQ+",2"+CR+"AT*MISC="+SEQ+",2,20,2000,3000"+CR+"AT*FTRIM="+SEQ+CR+"AT*REF="+SEQ+",290717696");//2-5
-		sendCommand("AT*PCMD="+SEQ+",1,0,0,0,0"+CR+"AT*REF="+SEQ+",290717696"+CR+"AT*COMWDG="+SEQ);//6-8
-		sendCommand("AT*PCMD="+SEQ+",1,0,0,0,0"+CR+"AT*REF="+SEQ+",290717696"+CR+"AT*COMWDG="+SEQ);//6-8
-		sendCommand("AT*FTRIM="+SEQ);
+	private void initARDrone() {
+		sendPMode(2);
+		sendMisc(2, 20, 2000, 3000);
+		stop();
+		landing();
 		System.out.println("Initialize completed!");
 	}
-	
-	/*private void setCommand(String command, boolean continuance){
-		this.command=command;
-		this.continuance=continuance;
-	}*/
 
-	
-	private void sendCommand(){
-		sendCommand(this.command);
-	}
-	
-	private synchronized void sendCommand(String command){
+	private synchronized void sendCommand(String command) {
 		/**
-		 * Each command needs an individual sequence number (this also holds for Hover/Stop commands)
-		 * At first, only a placeholder is set for every command and this placeholder is replaced with a real sequence number below.
-		 * Because one command string may contain chained commands (e.g. "AT...AT...AT...) the replacement needs to be done individually for every 'subcommand'
+		 * Each command needs an individual sequence number (this also holds for
+		 * Hover/Stop commands) At first, only a placeholder is set for every
+		 * command and this placeholder is replaced with a real sequence number
+		 * below. Because one command string may contain chained commands (e.g.
+		 * "AT...AT...AT...) the replacement needs to be done individually for
+		 * every 'subcommand'
 		 */
+		Log.v("YADrone", command);
 		int seqIndex = -1;
-		while ((seqIndex = command.indexOf(SEQ)) != -1)
-		{
+		while ((seqIndex = command.indexOf(SEQ)) != -1) {
 			command = command.substring(0, seqIndex) + (seq++) + command.substring(seqIndex + SEQ.length());
-		} 
-		
-		byte[] buffer=(command+CR).getBytes();
-//		System.out.println(command);
-		DatagramPacket packet=new DatagramPacket(buffer, buffer.length, inetaddr, 5556);
+		}
+
+		byte[] buffer = (command + CR).getBytes();
+		DatagramPacket packet = new DatagramPacket(buffer, buffer.length, inetaddr, ARDroneUtils.PORT);
 		try {
 			socket.send(packet);
-			Thread.sleep(20);//<50ms			
+			Thread.sleep(20);// <50ms
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -435,8 +353,7 @@ public class CommandManager extends AbstractManager{
 		}
 	}
 
-	private int intOfFloat(float f) {
-		fb.put(0, f);
-		return ib.get(0);
+	private int float2Int(float f) {
+		return Float.floatToIntBits(f);
 	}
 }

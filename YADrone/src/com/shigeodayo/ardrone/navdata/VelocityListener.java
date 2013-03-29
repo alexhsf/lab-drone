@@ -5,6 +5,8 @@
  */
 package com.shigeodayo.ardrone.navdata;
 
-public interface VelocityListener {
+import java.util.EventListener;
+
+public interface VelocityListener extends EventListener {
 	void velocityChanged(float vx, float vy, float vz);
 }

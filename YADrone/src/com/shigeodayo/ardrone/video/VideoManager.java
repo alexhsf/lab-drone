@@ -20,40 +20,58 @@ package com.shigeodayo.ardrone.video;
 import java.net.InetAddress;
 
 import com.shigeodayo.ardrone.command.CommandManager;
+import com.shigeodayo.ardrone.command.VideoBitRateMode;
 import com.shigeodayo.ardrone.manager.AbstractTCPManager;
 import com.shigeodayo.ardrone.utils.ARDroneUtils;
 
 public class VideoManager extends AbstractTCPManager {
-    private VideoDecoder decoder;
+	private VideoDecoder decoder;
 
-    private CommandManager manager = null;
+	private CommandManager manager = null;
 
-    private ImageListener listener = null;
+	private ImageListener listener = null;
 
-    public VideoManager(InetAddress inetaddr, CommandManager manager,
-            VideoDecoder decoder) {
-        this.inetaddr = inetaddr;
-        this.manager = manager;
-        this.decoder = decoder;
-    }
+	public VideoManager(InetAddress inetaddr, CommandManager manager, VideoDecoder decoder) {
+		super(inetaddr);
+		this.manager = manager;
+		this.decoder = decoder;
+	}
 
-    public void setImageListener(ImageListener listener) {
-        this.listener = listener;
-    }
+	public void setImageListener(ImageListener listener) {
+		this.listener = listener;
+	}
 
-    public void removeImageListener() {
-        listener = null;
-    }
+	public boolean connect(int port) {
+		if (decoder == null)
+			return false;
 
-    @Override
-    public void run() {
-        ticklePort(ARDroneUtils.VIDEO_PORT);
-        manager.enableVideoData();
-        ticklePort(ARDroneUtils.VIDEO_PORT);
-        manager.setVideoBitrateControl(CommandManager.VBC_MODE_DISABLED);
+		return super.connect(port);
+	}
 
-        if (decoder != null) {
-            decoder.decode(getInputStream(), listener);
-        }
-    }
+	@Override
+	public void run() {
+		if (decoder == null)
+			return;
+
+		ticklePort(ARDroneUtils.VIDEO_PORT);
+		manager.enableVideoData();
+		ticklePort(ARDroneUtils.VIDEO_PORT);
+		manager.setVideoBitrateControl(VideoBitRateMode.DISABLED);
+		decoder.decode(getInputStream(), listener);
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.shigeodayo.ardrone.manager.AbstractTCPManager#close()
+	 */
+	@Override
+	public void close() {
+		if (decoder == null)
+			return;
+
+		super.close();
+	}
+
 }

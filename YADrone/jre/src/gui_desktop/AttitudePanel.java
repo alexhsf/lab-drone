@@ -108,7 +108,7 @@ public class AttitudePanel extends SimpleApplication
     	}   
     }
     
-    public void setAttitude(float pitch, float roll, float yaw, int altitude)
+    public void setAttitude(float pitch, float roll, float yaw)
 	{
 		if (!isStarted)
 		{
@@ -133,7 +133,7 @@ public class AttitudePanel extends SimpleApplication
     public static void main(String[] args)
     {
     	AttitudePanel panel = new AttitudePanel();
-    	panel.setAttitude(45f, 45f, 45f, 0);
+    	panel.setAttitude(45f, 45f, 45f);
     }
     
 }

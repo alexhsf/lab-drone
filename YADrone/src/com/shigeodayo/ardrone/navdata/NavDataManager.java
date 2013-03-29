@@ -21,75 +21,190 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
 
 import com.shigeodayo.ardrone.command.CommandManager;
 import com.shigeodayo.ardrone.manager.AbstractManager;
-import com.shigeodayo.ardrone.navdata.javadrone.JavadroneNavDataParser;
-import com.shigeodayo.ardrone.navdata.javadrone.NavDataListener;
 import com.shigeodayo.ardrone.utils.ARDroneUtils;
 
-public class NavDataManager extends AbstractManager{
+//TODO: refactor parsing code into separate classes but need to think about how to put the listener code
+//option: make it one abstract listener, disadvantage: each client has many methods to implement
+public class NavDataManager extends AbstractManager {
 
-    private static final int MAX_PACKET_SIZE = 2048;
-    
-	private CommandManager manager=null;
-	
-	//listeners
-	private AttitudeListener attitudeListener=null;
-	private StateListener stateListener=null;
-	private VelocityListener velocityListener=null;
-	private BatteryListener batteryListener=null;
-	private NavDataListener navDataListener=null;
-	
-	public NavDataManager(InetAddress inetaddr, CommandManager manager){
-		this.inetaddr=inetaddr;
-		this.manager=manager;
-	}
-	
-	public void setAttitudeListener(AttitudeListener attitudeListener){
-		this.attitudeListener=attitudeListener;
-	}
-	public void setBatteryListener(BatteryListener batteryListener){
-		this.batteryListener=batteryListener;
-	}
-	public void setStateListener(StateListener stateListener){
-		this.stateListener=stateListener;
-	}
-	public void setVelocityListener(VelocityListener velocityListener){
-		this.velocityListener=velocityListener;
-	}
-	public void setNavDataListener(NavDataListener navDataListener){
-		this.navDataListener=navDataListener;
+	private static final int NB_ACCS = 3;
+	private static final int NB_GYROS = 3;
+
+	/* number of trackers in width of current picture */
+	private static final int NB_CORNER_TRACKERS_WIDTH = 5;
+	/* number of trackers in height of current picture */
+	private static final int NB_CORNER_TRACKERS_HEIGHT = 4;
+
+	private static final int DEFAULT_NB_TRACKERS_WIDTH = NB_CORNER_TRACKERS_WIDTH + 1;
+	private static final int DEFAULT_NB_TRACKERS_HEIGHT = NB_CORNER_TRACKERS_HEIGHT + 1;
+
+	// source: navdata_common.h
+	private static final int NAVDATA_MAX_CUSTOM_TIME_SAVE = 20;
+	private static final int MAX_PACKET_SIZE = 2048;
+
+	private CommandManager manager = null;
+
+	private AttitudeListener attitudeListener = null;
+	private AltitudeListener altitudeListener = null;
+	private StateListener stateListener = null;
+	private VelocityListener velocityListener = null;
+	private BatteryListener batteryListener = null;
+	private TimeListener timeListener = null;
+	private VisionListener visionListener = null;
+	private MagnetoListener magnetoListener = null;
+	private AcceleroListener acceleroListener = null;
+	private GyroListener gyroListener = null;
+	private UltrasoundListener ultrasoundListener = null;
+	private WatchdogListener watchdogListener = null;
+	private AdcListener adcListener = null;
+	private CounterListener counterListener = null;
+	private PressureListener pressureListener = null;
+	private TemperatureListener temperatureListener = null;
+	private WindListener windListener = null;
+	private VideoListener videoListener = null;
+	private WifiListener wifiListener = null;
+	private Zimmu3000Listener zimmu3000Listener = null;
+	private PWMlistener pwmlistener = null;
+	private ReferencesListener referencesListener = null;
+	private TrimsListener trimsListener = null;
+
+	private long lastSequenceNumber = 1;
+
+	public NavDataManager(InetAddress inetaddr, CommandManager manager) {
+		super(inetaddr);
+		this.manager = manager;
 	}
 
-	
+	public void setAttitudeListener(AttitudeListener attitudeListener) {
+		this.attitudeListener = attitudeListener;
+	}
+
+	public void setAltitudeListener(AltitudeListener altitudeListener) {
+		this.altitudeListener = altitudeListener;
+	}
+
+	public void setBatteryListener(BatteryListener batteryListener) {
+		this.batteryListener = batteryListener;
+	}
+
+	public void setTimeListener(TimeListener timeListener) {
+		this.timeListener = timeListener;
+	}
+
+	public void setStateListener(StateListener stateListener) {
+		this.stateListener = stateListener;
+	}
+
+	public void setVelocityListener(VelocityListener velocityListener) {
+		this.velocityListener = velocityListener;
+	}
+
+	public void setVisionListener(VisionListener visionListener) {
+		this.visionListener = visionListener;
+	}
+
+	public void setMagnetoListener(MagnetoListener magnetoListener) {
+		this.magnetoListener = magnetoListener;
+	}
+
+	public void setAcceleroListener(AcceleroListener acceleroListener) {
+		this.acceleroListener = acceleroListener;
+	}
+
+	public void setGyroListener(GyroListener gyroListener) {
+		this.gyroListener = gyroListener;
+	}
+
+	public void setUltrasoundListener(UltrasoundListener ultrasoundListener) {
+		this.ultrasoundListener = ultrasoundListener;
+	}
+
+	public void setAdcListener(AdcListener adcListener) {
+		this.adcListener = adcListener;
+	}
+
+	public void setCounterListener(CounterListener counterListener) {
+		this.counterListener = counterListener;
+	}
+
+	public void setPressureListener(PressureListener pressureListener) {
+		this.pressureListener = pressureListener;
+	}
+
+	public void setTemperatureListener(TemperatureListener temperatureListener) {
+		this.temperatureListener = temperatureListener;
+	}
+
+	public void setWindListener(WindListener windListener) {
+		this.windListener = windListener;
+	}
+
+	public void setVideoListener(VideoListener videoListener) {
+		this.videoListener = videoListener;
+	}
+
+	public void setHDVideoStreamListener(VideoListener hdVideoStreamListener) {
+		this.videoListener = hdVideoStreamListener;
+	}
+
+	public void setWifiListener(WifiListener wifiListener) {
+		this.wifiListener = wifiListener;
+	}
+
+	public void setZimmu3000Listener(Zimmu3000Listener zimmu3000Listener) {
+		this.zimmu3000Listener = zimmu3000Listener;
+	}
+
+	public void setPWMlistener(PWMlistener pwmlistener) {
+		this.pwmlistener = pwmlistener;
+	}
+
+	public void setReferencesListener(ReferencesListener referencesListener) {
+		this.referencesListener = referencesListener;
+	}
+
+	public void setTrimsListener(TrimsListener trimsListener) {
+		this.trimsListener = trimsListener;
+	}
+
 	@Override
-	public void run(){
+	public void run() {
 		ticklePort(ARDroneUtils.NAV_PORT);
-		manager.sendControlAck();
-		
-		// Use the original ARDroneForP5 parser as well as the Javadrone parser. The latter parses the complete navdata record sent by the drone
-		NavDataParser parser=new NavDataParser();
-		parser.setAttitudeListener(attitudeListener);
-		parser.setBatteryListener(batteryListener);
-		parser.setStateListener(stateListener);
-		parser.setVelocityListener(velocityListener);
-		
-		JavadroneNavDataParser javadroneParser=new JavadroneNavDataParser();
-		javadroneParser.setNavDataListener(navDataListener);
-		
-		while(!doStop){
+		boolean bootstrapping = true;
+		boolean controlreceived = false;
+
+		DatagramPacket packet = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
+		while (!doStop) {
 			try {
-				ticklePort(ARDroneUtils.NAV_PORT);
-				DatagramPacket packet=new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE, inetaddr, 5554);
 
+				// ticklePort(ARDroneUtils.NAV_PORT);
 				socket.receive(packet);
-				
-				ByteBuffer buffer=ByteBuffer.wrap(packet.getData(), 0, packet.getLength());
+				ByteBuffer buffer = ByteBuffer.wrap(packet.getData(), 0, packet.getLength());
 
-				// use the original parser as well as the javadrone parser
-				parser.parseNavData(buffer.duplicate());
-				javadroneParser.parseNavData(buffer);
+				DroneState s = parse(buffer);
+
+				// according to 7.1.2. of the ARDrone Developpper Guide demo
+				// mode must be set after exiting bootstrap mode
+				// TODO can we receive multiple bootsrap packets?
+				if (bootstrapping && !s.isNavDataBootstrap()) {
+					manager.setExtendedNavData(false);
+					bootstrapping = false;
+				}
+
+				if (!controlreceived && s.isControlReceived()) {
+					manager.sendControlAck();
+					controlreceived = true;
+				}
+
+				if (s.isCommunicationProblemOccurred()) {
+					manager.resetCommunicationWatchDog();
+				}
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (NavDataException e) {
@@ -97,4 +212,932 @@ public class NavDataManager extends AbstractManager{
 			}
 		}
 	}
+
+	public DroneState parse(ByteBuffer b) throws NavDataException {
+
+		b.order(ByteOrder.LITTLE_ENDIAN);
+		int magic = b.getInt();
+		requireEquals("Magic must be correct", 0x55667788, magic);
+
+		int state = b.getInt();
+		long sequence = getUInt32(b);
+		int vision = b.getInt();
+
+		if (sequence <= lastSequenceNumber && sequence != 1) {
+			throw new NavDataException("Invalid sequence number received (received=" + sequence + "last="
+					+ lastSequenceNumber);
+		}
+		lastSequenceNumber = sequence;
+
+		DroneState s = new DroneState(state, vision);
+		if (stateListener != null) {
+			stateListener.stateChanged(s);
+		}
+
+		while (b.position() < b.limit()) {
+			int tag = b.getShort() & 0xFFFF;
+			int payloadSize = (b.getShort() & 0xFFFF) - 4;
+			ByteBuffer optionData = b.slice().order(ByteOrder.LITTLE_ENDIAN);
+			optionData.limit(payloadSize);
+			b.position(b.position() + payloadSize);
+
+			parseOption(tag, optionData);
+		}
+
+		return s;
+	}
+
+	private static final int NAVDATA_CKS_TAG = -1;
+	private static final int NAVDATA_DEMO_TAG = 0;
+	private static final int NAVDATA_TIME_TAG = 1;
+	private static final int NAVDATA_RAW_MEASURES_TAG = 2;
+	private static final int NAVDATA_PHYS_MEASURES_TAG = 3;
+	private static final int NAVDATA_GYROS_OFFSETS_TAG = 4;
+	private static final int NAVDATA_EULER_ANGLES_TAG = 5;
+	private static final int NAVDATA_REFERENCES_TAG = 6;
+	private static final int NAVDATA_TRIMS_TAG = 7;
+	private static final int NAVDATA_RC_REFERENCES_TAG = 8;
+	private static final int NAVDATA_PWM_TAG = 9;
+	private static final int NAVDATA_ALTITUDE_TAG = 10;
+	private static final int NAVDATA_VISION_RAW_TAG = 11;
+	private static final int NAVDATA_VISION_OF_TAG = 12;
+	private static final int NAVDATA_VISION_TAG = 13;
+	private static final int NAVDATA_VISION_PERF_TAG = 14;
+	private static final int NAVDATA_TRACKERS_SEND_TAG = 15;
+	private static final int NAVDATA_VISION_DETECT_TAG = 16;
+	private static final int NAVDATA_WATCHDOG_TAG = 17;
+	private static final int NAVDATA_ADC_DATA_FRAME_TAG = 18;
+	private static final int NAVDATA_VIDEO_STREAM_TAG = 19;
+	private static final int NAVDATA_GAMES_TAG = 20;
+	private static final int NAVDATA_PRESSURE_RAW_TAG = 21;
+	private static final int NAVDATA_MAGENTO_TAG = 22;
+	private static final int NAVDATA_WIND_TAG = 23;
+	private static final int NAVDATA_KALMAN_PRESSURE_TAG = 24;
+	private static final int NAVDATA_HDVIDEO_STREAM_TAG = 25;
+	private static final int NAVDATA_WIFI_TAG = 26;
+	private static final int NAVDATA_ZIMMU_3000_TAG = 27;
+
+	private void parseOption(int tag, ByteBuffer optionData) {
+		switch (tag) {
+		case NAVDATA_CKS_TAG:
+			parseCksOption(optionData);
+			break;
+		case NAVDATA_DEMO_TAG:
+			parseDemoOption(optionData);
+			break;
+		case NAVDATA_TIME_TAG:
+			parseTimeOption(optionData);
+			break;
+		case NAVDATA_RAW_MEASURES_TAG:
+			parseRawMeasuresOption(optionData);
+			break;
+		case NAVDATA_PHYS_MEASURES_TAG:
+			parsePhysMeasuresOption(optionData);
+			break;
+		case NAVDATA_GYROS_OFFSETS_TAG:
+			parseGyrosOffsetsOption(optionData);
+			break;
+		case NAVDATA_EULER_ANGLES_TAG:
+			parseEulerAnglesOption(optionData);
+			break;
+		case NAVDATA_REFERENCES_TAG:
+			parseReferencesOption(optionData);
+			break;
+		case NAVDATA_TRIMS_TAG:
+			parseTrimsOption(optionData);
+			break;
+		case NAVDATA_RC_REFERENCES_TAG:
+			parseRcReferencesOption(optionData);
+			break;
+		case NAVDATA_PWM_TAG:
+			parsePWMOption(optionData);
+			break;
+		case NAVDATA_ALTITUDE_TAG:
+			parseAltitudeOption(optionData);
+			break;
+		case NAVDATA_VISION_RAW_TAG:
+			parseVisionRawOption(optionData);
+			break;
+		case NAVDATA_VISION_OF_TAG:
+			parseVisionOfOption(optionData);
+			break;
+		case NAVDATA_VISION_TAG:
+			parseVisionOption(optionData);
+			break;
+		case NAVDATA_VISION_PERF_TAG:
+			parseVisionPerfOption(optionData);
+			break;
+		case NAVDATA_TRACKERS_SEND_TAG:
+			parseTrackersSendOption(optionData);
+			break;
+		case NAVDATA_VISION_DETECT_TAG:
+			parseVisionDetectOption(optionData);
+			break;
+		case NAVDATA_WATCHDOG_TAG:
+			parseWatchdogOption(optionData);
+			break;
+		case NAVDATA_ADC_DATA_FRAME_TAG:
+			parseAdcDataFrameOption(optionData);
+			break;
+		case NAVDATA_VIDEO_STREAM_TAG:
+			parseVideoStreamOption(optionData);
+			break;
+		case NAVDATA_GAMES_TAG:
+			parseGamesOption(optionData);
+			break;
+		case NAVDATA_PRESSURE_RAW_TAG:
+			parsePressureOption(optionData);
+			break;
+		case NAVDATA_MAGENTO_TAG:
+			parseMagnetoDataOption(optionData);
+			break;
+		case NAVDATA_WIND_TAG:
+			parseWindOption(optionData);
+			break;
+		case NAVDATA_KALMAN_PRESSURE_TAG:
+			parseKalmanPressureOption(optionData);
+			break;
+		case NAVDATA_HDVIDEO_STREAM_TAG:
+			parseHDVideoSteamOption(optionData);
+			break;
+		case NAVDATA_WIFI_TAG:
+			parseWifiOption(optionData);
+			break;
+		case NAVDATA_ZIMMU_3000_TAG:
+			parseZimmu3000Option(optionData);
+			break;
+		}
+
+	}
+
+	private void parseCksOption(ByteBuffer b) {
+		int cks = b.getInt();
+		// TODO compute navdata checksum and compare
+	}
+
+	private void parseZimmu3000Option(ByteBuffer b) {
+		if (zimmu3000Listener != null) {
+
+			int vzimmuLSB = b.getInt();
+			float vzfind = b.getFloat();
+
+			zimmu3000Listener.received(vzimmuLSB, vzfind);
+		}
+
+	}
+
+	private void parseWifiOption(ByteBuffer b) {
+		// TODO: verify if link quality stays below Integer.MAX_INT
+		if (wifiListener != null) {
+			long link_quality = getUInt32(b);
+
+			wifiListener.received(link_quality);
+		}
+
+	}
+
+	private void parseHDVideoSteamOption(ByteBuffer b) {
+		if (videoListener != null) {
+			// assumption: does not exceed Integer.MAX_INT
+			HDVideoState hdvideo_state = HDVideoState.fromInt(b.getInt());
+
+			// assumption: does not exceed Integer.MAX_INT
+			int storage_fifo_nb_packets = b.getInt();
+
+			// assumption: does not exceed Integer.MAX_INT
+			int storage_fifo_size = b.getInt();
+
+			// assumption: USB key size below Integer.MAX_INT kbytes
+			// USB key in kbytes - 0 if no key present
+			int usbkey_size = b.getInt();
+
+			// assumption: USB key size below Integer.MAX_INT kbytes
+			// USB key free space in kbytes - 0 if no key present
+			int usbkey_freespace = b.getInt();
+
+			// 'frame_number' PaVE field of the frame starting to be encoded for
+			// the
+			// HD stream
+			int frame_number = b.getInt();
+
+			// remaining time in seconds
+			int usbkey_remaining_time = b.getInt();
+
+			HDVideoStreamData d = new HDVideoStreamData(hdvideo_state, storage_fifo_nb_packets, storage_fifo_size,
+					usbkey_size, usbkey_freespace, frame_number, usbkey_remaining_time);
+			videoListener.receivedHDVideoStreamData(d);
+		}
+	}
+
+	private void parseKalmanPressureOption(ByteBuffer b) {
+		if (pressureListener != null) {
+
+			float offset_pressure = b.getFloat();
+			float est_z = b.getFloat();
+			float est_zdot = b.getFloat();
+			float est_bias_PWM = b.getFloat();
+			float est_biais_pression = b.getFloat();
+			float offset_US = b.getFloat();
+			float prediction_US = b.getFloat();
+			float cov_alt = b.getFloat();
+			float cov_PWM = b.getFloat();
+			float cov_vitesse = b.getFloat();
+			boolean effet_sol = getBoolean(b);
+			float somme_inno = b.getFloat();
+			boolean rejet_US = getBoolean(b);
+			float u_multisinus = b.getFloat();
+			float gaz_altitude = b.getFloat();
+			boolean multisinus = getBoolean(b);
+			boolean multisinus_debut = getBoolean(b);
+
+			KalmanPressureData d = new KalmanPressureData(offset_pressure, est_z, est_zdot, est_bias_PWM,
+					est_biais_pression, offset_US, prediction_US, cov_alt, cov_PWM, cov_vitesse, effet_sol, somme_inno,
+					rejet_US, u_multisinus, gaz_altitude, multisinus, multisinus_debut);
+			pressureListener.receivedKalmanPressure(d);
+		}
+	}
+
+	private void parseWindOption(ByteBuffer b) {
+		if (attitudeListener != null || windListener != null) {
+
+			// estimated wind speed [m/s]
+			float wind_speed = b.getFloat();
+
+			// estimated wind direction in North-East frame [rad] e.g. if
+			// wind_angle
+			// is pi/4, wind is from South-West to North-East
+			float wind_angle = b.getFloat();
+
+			float wind_compensation_theta = b.getFloat();
+			float wind_compensation_phi = b.getFloat();
+
+			float[] state = getFloat(b, 6);
+
+			float[] magneto = getFloat(b, 3);
+
+			if (attitudeListener != null) {
+				attitudeListener.windCompensation(wind_compensation_theta, wind_compensation_phi);
+			}
+
+			if (windListener != null) {
+				WindEstimationData d = new WindEstimationData(wind_speed, wind_angle, state, magneto);
+				windListener.receivedEstimation(d);
+			}
+		}
+
+	}
+
+	private void parsePressureOption(ByteBuffer b) {
+		if (pressureListener != null || temperatureListener != null) {
+
+			int up = b.getInt();
+			short ut = b.getShort();
+			int temperature_meas = b.getInt();
+			int pression_meas = b.getInt();
+
+			if (pressureListener != null) {
+				Pressure d = new Pressure(up, pression_meas);
+				pressureListener.receivedPressure(d);
+			}
+
+			if (temperatureListener != null) {
+				Temperature d = new Temperature(ut, temperature_meas);
+				temperatureListener.receivedTemperature(d);
+			}
+		}
+	}
+
+	private void parseGamesOption(ByteBuffer b) {
+		if (counterListener != null) {
+
+			long double_tap_counter = getUInt32(b);
+			long finish_line_counter = getUInt32(b);
+
+			Counters d = new Counters(double_tap_counter, finish_line_counter);
+			counterListener.update(d);
+		}
+
+	}
+
+	private void parseVideoStreamOption(ByteBuffer b) {
+		if (videoListener != null) {
+
+			// quantizer reference used to encode frame [1:31]
+			// assumption: sign is irrelevant
+			byte quant = b.get();
+
+			// frame size (bytes)
+			// assumption: does not exceed Integer.MAX_INT
+			int frame_size = b.getInt();
+
+			// frame index
+			// assumption: does not exceed Integer.MAX_INT
+			int frame_number = b.getInt();
+
+			// atmcd ref sequence number
+			// assumption: does not exceed Integer.MAX_INT
+			int atcmd_ref_seq = b.getInt();
+
+			// mean time between two consecutive atcmd_ref (ms)
+			// assumption: does not exceed Integer.MAX_INT
+			int atcmd_mean_ref_gap = b.getInt();
+
+			float atcmd_var_ref_gap = b.getInt();
+
+			// estimator of atcmd link quality
+			// assumption: does not exceed Integer.MAX_INT
+			int atcmd_ref_quality = b.getInt();
+
+			// drone2
+
+			// measured out throughput from the video tcp socket
+			// assumption: does not exceed Integer.MAX_INT
+			int out_bitrate = b.getInt();
+
+			// last frame size generated by the video encoder
+			// assumption: does not exceed Integer.MAX_INT
+			int desired_bitrate = b.getInt();
+
+			// misc temporary data
+			int[] temp_data = getInt(b, 5);
+
+			// queue usage
+			// assumption: does not exceed Integer.MAX_INT
+			int tcp_queue_level = b.getInt();
+			// assumption: does not exceed Integer.MAX_INT
+			int fifo_queue_level = b.getInt();
+
+			VideoStreamData d = new VideoStreamData(quant, frame_size, frame_number, atcmd_ref_seq, atcmd_mean_ref_gap,
+					atcmd_var_ref_gap, atcmd_ref_quality, out_bitrate, desired_bitrate, temp_data, tcp_queue_level,
+					fifo_queue_level);
+			videoListener.receivedVideoStreamData(d);
+		}
+	}
+
+	private void parseAdcDataFrameOption(ByteBuffer b) {
+		if (adcListener != null) {
+			// assumption: does not exceed Integer.MAX_INT or sign is irrelevant
+			int version = b.getInt();
+
+			// assumption: sign is irrelevant
+			byte[] data_frame = new byte[32];
+			b.get(data_frame);
+
+			AdcFrame d = new AdcFrame(version, data_frame);
+			adcListener.receivedFrame(d);
+		}
+	}
+
+	private void parseWatchdogOption(ByteBuffer b) {
+		if (watchdogListener != null) {
+			int watchdog = b.getInt();
+
+			watchdogListener.received(watchdog);
+		}
+	}
+
+	private void parseTrackersSendOption(ByteBuffer b) {
+		if (visionListener != null) {
+
+			int[][] locked = new int[DEFAULT_NB_TRACKERS_WIDTH][DEFAULT_NB_TRACKERS_HEIGHT];
+			for (int i = 0; i < DEFAULT_NB_TRACKERS_WIDTH; i++) {
+				for (int j = 0; j < DEFAULT_NB_TRACKERS_HEIGHT; j++) {
+					locked[i][j] = b.getInt();
+				}
+			}
+
+			int[][][] point = new int[DEFAULT_NB_TRACKERS_WIDTH][DEFAULT_NB_TRACKERS_HEIGHT][2];
+			for (int i = 0; i < DEFAULT_NB_TRACKERS_WIDTH; i++) {
+				for (int j = 0; j < DEFAULT_NB_TRACKERS_HEIGHT; j++) {
+					point[i][j] = getInt(b, 2);
+				}
+			}
+
+			// TODO: create Tracker class containing locked + point?
+			visionListener.trackersSend(locked, point);
+		}
+	}
+
+	private void parseVisionPerfOption(ByteBuffer b) {
+		if (visionListener != null) {
+			float time_szo = b.getFloat();
+			float time_corners = b.getFloat();
+			float time_compute = b.getFloat();
+			float time_tracking = b.getFloat();
+			float time_trans = b.getFloat();
+			float time_update = b.getFloat();
+			float[] time_custom = getFloat(b, NAVDATA_MAX_CUSTOM_TIME_SAVE);
+
+			VisionPerormance d = new VisionPerormance(time_szo, time_corners, time_compute, time_tracking, time_trans,
+					time_update, time_custom);
+			visionListener.receivedPerformanceData(d);
+		}
+	}
+
+	private void parseVisionOption(ByteBuffer b) {
+		if (visionListener != null) {
+			int vision_state = b.getInt();
+			int vision_misc = b.getInt();
+			float vision_phi_trim = b.getFloat();
+			float vision_phi_ref_prop = b.getFloat();
+			float vision_theta_trim = b.getFloat();
+			float vision_theta_ref_prop = b.getFloat();
+			int new_raw_picture = b.getInt();
+			float theta_capture = b.getFloat();
+			float phi_capture = b.getFloat();
+			float psi_capture = b.getFloat();
+			int altitude_capture = b.getInt();
+			// time in TSECDEC format (see config.h)
+			int time_capture = b.getInt();
+			int time_capture_seconds = getSeconds(time_capture);
+			int time_capture_useconds = getUSeconds(time_capture);
+			float[] body_v = getFloat(b, 3);
+			float delta_phi = b.getFloat();
+			float delta_theta = b.getFloat();
+			float delta_psi = b.getFloat();
+			int gold_defined = b.getInt();
+			int gold_reset = b.getInt();
+			float gold_x = b.getFloat();
+			float gold_y = b.getFloat();
+
+			VisionData d = new VisionData(vision_state, vision_misc, vision_phi_trim, vision_phi_ref_prop,
+					vision_theta_trim, vision_theta_ref_prop, new_raw_picture, theta_capture, phi_capture, psi_capture,
+					altitude_capture, time_capture_seconds, time_capture_useconds, body_v, delta_phi, delta_theta,
+					delta_psi, gold_defined, gold_reset, gold_x, gold_y);
+			visionListener.receivedData(d);
+		}
+
+	}
+
+	private void parseVisionOfOption(ByteBuffer b) {
+		if (visionListener != null) {
+			float[] of_dx = getFloat(b, 5);
+			float[] of_dy = getFloat(b, 5);
+
+			visionListener.receivedVisionOf(of_dx, of_dy);
+		}
+
+	}
+
+	private void parseVisionRawOption(ByteBuffer b) {
+		if (visionListener != null) {
+			float[] vision_raw = getFloat(b, 3);
+
+			visionListener.receivedRawData(vision_raw);
+		}
+	}
+
+	private void parseAltitudeOption(ByteBuffer b) {
+		if (altitudeListener != null) {
+			int altitude_vision = b.getInt();
+			float altitude_vz = b.getFloat();
+			int altitude_ref = b.getInt();
+			int altitude_raw = b.getInt();
+
+			// TODO: what does obs mean?
+			float obs_accZ = b.getFloat();
+			float obs_alt = b.getFloat();
+
+			float[] obs_x = getFloat(b, 3);
+
+			int obs_state = b.getInt();
+
+			// TODO: what does vb mean?
+			float[] est_vb = getFloat(b, 2);
+
+			int est_state = b.getInt();
+
+			Altitude d = new Altitude(altitude_vision, altitude_vz, altitude_ref, altitude_raw, obs_accZ, obs_alt,
+					obs_x, obs_state, est_vb, est_state);
+			altitudeListener.receivedExtendedAltitude(d);
+		}
+	}
+
+	private void parsePWMOption(ByteBuffer b) {
+		if (pwmlistener != null) {
+			short[] motor = getUInt8(b, 4);
+			short[] sat_motor = getUInt8(b, 4);
+			float gaz_feed_forward = b.getFloat();
+			float gaz_altitude = b.getFloat();
+			float altitude_integral = b.getFloat();
+			float vz_ref = b.getFloat();
+			// pry = pitch roll yaw; bit lazy yes :-)
+			int[] u_pry = getInt(b, 3);
+			float yaw_u_I = b.getFloat();
+			// pry = pitch roll yaw; bit lazy yes :-)
+			int[] u_planif_pry = getInt(b, 3);
+			float u_gaz_planif = b.getFloat();
+			int current_motor[] = getUInt16(b, 4);
+			// WARNING: new navdata (FC 26/07/2011)
+			float altitude_prop = b.getFloat();
+			float altitude_der = b.getFloat();
+
+			PWMData d = new PWMData(motor, sat_motor, gaz_feed_forward, gaz_altitude, altitude_integral, vz_ref, u_pry,
+					yaw_u_I, u_planif_pry, u_gaz_planif, current_motor, altitude_prop, altitude_der);
+			pwmlistener.received(d);
+		}
+	}
+
+	private void parseRcReferencesOption(ByteBuffer b) {
+		if (referencesListener != null) {
+			int[] rc_ref = getInt(b, 5);
+			referencesListener.receivedRcReferences(rc_ref);
+		}
+	}
+
+	private void parseTrimsOption(ByteBuffer b) {
+		if (trimsListener != null) {
+			float angular_rates_trim_r = b.getFloat();
+			float euler_angles_trim_theta = b.getFloat();
+			float euler_angles_trim_phi = b.getFloat();
+
+			trimsListener.receivedTrimData(angular_rates_trim_r, euler_angles_trim_theta, euler_angles_trim_phi);
+		}
+	}
+
+	private void parseReferencesOption(ByteBuffer b) {
+		if (referencesListener != null) {
+			int ref_theta = b.getInt();
+			int ref_phi = b.getInt();
+			int ref_theta_I = b.getInt();
+			int ref_phi_I = b.getInt();
+			int ref_pitch = b.getInt();
+			int ref_roll = b.getInt();
+			int ref_yaw = b.getInt();
+			int ref_psi = b.getInt();
+
+			float[] v_ref = getFloat(b, 2);
+			float theta_mod = b.getFloat();
+			float phi_mod = b.getFloat();
+			float[] k_v = getFloat(b, 2);
+			// assumption: k_mode does not exceed Integer.MAX_INT
+			int k_mode = b.getInt();
+
+			float ui_time = b.getFloat();
+			float ui_theta = b.getFloat();
+			float ui_phi = b.getFloat();
+			float ui_psi = b.getFloat();
+			float ui_psi_accuracy = b.getFloat();
+			int ui_seq = b.getInt();
+
+			ReferencesData d = new ReferencesData(ref_theta, ref_phi, ref_theta_I, ref_phi_I, ref_pitch, ref_roll,
+					ref_yaw, ref_psi, v_ref, theta_mod, phi_mod, k_v, k_mode, ui_time, ui_theta, ui_phi, ui_psi,
+					ui_psi_accuracy, ui_seq);
+			referencesListener.receivedReferences(d);
+		}
+
+	}
+
+	private void parseRawMeasuresOption(ByteBuffer b) {
+		if (batteryListener != null || acceleroListener != null || gyroListener != null || ultrasoundListener != null) {
+			// filtered accelerometers
+			int[] raw_accs = getUInt16(b, NB_ACCS);
+
+			// filtered gyrometers
+			short[] raw_gyros = getShort(b, NB_GYROS);
+
+			// gyrometers x/y 110 deg/s
+			short[] raw_gyros_110 = getShort(b, 2);
+
+			// Assumption: value well below Integer.MAX_VALUE
+			// battery voltage raw (mV)
+			int vbat_raw = b.getInt();
+
+			int us_debut_echo = getUInt16(b);
+			int us_fin_echo = getUInt16(b);
+			int us_association_echo = getUInt16(b);
+			int us_distance_echo = getUInt16(b);
+			int us_courbe_temps = getUInt16(b);
+			int us_courbe_valeur = getUInt16(b);
+			int us_courbe_ref = getUInt16(b);
+			int flag_echo_ini = getUInt16(b);
+			int nb_echo = getUInt16(b);
+			long sum_echo = getUInt32(b);
+			int alt_temp_raw = b.getInt();
+			short gradient = b.getShort();
+
+			if (batteryListener != null) {
+				batteryListener.voltageChanged(vbat_raw);
+			}
+
+			if (acceleroListener != null) {
+				AcceleroRawData d = new AcceleroRawData(raw_accs);
+				acceleroListener.receivedRawData(d);
+			}
+
+			if (gyroListener != null) {
+				GyroRawData d = new GyroRawData(raw_gyros, raw_gyros_110);
+				gyroListener.receivedRawData(d);
+			}
+
+			if (ultrasoundListener != null) {
+				UltrasoundData d = new UltrasoundData(us_debut_echo, us_fin_echo, us_association_echo,
+						us_distance_echo, us_courbe_temps, us_courbe_valeur, us_courbe_ref, flag_echo_ini, nb_echo,
+						sum_echo, alt_temp_raw, gradient);
+				ultrasoundListener.receivedRawData(d);
+			}
+		}
+	}
+
+	private void parsePhysMeasuresOption(ByteBuffer b) {
+		if (acceleroListener != null || gyroListener != null) {
+			float accs_temp = b.getFloat();
+			int gyro_temp = getUInt16(b);
+
+			float[] phys_accs = getFloat(b, NB_ACCS);
+
+			float[] phys_gyros = getFloat(b, NB_GYROS);
+
+			// 3.3volt alim [LSB]
+			// TODO: check if LSB indeed means 1 byte
+			// assumption alim relates to both sensors
+			int alim3V3 = b.getInt() & 0xFF;
+
+			// ref volt Epson gyro [LSB]
+			// TODO: check if LSB indeed means 1 byte
+			int vrefEpson = b.getInt() & 0xFF;
+
+			// ref volt IDG gyro [LSB]
+			// TODO: check if LSB indeed means 1 byte
+			int vrefIDG = b.getInt() & 0xFF;
+
+			if (acceleroListener != null) {
+				AcceleroPhysData d = new AcceleroPhysData(accs_temp, phys_accs, alim3V3);
+				acceleroListener.receivedPhysData(d);
+			}
+
+			if (gyroListener != null) {
+				GyroPhysData d = new GyroPhysData(gyro_temp, phys_gyros, alim3V3, vrefEpson, vrefIDG);
+				gyroListener.receivedPhysData(d);
+			}
+		}
+
+	}
+
+	private void parseGyrosOffsetsOption(ByteBuffer b) {
+		if (gyroListener != null) {
+			float[] offset_g = getFloat(b, NB_GYROS);
+
+			gyroListener.receivedOffsets(offset_g);
+		}
+	}
+
+	private void parseEulerAnglesOption(ByteBuffer b) {
+		if (attitudeListener != null) {
+			float theta_a = b.getFloat();
+			float phi_a = b.getFloat();
+
+			attitudeListener.attitudeUpdated(theta_a, phi_a);
+		}
+
+	}
+
+	private void parseDemoOption(ByteBuffer b) {
+		if (stateListener != null || batteryListener != null || attitudeListener != null || altitudeListener != null
+				|| velocityListener != null) {
+			int controlState = b.getInt();
+
+			// batteryPercentage is <=100 so sign is not an issue
+			int batteryPercentage = b.getInt();
+
+			float theta = b.getFloat() / 1000;
+			float phi = b.getFloat() / 1000;
+			float psi = b.getFloat() / 1000;
+
+			int altitude = b.getInt();
+
+			float v[] = getFloat(b, 3);
+
+			if (stateListener != null) {
+				stateListener.controlStateChanged(ControlState.fromInt(controlState >> 16));
+			}
+
+			if (batteryListener != null) {
+				batteryListener.batteryLevelChanged(batteryPercentage);
+			}
+
+			if (attitudeListener != null) {
+				attitudeListener.attitudeUpdated(theta, phi, psi);
+			}
+
+			if (altitudeListener != null) {
+				altitudeListener.receivedAltitude(altitude);
+			}
+
+			if (velocityListener != null) {
+				velocityListener.velocityChanged(v[0], v[1], v[2]);
+			}
+		}
+	}
+
+	private void parseTimeOption(ByteBuffer b) {
+		if (timeListener != null) {
+			int time = b.getInt();
+
+			int useconds = getUSeconds(time);
+			int seconds = getSeconds(time);
+
+			timeListener.timeReceived(seconds, useconds);
+		}
+	}
+
+	/**
+	 * @param time
+	 * @return
+	 */
+	private int getSeconds(int time) {
+		int seconds = (time >>> 11);
+		return seconds;
+	}
+
+	/**
+	 * @param time
+	 * @return
+	 */
+	private int getUSeconds(int time) {
+		int useconds = (time & (0xFFFFFFFF >>> 11));
+		return useconds;
+	}
+
+	private void parseVisionDetectOption(ByteBuffer b) {
+		if (visionListener != null) {
+			int n = b.getInt();
+
+			int type[] = getInt(b, n);
+
+			// assumption: values are well below Integer.MAX_VALUE, so sign is
+			// no
+			// issue
+			int xc[] = getInt(b, n);
+
+			// assumption: values are well below Integer.MAX_VALUE, so sign is
+			// no
+			// issue
+			int yc[] = getInt(b, n);
+
+			// assumption: values are well below Integer.MAX_VALUE, so sign is
+			// no
+			// issue
+			int width[] = getInt(b, n);
+
+			// assumption: values are well below Integer.MAX_VALUE, so sign is
+			// no
+			// issue
+			int height[] = getInt(b, n);
+
+			// assumption: values are well below Integer.MAX_VALUE, so sign is
+			// no
+			// issue
+			int dist[] = getInt(b, n);
+
+			float[] orientation_angle = getFloat(b, n);
+
+			// could extend Bytebuffer to read matrix types
+			float[][][] rotation = new float[n][3][3];
+			for (int i = 0; i < n; i++) {
+				for (int r = 0; r < 3; r++) {
+					for (int c = 0; c < 3; c++) {
+						rotation[i][r][c] = b.getFloat();
+					}
+				}
+			}
+
+			// could extend Bytebuffer to read vector types
+			float[][] translation = new float[n][3];
+			for (int i = 0; i < n; i++) {
+				for (int r = 0; r < 3; r++) {
+					translation[i][r] = b.getFloat();
+				}
+			}
+
+			// assumption: values are well below Integer.MAX_VALUE, so sign is
+			// no
+			// issue
+			int camera_source[] = getInt(b, n);
+
+			ArrayList<VisionTag> tags = new ArrayList<VisionTag>(n);
+			for (int i = 0; i < n; i++) {
+				VisionTag tag = new VisionTag(VisionTagType.fromInt(type[i]), xc[i], yc[i], width[i], height[i],
+						dist[i], orientation_angle[i], rotation[i], translation[i], camera_source[i]);
+				tags.add(tag);
+			}
+
+			visionListener.tagsDetected(tags);
+		}
+	}
+
+	private void parseMagnetoDataOption(ByteBuffer b) {
+		if (magnetoListener != null) {
+			short m[] = getShort(b, 3);
+
+			float[] mraw = getFloat(b, 3);
+
+			float mrectified[] = getFloat(b, 3);
+
+			float m_[] = getFloat(b, 3);
+
+			float heading_unwrapped = b.getFloat();
+			float heading_gyro_unwrapped = b.getFloat();
+			float heading_fusion_unwrapped = b.getFloat();
+			byte calibration_ok = b.get();
+			int state = b.getInt(); // TODO: encoding?
+			float radius = b.getFloat();
+			float error_mean = b.getFloat();
+			float error_var = b.getFloat();
+
+			MagnetoData md = new MagnetoData(m, mraw, mrectified, m_, heading_unwrapped, heading_gyro_unwrapped,
+					heading_fusion_unwrapped, calibration_ok, state, radius, error_mean, error_var);
+			magnetoListener.received(md);
+		}
+	}
+
+	/**
+	 * @param b
+	 * @param n
+	 * @return
+	 */
+	private float[] getFloat(ByteBuffer b, int n) {
+		float f[] = new float[n];
+		for (int k = 0; k < f.length; k++) {
+			f[k] = b.getFloat();
+		}
+		return f;
+	}
+
+	/**
+	 * @param b
+	 * @param n
+	 * @return
+	 */
+	private int[] getInt(ByteBuffer b, int n) {
+		int i[] = new int[n];
+		for (int k = 0; k < i.length; k++) {
+			i[k] = b.getInt();
+		}
+		return i;
+	}
+
+	/**
+	 * @param b
+	 * @param n
+	 * @return
+	 */
+	private short[] getShort(ByteBuffer b, int n) {
+		short s[] = new short[n];
+		for (int k = 0; k < s.length; k++) {
+			s[k] = b.getShort();
+		}
+		return s;
+	}
+
+	private int[] getUInt16(ByteBuffer b, int n) {
+		int i[] = new int[n];
+		for (int k = 0; k < i.length; k++) {
+			i[k] = getUInt16(b);
+		}
+		return i;
+	}
+
+	private short[] getUInt8(ByteBuffer b, int n) {
+		short s[] = new short[n];
+		for (int k = 0; k < s.length; k++) {
+			s[k] = getUInt8(b);
+		}
+		return s;
+	}
+
+	private boolean getBoolean(ByteBuffer b) {
+		return (b.getInt() == 1);
+	}
+
+	/*
+	 * Since Java does not have unsigned bytes, all uint8 are converted to
+	 * signed shorts
+	 */
+	private short getUInt8(ByteBuffer b) {
+		return (short) (b.get() & 0xFF);
+	}
+
+	/*
+	 * Since Java does not have unsigned shorts, all uint16 are converted to
+	 * signed integers
+	 */
+	private int getUInt16(ByteBuffer b) {
+		return (b.getShort() & 0xFFFF);
+	}
+
+	/*
+	 * Since Java does not have unsigned ints, all uint32 are converted to
+	 * signed longs
+	 */
+	private long getUInt32(ByteBuffer b) {
+		return (b.getInt() & 0xFFFFFFFFL);
+	}
+
+	private void requireEquals(String message, int expected, int actual) throws NavDataException {
+		if (expected != actual) {
+			throw new NavDataException(message + " : expected " + expected + ", was " + actual);
+		}
+	}
+
 }

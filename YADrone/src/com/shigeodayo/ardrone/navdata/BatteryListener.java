@@ -5,6 +5,10 @@
  */
 package com.shigeodayo.ardrone.navdata;
 
-public interface BatteryListener {
-	void batteryLevelChanged(int percentage); 
+import java.util.EventListener;
+
+public interface BatteryListener extends EventListener {
+	public void batteryLevelChanged(int percentage);
+
+	public void voltageChanged(int vbat_raw);
 }
