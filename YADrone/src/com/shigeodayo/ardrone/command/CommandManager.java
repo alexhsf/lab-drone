@@ -58,6 +58,10 @@ public class CommandManager extends AbstractManager {
 		q.add(new FlatTrimCommand());
 	}
 
+	public void manualTrim(float pitch, float roll, float yaw) {
+		q.add(new ManualTrimCommand(pitch, roll, yaw));
+	}
+
 	public void takeOff() {
 		flatTrim();
 		q.add(new TakeOffCommand());
@@ -192,8 +196,8 @@ public class CommandManager extends AbstractManager {
 		q.add(new ConfigureCommand("general:video_enable", b));
 	}
 
-	public void setExtendedNavData(boolean b) {
-		q.add(new ConfigureCommand("general:navdata_demo", !b));
+	public void setDemoNavData(boolean b) {
+		q.add(new ConfigureCommand("general:navdata_demo", b));
 	}
 
 	public void setNavDataOptions(int mask) {
@@ -393,6 +397,31 @@ public class CommandManager extends AbstractManager {
 
 	public void setOwnerMac(String mac) {
 		q.add(new ConfigureCommand("network:owner_mac", mac));
+	}
+
+	public void startRecordingNavData(String dirname) {
+		q.add(new ConfigureCommand("userbox:userbox_cmd", String.valueOf(UserBox.START.ordinal()) + "," + dirname));
+	}
+
+	public void cancelRecordingNavData() {
+		q.add(new ConfigureCommand("userbox:userbox_cmd", UserBox.CANCEL.ordinal()));
+	}
+
+	public void stopRecordingNavData() {
+		q.add(new ConfigureCommand("userbox:userbox_cmd", UserBox.STOP.ordinal()));
+	}
+
+	public void recordPictures(int delay, int nshots, String dirname) {
+		q.add(new ConfigureCommand("userbox:userbox_cmd", String.valueOf(UserBox.SCREENSHOT.ordinal()) + ","
+				+ String.valueOf(delay) + "," + String.valueOf(nshots) + "," + dirname));
+	}
+
+	public void getRecordedNavData() {
+		// TODO
+	}
+
+	public void getRecordedPicture() {
+		// TODO
 	}
 
 	// AT*MISC undocumented, but needed to initialize
