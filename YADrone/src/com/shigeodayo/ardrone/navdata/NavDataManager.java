@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.zip.CRC32;
 
 import com.shigeodayo.ardrone.command.CommandManager;
 import com.shigeodayo.ardrone.manager.AbstractManager;
@@ -75,101 +76,137 @@ public class NavDataManager extends AbstractManager {
 
 	private long lastSequenceNumber = 1;
 
+	private int mask = 0;
+	private boolean maskChanged = true;
+	private int checksum = 0;
+
 	public NavDataManager(InetAddress inetaddr, CommandManager manager) {
 		super(inetaddr);
 		this.manager = manager;
 	}
 
+	private void setMask(boolean reset, int[] tags) {
+		int newmask = 0;
+		for (int n = 0; n < tags.length; n++) {
+			newmask |= 1 << tags[n];
+		}
+		if (reset) {
+			mask &= ~newmask;
+		} else {
+			mask |= newmask;
+		}
+		maskChanged = true;
+	}
+
 	public void setAttitudeListener(AttitudeListener attitudeListener) {
 		this.attitudeListener = attitudeListener;
+		setMask(attitudeListener == null, new int[] { DEMO_TAG, EULER_ANGLES_TAG, WIND_TAG });
 	}
 
 	public void setAltitudeListener(AltitudeListener altitudeListener) {
 		this.altitudeListener = altitudeListener;
+		setMask(altitudeListener == null, new int[] { DEMO_TAG, ALTITUDE_TAG });
 	}
 
 	public void setBatteryListener(BatteryListener batteryListener) {
 		this.batteryListener = batteryListener;
+		setMask(batteryListener == null, new int[] { DEMO_TAG, RAW_MEASURES_TAG });
 	}
 
 	public void setTimeListener(TimeListener timeListener) {
 		this.timeListener = timeListener;
+		setMask(timeListener == null, new int[] { TIME_TAG });
 	}
 
 	public void setStateListener(StateListener stateListener) {
 		this.stateListener = stateListener;
+		setMask(stateListener == null, new int[] { DEMO_TAG });
 	}
 
 	public void setVelocityListener(VelocityListener velocityListener) {
 		this.velocityListener = velocityListener;
+		setMask(velocityListener == null, new int[] { DEMO_TAG });
 	}
 
 	public void setVisionListener(VisionListener visionListener) {
 		this.visionListener = visionListener;
+		setMask(visionListener == null, new int[] { TRACKERS_SEND_TAG, VISION_DETECT_TAG, VISION_OF_TAG, VISION_TAG,
+				VISION_PERF_TAG, VISION_RAW_TAG });
 	}
 
 	public void setMagnetoListener(MagnetoListener magnetoListener) {
 		this.magnetoListener = magnetoListener;
+		setMask(magnetoListener == null, new int[] { MAGENTO_TAG });
 	}
 
 	public void setAcceleroListener(AcceleroListener acceleroListener) {
 		this.acceleroListener = acceleroListener;
+		setMask(acceleroListener == null, new int[] { PHYS_MEASURES_TAG, RAW_MEASURES_TAG });
 	}
 
 	public void setGyroListener(GyroListener gyroListener) {
 		this.gyroListener = gyroListener;
+		setMask(gyroListener == null, new int[] { GYROS_OFFSETS_TAG, PHYS_MEASURES_TAG, RAW_MEASURES_TAG });
 	}
 
 	public void setUltrasoundListener(UltrasoundListener ultrasoundListener) {
 		this.ultrasoundListener = ultrasoundListener;
+		setMask(ultrasoundListener == null, new int[] { RAW_MEASURES_TAG });
 	}
 
 	public void setAdcListener(AdcListener adcListener) {
 		this.adcListener = adcListener;
+		setMask(adcListener == null, new int[] { ADC_DATA_FRAME_TAG });
 	}
 
 	public void setCounterListener(CounterListener counterListener) {
 		this.counterListener = counterListener;
+		setMask(counterListener == null, new int[] { GAMES_TAG });
 	}
 
 	public void setPressureListener(PressureListener pressureListener) {
 		this.pressureListener = pressureListener;
+		setMask(pressureListener == null, new int[] { KALMAN_PRESSURE_TAG, PRESSURE_RAW_TAG });
 	}
 
 	public void setTemperatureListener(TemperatureListener temperatureListener) {
 		this.temperatureListener = temperatureListener;
+		setMask(temperatureListener == null, new int[] { PRESSURE_RAW_TAG });
 	}
 
 	public void setWindListener(WindListener windListener) {
 		this.windListener = windListener;
+		setMask(windListener == null, new int[] { WIND_TAG });
 	}
 
 	public void setVideoListener(VideoListener videoListener) {
 		this.videoListener = videoListener;
-	}
-
-	public void setHDVideoStreamListener(VideoListener hdVideoStreamListener) {
-		this.videoListener = hdVideoStreamListener;
+		setMask(videoListener == null, new int[] { HDVIDEO_STREAM_TAG, VIDEO_STREAM_TAG });
 	}
 
 	public void setWifiListener(WifiListener wifiListener) {
 		this.wifiListener = wifiListener;
+		setMask(wifiListener == null, new int[] { WIFI_TAG });
 	}
 
 	public void setZimmu3000Listener(Zimmu3000Listener zimmu3000Listener) {
 		this.zimmu3000Listener = zimmu3000Listener;
+		setMask(zimmu3000Listener == null, new int[] { ZIMMU_3000_TAG });
 	}
 
 	public void setPWMlistener(PWMlistener pwmlistener) {
 		this.pwmlistener = pwmlistener;
+		setMask(pwmlistener == null, new int[] { PWM_TAG });
 	}
 
 	public void setReferencesListener(ReferencesListener referencesListener) {
 		this.referencesListener = referencesListener;
+		setMask(referencesListener == null, new int[] { RC_REFERENCES_TAG, REFERENCES_TAG });
 	}
 
 	public void setTrimsListener(TrimsListener trimsListener) {
 		this.trimsListener = trimsListener;
+		setMask(trimsListener == null, new int[] { TRIMS_TAG });
 	}
 
 	@Override
@@ -190,9 +227,11 @@ public class NavDataManager extends AbstractManager {
 
 				// according to 7.1.2. of the ARDrone Developpper Guide demo
 				// mode must be set after exiting bootstrap mode
-				// TODO can we receive multiple bootsrap packets?
+				// TODO can we receive multiple bootstrap packets?
 				if (bootstrapping && !s.isNavDataBootstrap()) {
-					manager.setExtendedNavData(false);
+					// presumably iso setting the demo option we can ask for the options we want here
+					manager.setNavDataOptions(mask);
+					maskChanged = false;
 					bootstrapping = false;
 				}
 
@@ -205,6 +244,10 @@ public class NavDataManager extends AbstractManager {
 					manager.resetCommunicationWatchDog();
 				}
 
+				if (!bootstrapping && controlreceived && maskChanged) {
+					manager.setNavDataOptions(mask);
+					maskChanged = false;
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (NavDataException e) {
@@ -217,7 +260,7 @@ public class NavDataManager extends AbstractManager {
 
 		b.order(ByteOrder.LITTLE_ENDIAN);
 		int magic = b.getInt();
-		requireEquals("Magic must be correct", 0x55667788, magic);
+		checkEqual(0x55667788, magic, "Magic must be correct");
 
 		int state = b.getInt();
 		long sequence = getUInt32(b);
@@ -234,136 +277,139 @@ public class NavDataManager extends AbstractManager {
 			stateListener.stateChanged(s);
 		}
 
+		// parse options
 		while (b.position() < b.limit()) {
 			int tag = b.getShort() & 0xFFFF;
 			int payloadSize = (b.getShort() & 0xFFFF) - 4;
 			ByteBuffer optionData = b.slice().order(ByteOrder.LITTLE_ENDIAN);
 			optionData.limit(payloadSize);
-			b.position(b.position() + payloadSize);
-
 			parseOption(tag, optionData);
+			b.position(b.position() + payloadSize);
 		}
+
+		// verify checksum
+		checkEqual(getCRC(b, 0, b.limit() - 4), checksum, "Checksum does not match");
 
 		return s;
 	}
 
-	private static final int NAVDATA_CKS_TAG = -1;
-	private static final int NAVDATA_DEMO_TAG = 0;
-	private static final int NAVDATA_TIME_TAG = 1;
-	private static final int NAVDATA_RAW_MEASURES_TAG = 2;
-	private static final int NAVDATA_PHYS_MEASURES_TAG = 3;
-	private static final int NAVDATA_GYROS_OFFSETS_TAG = 4;
-	private static final int NAVDATA_EULER_ANGLES_TAG = 5;
-	private static final int NAVDATA_REFERENCES_TAG = 6;
-	private static final int NAVDATA_TRIMS_TAG = 7;
-	private static final int NAVDATA_RC_REFERENCES_TAG = 8;
-	private static final int NAVDATA_PWM_TAG = 9;
-	private static final int NAVDATA_ALTITUDE_TAG = 10;
-	private static final int NAVDATA_VISION_RAW_TAG = 11;
-	private static final int NAVDATA_VISION_OF_TAG = 12;
-	private static final int NAVDATA_VISION_TAG = 13;
-	private static final int NAVDATA_VISION_PERF_TAG = 14;
-	private static final int NAVDATA_TRACKERS_SEND_TAG = 15;
-	private static final int NAVDATA_VISION_DETECT_TAG = 16;
-	private static final int NAVDATA_WATCHDOG_TAG = 17;
-	private static final int NAVDATA_ADC_DATA_FRAME_TAG = 18;
-	private static final int NAVDATA_VIDEO_STREAM_TAG = 19;
-	private static final int NAVDATA_GAMES_TAG = 20;
-	private static final int NAVDATA_PRESSURE_RAW_TAG = 21;
-	private static final int NAVDATA_MAGENTO_TAG = 22;
-	private static final int NAVDATA_WIND_TAG = 23;
-	private static final int NAVDATA_KALMAN_PRESSURE_TAG = 24;
-	private static final int NAVDATA_HDVIDEO_STREAM_TAG = 25;
-	private static final int NAVDATA_WIFI_TAG = 26;
-	private static final int NAVDATA_ZIMMU_3000_TAG = 27;
+	private static final int CKS_TAG = -1;
+	private static final int DEMO_TAG = 0;
+	private static final int TIME_TAG = 1;
+	private static final int RAW_MEASURES_TAG = 2;
+	private static final int PHYS_MEASURES_TAG = 3;
+	private static final int GYROS_OFFSETS_TAG = 4;
+	private static final int EULER_ANGLES_TAG = 5;
+	private static final int REFERENCES_TAG = 6;
+	private static final int TRIMS_TAG = 7;
+	private static final int RC_REFERENCES_TAG = 8;
+	private static final int PWM_TAG = 9;
+	private static final int ALTITUDE_TAG = 10;
+	private static final int VISION_RAW_TAG = 11;
+	private static final int VISION_OF_TAG = 12;
+	private static final int VISION_TAG = 13;
+	private static final int VISION_PERF_TAG = 14;
+	private static final int TRACKERS_SEND_TAG = 15;
+	private static final int VISION_DETECT_TAG = 16;
+	private static final int WATCHDOG_TAG = 17;
+	private static final int ADC_DATA_FRAME_TAG = 18;
+	private static final int VIDEO_STREAM_TAG = 19;
+	private static final int GAMES_TAG = 20;
+	private static final int PRESSURE_RAW_TAG = 21;
+	private static final int MAGENTO_TAG = 22;
+	private static final int WIND_TAG = 23;
+	private static final int KALMAN_PRESSURE_TAG = 24;
+	private static final int HDVIDEO_STREAM_TAG = 25;
+	private static final int WIFI_TAG = 26;
+	private static final int ZIMMU_3000_TAG = 27;
 
 	private void parseOption(int tag, ByteBuffer optionData) {
 		switch (tag) {
-		case NAVDATA_CKS_TAG:
+		case CKS_TAG:
 			parseCksOption(optionData);
 			break;
-		case NAVDATA_DEMO_TAG:
+		case DEMO_TAG:
 			parseDemoOption(optionData);
 			break;
-		case NAVDATA_TIME_TAG:
+		case TIME_TAG:
 			parseTimeOption(optionData);
 			break;
-		case NAVDATA_RAW_MEASURES_TAG:
+		case RAW_MEASURES_TAG:
 			parseRawMeasuresOption(optionData);
 			break;
-		case NAVDATA_PHYS_MEASURES_TAG:
+		case PHYS_MEASURES_TAG:
 			parsePhysMeasuresOption(optionData);
 			break;
-		case NAVDATA_GYROS_OFFSETS_TAG:
+		case GYROS_OFFSETS_TAG:
 			parseGyrosOffsetsOption(optionData);
 			break;
-		case NAVDATA_EULER_ANGLES_TAG:
+		case EULER_ANGLES_TAG:
 			parseEulerAnglesOption(optionData);
 			break;
-		case NAVDATA_REFERENCES_TAG:
+		case REFERENCES_TAG:
 			parseReferencesOption(optionData);
 			break;
-		case NAVDATA_TRIMS_TAG:
+		case TRIMS_TAG:
 			parseTrimsOption(optionData);
 			break;
-		case NAVDATA_RC_REFERENCES_TAG:
+		case RC_REFERENCES_TAG:
 			parseRcReferencesOption(optionData);
 			break;
-		case NAVDATA_PWM_TAG:
+		case PWM_TAG:
 			parsePWMOption(optionData);
 			break;
-		case NAVDATA_ALTITUDE_TAG:
+		case ALTITUDE_TAG:
 			parseAltitudeOption(optionData);
 			break;
-		case NAVDATA_VISION_RAW_TAG:
+		case VISION_RAW_TAG:
 			parseVisionRawOption(optionData);
 			break;
-		case NAVDATA_VISION_OF_TAG:
+		case VISION_OF_TAG:
 			parseVisionOfOption(optionData);
 			break;
-		case NAVDATA_VISION_TAG:
+		case VISION_TAG:
 			parseVisionOption(optionData);
 			break;
-		case NAVDATA_VISION_PERF_TAG:
+		case VISION_PERF_TAG:
 			parseVisionPerfOption(optionData);
 			break;
-		case NAVDATA_TRACKERS_SEND_TAG:
+		case TRACKERS_SEND_TAG:
 			parseTrackersSendOption(optionData);
 			break;
-		case NAVDATA_VISION_DETECT_TAG:
+		case VISION_DETECT_TAG:
 			parseVisionDetectOption(optionData);
 			break;
-		case NAVDATA_WATCHDOG_TAG:
+		case WATCHDOG_TAG:
 			parseWatchdogOption(optionData);
 			break;
-		case NAVDATA_ADC_DATA_FRAME_TAG:
+		case ADC_DATA_FRAME_TAG:
 			parseAdcDataFrameOption(optionData);
 			break;
-		case NAVDATA_VIDEO_STREAM_TAG:
+		case VIDEO_STREAM_TAG:
 			parseVideoStreamOption(optionData);
 			break;
-		case NAVDATA_GAMES_TAG:
+		case GAMES_TAG:
 			parseGamesOption(optionData);
 			break;
-		case NAVDATA_PRESSURE_RAW_TAG:
+		case PRESSURE_RAW_TAG:
 			parsePressureOption(optionData);
 			break;
-		case NAVDATA_MAGENTO_TAG:
+		case MAGENTO_TAG:
 			parseMagnetoDataOption(optionData);
 			break;
-		case NAVDATA_WIND_TAG:
+		case WIND_TAG:
 			parseWindOption(optionData);
 			break;
-		case NAVDATA_KALMAN_PRESSURE_TAG:
+		case KALMAN_PRESSURE_TAG:
 			parseKalmanPressureOption(optionData);
 			break;
-		case NAVDATA_HDVIDEO_STREAM_TAG:
+		case HDVIDEO_STREAM_TAG:
 			parseHDVideoSteamOption(optionData);
 			break;
-		case NAVDATA_WIFI_TAG:
+		case WIFI_TAG:
 			parseWifiOption(optionData);
 			break;
-		case NAVDATA_ZIMMU_3000_TAG:
+		case ZIMMU_3000_TAG:
 			parseZimmu3000Option(optionData);
 			break;
 		}
@@ -371,8 +417,7 @@ public class NavDataManager extends AbstractManager {
 	}
 
 	private void parseCksOption(ByteBuffer b) {
-		int cks = b.getInt();
-		// TODO compute navdata checksum and compare
+		checksum = b.getInt();
 	}
 
 	private void parseZimmu3000Option(ByteBuffer b) {
@@ -1111,33 +1156,40 @@ public class NavDataManager extends AbstractManager {
 	}
 
 	/*
-	 * Since Java does not have unsigned bytes, all uint8 are converted to
-	 * signed shorts
+	 * Since Java does not have unsigned bytes, all uint8 are converted to signed shorts
 	 */
 	private short getUInt8(ByteBuffer b) {
 		return (short) (b.get() & 0xFF);
 	}
 
 	/*
-	 * Since Java does not have unsigned shorts, all uint16 are converted to
-	 * signed integers
+	 * Since Java does not have unsigned shorts, all uint16 are converted to signed integers
 	 */
 	private int getUInt16(ByteBuffer b) {
 		return (b.getShort() & 0xFFFF);
 	}
 
 	/*
-	 * Since Java does not have unsigned ints, all uint32 are converted to
-	 * signed longs
+	 * Since Java does not have unsigned ints, all uint32 are converted to signed longs
 	 */
 	private long getUInt32(ByteBuffer b) {
 		return (b.getInt() & 0xFFFFFFFFL);
 	}
 
-	private void requireEquals(String message, int expected, int actual) throws NavDataException {
+	private void checkEqual(int expected, int actual, String message) throws NavDataException {
 		if (expected != actual) {
 			throw new NavDataException(message + " : expected " + expected + ", was " + actual);
 		}
+	}
+
+	private int getCRC(byte[] b, int offset, int length) {
+		CRC32 cks = new CRC32();
+		cks.update(b, offset, length);
+		return (int)(cks.getValue() & 0xFFFFFFFFL);
+	}
+
+	private int getCRC(ByteBuffer b, int offset, int length) {
+		return getCRC(b.array(), b.arrayOffset() + offset, length);
 	}
 
 }
