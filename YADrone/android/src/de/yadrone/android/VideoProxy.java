@@ -50,7 +50,7 @@ public class VideoProxy {
     private ServerSocket m3usocket;
 
     public VideoProxy(CommandManager manager) {
-        manager.enableVideoData();
+        manager.setVideoData(true);
         manager.setVideoCodecFps(H264.MIN_FPS);
         manager.setVideoCodec(VideoCodec.H264_360P);
         manager.setVideoBitrateControl(VideoBitRateMode.MANUAL);

@@ -50,7 +50,7 @@ public class StreamProxy implements Runnable
 		}
 		
 		ticklePort(ARDroneUtils.VIDEO_PORT);
-		manager.enableVideoData();
+		manager.setVideoData(true);
 		ticklePort(ARDroneUtils.VIDEO_PORT);
 		manager.setVideoBitrateControl(VideoBitRateMode.DISABLED);
 		

@@ -54,7 +54,7 @@ public class VideoManager extends AbstractTCPManager {
 			return;
 
 		ticklePort(ARDroneUtils.VIDEO_PORT);
-		manager.enableVideoData();
+		manager.setVideoData(true);
 		ticklePort(ARDroneUtils.VIDEO_PORT);
 		manager.setVideoBitrateControl(VideoBitRateMode.DISABLED);
 		decoder.decode(getInputStream(), listener);
