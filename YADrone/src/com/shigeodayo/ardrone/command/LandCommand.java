@@ -11,10 +11,6 @@ public class LandCommand extends RefCommand {
 		return HIGH_PRIORITY;
 	}
 
-	public boolean isSticky() {
-		return true;
-	}
-
 	public String getCategory() {
 		return LAND_TAKEOFF_CATEGORY;
 	}

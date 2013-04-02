@@ -17,7 +17,6 @@ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PRO
  */
 package com.shigeodayo.ardrone.navdata;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -248,10 +247,9 @@ public class NavDataManager extends AbstractManager {
 					manager.setNavDataOptions(mask);
 					maskChanged = false;
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (NavDataException e) {
-				e.printStackTrace();
+			} catch (Throwable t) {
+				// continue whatever goes wrong
+				t.printStackTrace();
 			}
 		}
 	}
@@ -287,9 +285,11 @@ public class NavDataManager extends AbstractManager {
 			b.position(b.position() + payloadSize);
 		}
 
-		// verify checksum
-		checkEqual(getCRC(b, 0, b.limit() - 4), checksum, "Checksum does not match");
-
+		// verify checksum; a bit of a hack: assume checksum = 0 is very unlikely
+		if (checksum != 0) {
+			checkEqual(getCRC(b, 0, b.limit() - 4), checksum, "Checksum does not match");
+			checksum = 0;
+		}
 		return s;
 	}
 
@@ -1185,7 +1185,7 @@ public class NavDataManager extends AbstractManager {
 	private int getCRC(byte[] b, int offset, int length) {
 		CRC32 cks = new CRC32();
 		cks.update(b, offset, length);
-		return (int)(cks.getValue() & 0xFFFFFFFFL);
+		return (int) (cks.getValue() & 0xFFFFFFFFL);
 	}
 
 	private int getCRC(ByteBuffer b, int offset, int length) {

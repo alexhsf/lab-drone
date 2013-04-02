@@ -7,6 +7,7 @@ public class PCMDCommand extends ATCommand {
 	protected float front_back_tilt;
 	protected float vertical_speed;
 	protected float angular_speed;
+	protected int mode;
 
 	public PCMDCommand(boolean hover, boolean combined_yaw_enabled, float left_right_tilt, float front_back_tilt,
 			float vertical_speed, float angular_speed) {
@@ -17,6 +18,26 @@ public class PCMDCommand extends ATCommand {
 		this.front_back_tilt = front_back_tilt;
 		this.vertical_speed = vertical_speed;
 		this.angular_speed = angular_speed;
+		this.mode = 0;
+
+		if (!hover) {
+			mode |= (1 << 0);
+		}
+
+		if (combined_yaw_enabled) {
+			mode |= (1 << 1);
+		}
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.shigeodayo.ardrone.command.DroneCommand#isSticky()
+	 */
+	@Override
+	public boolean isSticky() {
+		return left_right_tilt != 0f || front_back_tilt != 0f || vertical_speed != 0f || angular_speed != 0f;
 	}
 
 	@Override
@@ -26,17 +47,6 @@ public class PCMDCommand extends ATCommand {
 
 	@Override
 	protected Object[] getParameters() {
-		int mode;
-		if (hover) {
-			mode = 0;
-		} else {
-			mode = 1;
-		}
-
-		if (combined_yaw_enabled) {
-			mode |= (1 << 1);
-		}
-
 		return new Object[] { mode, left_right_tilt, front_back_tilt, vertical_speed, angular_speed };
 	}
 }

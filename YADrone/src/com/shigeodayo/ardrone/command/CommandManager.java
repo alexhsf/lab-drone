@@ -20,25 +20,22 @@ package com.shigeodayo.ardrone.command;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 
 import com.shigeodayo.ardrone.manager.AbstractManager;
 import com.shigeodayo.ardrone.utils.ARDroneUtils;
 
 public class CommandManager extends AbstractManager {
 
-	// TODO replace by PriorityBlockingQueue
-	private BlockingQueue<ATCommand> q;
+	private PriorityBlockingQueue<ATCommand> q;
 
 	private static int seq = 1;
 
-	/** speed */
 	private float speed = 0.05f;// 0.01f - 1.0f
 
 	public CommandManager(InetAddress inetaddr) {
 		super(inetaddr);
-		this.q = new ArrayBlockingQueue<ATCommand>(100);
+		this.q = new CommandQueue(100);
 		initARDrone();
 	}
 
@@ -146,7 +143,7 @@ public class CommandManager extends AbstractManager {
 	}
 
 	public void stop() {
-		q.add(new MoveCommand(false, 0f, 0f, 0f, 0f));
+		q.add(new StopCommand());
 	}
 
 	public void setSpeed(int speed) {
@@ -329,6 +326,10 @@ public class CommandManager extends AbstractManager {
 		q.add(new ConfigureCommand(command, speed));
 	}
 
+	public void setCommand(ATCommand command) {
+		q.add(command);
+	}
+
 	public void setOutdoor(boolean flying_outdoor, boolean outdoor_hull) {
 		q.add(new ConfigureCommand("control:outdoor", flying_outdoor));
 		q.add(new ConfigureCommand("control:flight_without_shell", outdoor_hull));
@@ -441,13 +442,18 @@ public class CommandManager extends AbstractManager {
 		ATCommand c;
 		while (!doStop) {
 			try {
-				c = q.poll();
-				if (c != null) {
-					sendCommand(c);
-					if (c.isSticky() && q.isEmpty()) {
+				c = q.take();
+				if (c.isSticky()) {
+					if (c.getStickyCounter() > 0) {
+						// TODO try to measure iso blind sleep
+						Thread.sleep(30);// <50ms
+					}
+					c.incrementStickyCounter();
+					if (q.isEmpty()) {
 						q.add(c);
 					}
 				}
+				sendCommand(c);
 			} catch (InterruptedException e) {
 				doStop = true;
 			} catch (Throwable t) {
@@ -466,18 +472,10 @@ public class CommandManager extends AbstractManager {
 	}
 
 	private synchronized void sendCommand(ATCommand c) throws InterruptedException, IOException {
-		/**
-		 * Each command needs an individual sequence number (this also holds for Hover/Stop commands) At first, only a
-		 * placeholder is set for every command and this placeholder is replaced with a real sequence number below.
-		 * Because one command string may contain chained commands (e.g. "AT...AT...AT...) the replacement needs to be
-		 * done individually for every 'subcommand'
-		 */
 		System.out.println(c.getCommandString(seq));
 		byte[] buffer = c.getPacket(seq++);
 		DatagramPacket packet = new DatagramPacket(buffer, buffer.length, inetaddr, ARDroneUtils.PORT);
 		socket.send(packet);
-		// TODO: sleep needed???
-		Thread.sleep(20);// <50ms
 	}
 
 	private int limit(int i, int min, int max) {

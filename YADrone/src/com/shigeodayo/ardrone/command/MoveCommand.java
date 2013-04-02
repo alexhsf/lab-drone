@@ -5,4 +5,15 @@ public class MoveCommand extends PCMDCommand {
 			float vertical_speed, float angular_speed) {
 		super(false, combined_yaw_enabled, left_right_tilt, front_back_tilt, vertical_speed, angular_speed);
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.shigeodayo.ardrone.command.DroneCommand#isSticky()
+	 */
+	@Override
+	public boolean isSticky() {
+		return true;
+	}
+
 }
