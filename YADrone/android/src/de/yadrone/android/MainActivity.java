@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,6 +16,7 @@ import android.widget.TextView;
 
 import com.shigeodayo.ardrone.ARDrone;
 import com.shigeodayo.ardrone.command.CommandManager;
+import com.shigeodayo.ardrone.command.FlyingMode;
 import com.shigeodayo.ardrone.configuration.ConfigurationManager;
 import com.shigeodayo.ardrone.navdata.ControlState;
 import com.shigeodayo.ardrone.navdata.DroneState;
@@ -52,30 +52,41 @@ public class MainActivity extends BaseActivity implements StateListener, VisionL
 			drone.start();
 
 			CommandManager cmd = drone.getCommandManager();
-			//cmd.setExtendedNavData(true);
-			//cmd.setNavDataOptions(-1);
 
-			
+			cmd.setAutonomousFlight(false);
 			
 			cmd.setVerticalDetectionType((1 << 9) - 1);
-			
+
 			cmd.setHorizonalDetectionType((1 << 9) - 1);
 
 			//cmd.setFlyingMode(FlyingMode.HOVER_ON_TOP_OF_ORIENTED_ROUNDEL);
-
+			cmd.setFlyingMode(FlyingMode.FREE_FLIGHT);
+			cmd.setHoveringRange(500);
+			
 			NavDataManager nav = drone.getNavDataManager();
 			nav.setStateListener(this);
 			nav.setVisionListener(this);
+
+			text.append(configureDrone(drone));
 
 			// not allowed to do networking on the main thread
 			new Thread() {
 				public void run() {
 					ConfigurationManager cfg = drone.getConfigurationManager();
-					Log.d(MainActivity.class.getName(), cfg.getConfiguration());
+					final StringBuilder builder = new StringBuilder();
+					builder.append(cfg.getConfiguration());
+					builder.append(cfg.getPreviousRunLogs());
+					builder.append(cfg.getCustomCofigurationIds());
+					final String configs = builder.toString();
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							text.append(configs);
+						}
+					});
 				}
-			}.start();			
+			}.start();
 
-			text.append(configureDrone(drone));
 		} catch (Exception exc) {
 			exc.printStackTrace();
 
@@ -95,7 +106,7 @@ public class MainActivity extends BaseActivity implements StateListener, VisionL
 
 		double maxAltitude = Double.parseDouble(sharedPrefs.getString("pref_altitude", "3"));
 		text.append(String.format("Set max. Altitude to %1$f m\n", maxAltitude));
-		drone.setMaxAltitude(5);
+		drone.setMaxAltitude(1500);
 
 		double maxVerticalSpeed = Double.parseDouble(sharedPrefs.getString("pref_vertical_speed", "1"));
 		text.append(String.format("Set max. verticalspeed to %1$f m/s\n", maxVerticalSpeed));
@@ -121,8 +132,7 @@ public class MainActivity extends BaseActivity implements StateListener, VisionL
 	}
 
 	/**
-	 * Upon pressing the BACK-button, the user has to confirm the connection to
-	 * the drone is taken down.
+	 * Upon pressing the BACK-button, the user has to confirm the connection to the drone is taken down.
 	 */
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
@@ -188,7 +198,7 @@ public class MainActivity extends BaseActivity implements StateListener, VisionL
 
 	@Override
 	public void receivedData(VisionData d) {
-		//System.out.println("Visiondata: " + d);
+		// System.out.println("Visiondata: " + d);
 	}
 
 	@Override

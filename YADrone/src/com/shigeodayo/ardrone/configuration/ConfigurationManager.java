@@ -26,9 +26,11 @@ import java.net.SocketTimeoutException;
 import android.util.Log;
 
 import com.shigeodayo.ardrone.command.CommandManager;
+import com.shigeodayo.ardrone.command.ControlCommand;
 import com.shigeodayo.ardrone.manager.AbstractTCPManager;
 import com.shigeodayo.ardrone.utils.ARDroneUtils;
 
+// TODO consider to connect to the control port permanently
 public class ConfigurationManager extends AbstractTCPManager {
 	private CommandManager manager = null;
 
@@ -43,14 +45,27 @@ public class ConfigurationManager extends AbstractTCPManager {
 	public void run() {
 	}
 
-	public String getConfiguration() {
+	private String getControlCommandResult(int p1, int p2) {
 		try {
 			// TODO better have connect throw IOException if connection fails
 			// this allows to call close only when connect succeeded
 			connect(ARDroneUtils.CONTROL_PORT);
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
-			manager.getDroneConfiguration();
+			manager.setCommand(new ControlCommand(p1, p2));
+			manager.setCommand(new ControlCommand(p1, p2));
 
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			InputStream inputStream = getInputStream();
 			// TODO better getInputStream throw IOException to fail
 			if (inputStream != null) {
@@ -75,5 +90,22 @@ public class ConfigurationManager extends AbstractTCPManager {
 			close();
 		}
 		return "";
+
 	}
+	
+	public String getCustomCofigurationIds() {
+		String s = getControlCommandResult(6,0);
+		return s;
+	}
+
+	public String getPreviousRunLogs() {
+		String s = getControlCommandResult(3,0);
+		return s;
+	}
+
+	public String getConfiguration() {
+		String s = getControlCommandResult(4,0);
+		return s;
+	}
+
 }

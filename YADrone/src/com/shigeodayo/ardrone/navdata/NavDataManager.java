@@ -228,8 +228,9 @@ public class NavDataManager extends AbstractManager {
 				// according to 7.1.2. of the ARDrone Developpper Guide demo
 				// mode must be set after exiting bootstrap mode
 				// TODO can we receive multiple bootstrap packets?
-				if (bootstrapping && !s.isNavDataBootstrap()) {
+				if (bootstrapping && s.isNavDataBootstrap()) {
 					// presumably iso setting the demo option we can ask for the options we want here
+					manager.setNavDataDemo(false);
 					manager.setNavDataOptions(mask);
 					maskChanged = false;
 					bootstrapping = false;

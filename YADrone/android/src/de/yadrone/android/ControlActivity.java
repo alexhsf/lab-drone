@@ -40,7 +40,7 @@ public class ControlActivity extends BaseActivity implements StateListener {
 		initButtons(cm);
 		initStateView(nd);
 
-		setStates(0xAAAAAAAA);
+		//setStates(0xAAAAAAAA);
 
 		Toast.makeText(this, "Touch and hold the buttons", Toast.LENGTH_SHORT).show();
 	}
@@ -52,11 +52,12 @@ public class ControlActivity extends BaseActivity implements StateListener {
 			CheckedTextView v = new CheckedTextView(this);
 			v.setLayoutParams(lp);
 			v.setBackgroundResource(R.drawable.selectstate);
-			//v.setBackgroundColor(0xFFFF0000);
 			v.setClickable(false);
 			v.setLongClickable(false);
 			v.setDuplicateParentStateEnabled(false);
 			v.setFocusable(false);
+			v.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 10);
+			v.setText(String.valueOf(n));
 			vg.addView(v);
 		}
 

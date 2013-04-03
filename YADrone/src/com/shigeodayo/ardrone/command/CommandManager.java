@@ -132,10 +132,6 @@ public class CommandManager extends AbstractManager {
 		return (float) (speed / 100.0f);
 	}
 
-	public void getDroneConfiguration() {
-		q.add(new ControlCommand(5, 0));
-	}
-
 	public void setVideoCodecFps(int fps) {
 		fps = limit(fps, H264.MIN_FPS, H264.MAX_FPS);
 		q.add(new ConfigureCommand("video:codec_fps", fps));
@@ -170,7 +166,7 @@ public class CommandManager extends AbstractManager {
 		q.add(new ConfigureCommand("general:video_enable", b));
 	}
 
-	public void setDemoNavData(boolean b) {
+	public void setNavDataDemo(boolean b) {
 		q.add(new ConfigureCommand("general:navdata_demo", b));
 	}
 
@@ -197,17 +193,17 @@ public class CommandManager extends AbstractManager {
 	}
 
 	public void setVerticalDetectionType(int mask) {
-		q.add(new ConfigureCommand("detect:detect_type", 10));
+		//q.add(new ConfigureCommand("detect:detect_type", 10));
 		q.add(new ConfigureCommand("detect:detections_select_v", mask));
 	}
 
 	public void setHorizonalDetectionType(int mask) {
-		q.add(new ConfigureCommand("detect:detect_type", 10));
+		//q.add(new ConfigureCommand("detect:detect_type", 10));
 		q.add(new ConfigureCommand("detect:detections_select_h", mask));
 	}
 
 	public void setVerticalHsyncDetectionType(int mask) {
-		q.add(new ConfigureCommand("detect:detect_type", 10));
+		//q.add(new ConfigureCommand("detect:detect_type", 10));
 		q.add(new ConfigureCommand("detect:detections_select_v_hsync", mask));
 	}
 
@@ -251,7 +247,7 @@ public class CommandManager extends AbstractManager {
 	}
 
 	public void sendControlAck() {
-		q.add(new ControlCommand(4, 0));
+		q.add(new ControlCommand(5, 0));
 	}
 
 	public void setMaxEulerAngle(float angle) {
