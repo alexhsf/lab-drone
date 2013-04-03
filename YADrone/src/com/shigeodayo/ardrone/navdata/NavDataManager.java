@@ -19,6 +19,7 @@ package com.shigeodayo.ardrone.navdata;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -247,6 +248,8 @@ public class NavDataManager extends AbstractManager {
 					manager.setNavDataOptions(mask);
 					maskChanged = false;
 				}
+			} catch (SocketTimeoutException t) {
+				System.err.println("Navdata reception timeout");
 			} catch (Throwable t) {
 				// continue whatever goes wrong
 				t.printStackTrace();
@@ -673,7 +676,7 @@ public class NavDataManager extends AbstractManager {
 			float time_update = b.getFloat();
 			float[] time_custom = getFloat(b, NAVDATA_MAX_CUSTOM_TIME_SAVE);
 
-			VisionPerormance d = new VisionPerormance(time_szo, time_corners, time_compute, time_tracking, time_trans,
+			VisionPerformance d = new VisionPerformance(time_szo, time_corners, time_compute, time_tracking, time_trans,
 					time_update, time_custom);
 			visionListener.receivedPerformanceData(d);
 		}

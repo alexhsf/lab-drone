@@ -1,9 +1,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="fill_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
     android:orientation="vertical"
     tools:context=".ControlActivity" >
+
+    <LinearLayout
+        android:id="@+id/states"
+        android:layout_width="wrap_content"
+        android:layout_height="15dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/selectstate"
+        android:orientation="horizontal" >
+
+        <!-- Will be filled with state views by the activity class -->
+    </LinearLayout>
 
     <TableLayout
         android:layout_width="wrap_content"
@@ -25,7 +38,6 @@
                 android:id="@+id/cmd_forward"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_column="1"
                 android:padding="20dip"
                 android:text="Forward" />
 
@@ -83,9 +95,15 @@
                 android:id="@+id/cmd_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_column="1"
                 android:padding="20dip"
                 android:text="Up" />
+
+            <Button
+                android:id="@+id/cmd_trim"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20dip"
+                android:text="Trim" />
         </TableRow>
 
         <TableRow
@@ -116,154 +134,13 @@
     </TableLayout>
 
     <TableLayout
+        android:id="@+id/animations"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" >
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dip" >
 
-        <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/PHI_M30_DEG"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PM30D" />
-
-            <Button
-                android:id="@+id/PHI_30_DEG"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="P30D" />
-
-            <Button
-                android:id="@+id/THETA_M30_DEG"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TM30G" />
-
-            <Button
-                android:id="@+id/THETA_30_DEG"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="T30D" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/THETA_20DEG_YAW_200DEG"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="T20DY200D" />
-
-            <Button
-                android:id="@+id/THETA_20DEG_YAW_M200DEG"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="T20DYM200D" />
-
-            <Button
-                android:id="@+id/TURNAROUND"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TURN" />
-
-            <Button
-                android:id="@+id/TURNAROUND_GODOWN"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TRNDWN" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/YAW_SHAKE"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="YSHK" />
-
-            <Button
-                android:id="@+id/YAW_DANCE"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="YDNC" />
-
-            <Button
-                android:id="@+id/PHI_DANCE"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PDNC" />
-
-            <Button
-                android:id="@+id/THETA_DANCE"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TDNC" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/VZ_DANCE"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ZDNC" />
-
-            <Button
-                android:id="@+id/WAVE"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="WAVE" />
-
-            <Button
-                android:id="@+id/PHI_THETA_MIXED"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PTMX" />
-
-            <Button
-                android:id="@+id/DOUBLE_PHI_THETA_MIXED"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="DPTMX" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/FLIP_AHEAD"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="FAHD" />
-
-            <Button
-                android:id="@+id/FLIP_BEHIND"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="FBEHND" />
-
-            <Button
-                android:id="@+id/FLIP_LEFT"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="FLFT" />
-
-            <Button
-                android:id="@+id/FLIP_RIGHT"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="FRGHT" />
-        </TableRow>
+        <!-- Will be filled with state views by the activity class -->
     </TableLayout>
 
 </LinearLayout>

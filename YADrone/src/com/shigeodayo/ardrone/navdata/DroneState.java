@@ -20,6 +20,10 @@ public class DroneState {
 		this.vision = vision;
 	}
 
+	public int getStateBits() {
+		return state;
+	}
+	
 	public boolean isVisionDefined() {
 	    return vision == 1;
 	}

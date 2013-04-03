@@ -44,6 +44,11 @@ public class ARDrone implements ARDroneInterface {
 	private NavDataManager navdataManager = null;
 	private ConfigurationManager configurationManager = null;
 
+	// The speed setting has been moved into this class to allow the commandmanager to stay simple and to be able to do
+	// more advanced speed calculations for example based on the actual velocity
+	// Should we refactor this into a separate API?
+	int speed = 5;
+
 	/** constructor */
 	public ARDrone() {
 		this(IP_ADDRESS, null);
@@ -96,7 +101,7 @@ public class ARDrone implements ARDroneInterface {
 
 	@Override
 	public boolean connect() {
-		CommandManager cm = getCommandManager();		
+		CommandManager cm = getCommandManager();
 		if (!cm.isConnected()) {
 			return cm.connect(ARDroneUtils.PORT);
 		}
@@ -105,7 +110,7 @@ public class ARDrone implements ARDroneInterface {
 
 	@Override
 	public boolean connectVideo() {
-		VideoManager vm = getVideoManager();		
+		VideoManager vm = getVideoManager();
 		if (!vm.isConnected()) {
 			return vm.connect(ARDroneUtils.VIDEO_PORT);
 		}
@@ -117,7 +122,7 @@ public class ARDrone implements ARDroneInterface {
 		NavDataManager nm = getNavDataManager();
 		if (!nm.isConnected()) {
 			return nm.connect(ARDroneUtils.NAV_PORT);
-		}		
+		}
 		return true;
 	}
 
@@ -185,17 +190,11 @@ public class ARDrone implements ARDroneInterface {
 	@Override
 	public void reset() {
 		if (commandManager != null)
-			commandManager.reset();
+			commandManager.emergency();
 	}
 
 	@Override
 	public void forward() {
-		if (commandManager != null)
-			commandManager.forward();
-	}
-
-	@Override
-	public void forward(int speed) {
 		if (commandManager != null)
 			commandManager.forward(speed);
 	}
@@ -203,23 +202,11 @@ public class ARDrone implements ARDroneInterface {
 	@Override
 	public void backward() {
 		if (commandManager != null)
-			commandManager.backward();
-	}
-
-	@Override
-	public void backward(int speed) {
-		if (commandManager != null)
 			commandManager.backward(speed);
 	}
 
 	@Override
 	public void spinRight() {
-		if (commandManager != null)
-			commandManager.spinRight();
-	}
-
-	@Override
-	public void spinRight(int speed) {
 		if (commandManager != null)
 			commandManager.spinRight(speed);
 	}
@@ -227,23 +214,11 @@ public class ARDrone implements ARDroneInterface {
 	@Override
 	public void spinLeft() {
 		if (commandManager != null)
-			commandManager.spinLeft();
-	}
-
-	@Override
-	public void spinLeft(int speed) {
-		if (commandManager != null)
 			commandManager.spinLeft(speed);
 	}
 
 	@Override
 	public void up() {
-		if (commandManager != null)
-			commandManager.up();
-	}
-
-	@Override
-	public void up(int speed) {
 		if (commandManager != null)
 			commandManager.up(speed);
 	}
@@ -251,23 +226,11 @@ public class ARDrone implements ARDroneInterface {
 	@Override
 	public void down() {
 		if (commandManager != null)
-			commandManager.down();
-	}
-
-	@Override
-	public void down(int speed) {
-		if (commandManager != null)
 			commandManager.down(speed);
 	}
 
 	@Override
 	public void goRight() {
-		if (commandManager != null)
-			commandManager.goRight();
-	}
-
-	@Override
-	public void goRight(int speed) {
 		if (commandManager != null)
 			commandManager.goRight(speed);
 	}
@@ -275,19 +238,12 @@ public class ARDrone implements ARDroneInterface {
 	@Override
 	public void goLeft() {
 		if (commandManager != null)
-			commandManager.goLeft();
-	}
-
-	@Override
-	public void goLeft(int speed) {
-		if (commandManager != null)
 			commandManager.goLeft(speed);
 	}
 
 	@Override
 	public void setSpeed(int speed) {
-		if (commandManager != null)
-			commandManager.setSpeed(speed);
+		this.speed = speed;
 	}
 
 	@Override
@@ -303,9 +259,7 @@ public class ARDrone implements ARDroneInterface {
 	 */
 	@Override
 	public int getSpeed() {
-		if (commandManager == null)
-			return -1;
-		return commandManager.getSpeed();
+		return speed;
 	}
 
 	@Override

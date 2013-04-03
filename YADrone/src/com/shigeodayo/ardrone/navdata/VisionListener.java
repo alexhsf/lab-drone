@@ -9,7 +9,7 @@ public interface VisionListener extends EventListener {
 
 	public void trackersSend(int[][] locked, int[][][] point);
 
-	public void receivedPerformanceData(VisionPerormance d);
+	public void receivedPerformanceData(VisionPerformance d);
 
 	public void receivedRawData(float[] vision_raw);
 

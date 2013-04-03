@@ -31,8 +31,6 @@ public class CommandManager extends AbstractManager {
 
 	private static int seq = 1;
 
-	private float speed = 0.05f;// 0.01f - 1.0f
-
 	public CommandManager(InetAddress inetaddr) {
 		super(inetaddr);
 		this.q = new CommandQueue(100);
@@ -64,95 +62,74 @@ public class CommandManager extends AbstractManager {
 		q.add(new TakeOffCommand());
 	}
 
-	public void reset() {
+	/**
+	 * See Developer Guide 6.5:
+	 */
+	public void emergency() {
 		q.add(new EmergencyCommand());
 	}
 
-	public void forward() {
-		move(0f, -speed, 0f, 0f);
-	}
-
 	public void forward(int speed) {
-		setSpeed(speed);
-		forward();
-	}
-
-	public void backward() {
-		move(0f, speed, 0f, 0f);
+		move(0f, -perc2float(speed), 0f, 0f);
 	}
 
 	public void backward(int speed) {
-		setSpeed(speed);
-		backward();
-	}
-
-	public void spinRight() {
-		move(0f, 0f, 0f, speed);
+		move(0f, perc2float(speed), 0f, 0f);
 	}
 
 	public void spinRight(int speed) {
-		setSpeed(speed);
-		spinRight();
-	}
-
-	public void spinLeft() {
-		move(0f, 0f, 0f, -speed);
+		move(0f, 0f, 0f, perc2float(speed));
 	}
 
 	public void spinLeft(int speed) {
-		setSpeed(speed);
-		spinLeft();
-	}
-
-	public void up() {
-		System.out.println("*** Up");
-		move(0f, 0f, speed, 0f);
+		move(0f, 0f, 0f, -perc2float(speed));
 	}
 
 	public void up(int speed) {
-		setSpeed(speed);
-		up();
-	}
-
-	public void down() {
-		System.out.println("*** Down");
-		move(0f, 0f, -speed, 0f);
+		move(0f, 0f, perc2float(speed), 0f);
 	}
 
 	public void down(int speed) {
-		setSpeed(speed);
-		down();
-	}
-
-	public void goRight() {
-		move(speed, 0f, 0f, 0f);
+		move(0f, 0f, -perc2float(speed), 0f);
 	}
 
 	public void goRight(int speed) {
-		setSpeed(speed);
-		goRight();
-	}
-
-	public void goLeft() {
-		move(-speed, 0f, 0f, 0f);
+		move(perc2float(speed), 0f, 0f, 0f);
 	}
 
 	public void goLeft(int speed) {
-		setSpeed(speed);
-		goLeft();
+		move(-perc2float(speed), 0f, 0f, 0f);
+	}
+
+	public void move(float lrtilt, float fbtilt, float vspeed, float aspeed, float magneto_psi,
+			float magneto_psi_accuracy) {
+		lrtilt = limit(lrtilt, -1f, 1f);
+		fbtilt = limit(fbtilt, -1f, 1f);
+		vspeed = limit(vspeed, -1f, 1f);
+		aspeed = limit(aspeed, -1f, 1f);
+		magneto_psi = limit(magneto_psi, -1f, 1f);
+		magneto_psi_accuracy = limit(magneto_psi_accuracy, -1f, 1f);
+		q.add(new PCMDMagCommand(false, false, true, lrtilt, fbtilt, vspeed, aspeed, magneto_psi, magneto_psi_accuracy));
+	}
+
+	public void move(float lrtilt, float fbtilt, float vspeed, float aspeed) {
+		lrtilt = limit(lrtilt, -1f, 1f);
+		fbtilt = limit(fbtilt, -1f, 1f);
+		vspeed = limit(vspeed, -1f, 1f);
+		aspeed = limit(aspeed, -1f, 1f);
+		q.add(new MoveCommand(false, lrtilt, fbtilt, vspeed, aspeed));
+	}
+
+	public void move(int speedX, int speedY, int speedZ, int speedSpin) {
+		move(-perc2float(speedY), -perc2float(speedX), -perc2float(speedZ), -perc2float(speedSpin));
 	}
 
 	public void stop() {
 		q.add(new StopCommand());
 	}
 
-	public void setSpeed(int speed) {
-		if (speed > 100)
-			speed = 100;
-		else if (speed < 1)
-			speed = 1;
-
-		this.speed = (float) (speed / 100.0);
+	private float perc2float(int speed) {
+		return (float) (speed / 100.0f);
 	}
 
 	public void getDroneConfiguration() {
@@ -277,10 +254,6 @@ public class CommandManager extends AbstractManager {
 		q.add(new ControlCommand(4, 0));
 	}
 
-	public int getSpeed() {
-		return (int) (speed * 100);
-	}
-
 	public void setMaxEulerAngle(float angle) {
 		setMaxEulerAngle(Location.CURRENT, angle);
 	}
@@ -349,29 +322,6 @@ public class CommandManager extends AbstractManager {
 
 	public void animate(FlightAnimation a) {
 		q.add(new FlightAnimationCommand(a));
-	}
-
-	public void move(float lrtilt, float fbtilt, float vspeed, float aspeed, float magneto_psi,
-			float magneto_psi_accuracy) {
-		lrtilt = limit(lrtilt, -1f, 1f);
-		fbtilt = limit(fbtilt, -1f, 1f);
-		vspeed = limit(vspeed, -1f, 1f);
-		aspeed = limit(aspeed, -1f, 1f);
-		magneto_psi = limit(magneto_psi, -1f, 1f);
-		magneto_psi_accuracy = limit(magneto_psi_accuracy, -1f, 1f);
-		q.add(new PCMDMagCommand(false, false, true, lrtilt, fbtilt, vspeed, aspeed, magneto_psi, magneto_psi_accuracy));
-	}
-
-	public void move(float lrtilt, float fbtilt, float vspeed, float aspeed) {
-		lrtilt = limit(lrtilt, -1f, 1f);
-		fbtilt = limit(fbtilt, -1f, 1f);
-		vspeed = limit(vspeed, -1f, 1f);
-		aspeed = limit(aspeed, -1f, 1f);
-		q.add(new MoveCommand(false, lrtilt, fbtilt, vspeed, aspeed));
-	}
-
-	public void move(int speedX, int speedY, int speedZ, int speedSpin) {
-		move(-speedY / 100.0f, -speedX / 100.0f, -speedZ / 100.0f, -speedSpin / 100.0f);
 	}
 
 	public void setPosition(double latitude, double longitude, double altitude) {

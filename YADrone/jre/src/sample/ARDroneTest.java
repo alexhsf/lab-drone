@@ -136,8 +136,9 @@ public class ARDroneTest extends JFrame {
 			}
 		});
 
+		ardrone.setSpeed(45);
+
 		addKeyListener(new KeyAdapter() {
-			int speed = 45;
 
 			public void keyReleased(KeyEvent e) {
 				ardrone.stop();
@@ -170,28 +171,28 @@ public class ARDroneTest extends JFrame {
 						ardrone.spinLeft();
 						shiftflag = false;
 					} else
-						ardrone.goLeft(speed);
+						ardrone.goLeft();
 					break;
 				case KeyEvent.VK_RIGHT:
 					if (shiftflag) {
 						ardrone.spinRight();
 						shiftflag = false;
 					} else
-						ardrone.goRight(speed);
+						ardrone.goRight();
 					break;
 				case KeyEvent.VK_UP:
 					if (shiftflag) {
-						ardrone.up(speed);
+						ardrone.up();
 						shiftflag = false;
 					} else
-						ardrone.forward(speed);
+						ardrone.forward();
 					break;
 				case KeyEvent.VK_DOWN:
 					if (shiftflag) {
-						ardrone.down(speed);
+						ardrone.down();
 						shiftflag = false;
 					} else
-						ardrone.backward(speed);
+						ardrone.backward();
 					break;
 				case KeyEvent.VK_1:
 					ardrone.setHorizontalCamera();

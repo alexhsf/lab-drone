@@ -2,7 +2,7 @@ package com.shigeodayo.ardrone.navdata;
 
 import java.util.Arrays;
 
-public class VisionPerormance {
+public class VisionPerformance {
 	private float time_szo;
 	private float time_corners;
 	private float time_compute;
@@ -11,7 +11,7 @@ public class VisionPerormance {
 	private float time_update;
 	private float[] time_custom;
 
-	public VisionPerormance(float time_szo, float time_corners, float time_compute, float time_tracking,
+	public VisionPerformance(float time_szo, float time_corners, float time_compute, float time_tracking,
 			float time_trans, float time_update, float[] time_custom) {
 		super();
 		this.time_szo = time_szo;

@@ -3,7 +3,7 @@ package com.shigeodayo.ardrone.command;
 public class VisionOptionCommand extends ATCommand {
 
 	private int option;
-	
+
 	public VisionOptionCommand(int option) {
 		super();
 		this.option = option;

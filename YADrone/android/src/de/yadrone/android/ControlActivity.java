@@ -1,34 +1,72 @@
 package de.yadrone.android;
 
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.CheckedTextView;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.Toast;
 
 import com.shigeodayo.ardrone.ARDrone;
 import com.shigeodayo.ardrone.command.CommandManager;
 import com.shigeodayo.ardrone.command.FlightAnimation;
+import com.shigeodayo.ardrone.navdata.ControlState;
+import com.shigeodayo.ardrone.navdata.DroneState;
+import com.shigeodayo.ardrone.navdata.NavDataManager;
+import com.shigeodayo.ardrone.navdata.StateListener;
 
-public class ControlActivity extends BaseActivity {
+public class ControlActivity extends BaseActivity implements StateListener {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_control);
 
-		initButtons();
+		YADroneApplication app = (YADroneApplication) getApplication();
+		final ARDrone drone = app.getARDrone();
+		final CommandManager cm = drone.getCommandManager();
+		final NavDataManager nd = drone.getNavDataManager();
+
+		initButtons(cm);
+		initStateView(nd);
+
+		setStates(0xAAAAAAAA);
 
 		Toast.makeText(this, "Touch and hold the buttons", Toast.LENGTH_SHORT).show();
 	}
 
-	private void initButtons() {
-		YADroneApplication app = (YADroneApplication) getApplication();
-		final ARDrone drone = app.getARDrone();
-		final CommandManager cm = drone.getCommandManager();
+	private void initStateView(final NavDataManager nd) {
+		LinearLayout vg = (LinearLayout) findViewById(R.id.states);
+		LayoutParams lp = new LinearLayout.LayoutParams(15, LinearLayout.LayoutParams.MATCH_PARENT);
+		for (int n = 0; n < 32; n++) {
+			CheckedTextView v = new CheckedTextView(this);
+			v.setLayoutParams(lp);
+			v.setBackgroundResource(R.drawable.selectstate);
+			//v.setBackgroundColor(0xFFFF0000);
+			v.setClickable(false);
+			v.setLongClickable(false);
+			v.setDuplicateParentStateEnabled(false);
+			v.setFocusable(false);
+			vg.addView(v);
+		}
+
+		System.out.println(vg.getWidth());
+		System.out.println(vg.getHeight());
+		nd.setStateListener(this);
+
+	}
+
+	private void initButtons(final CommandManager cm) {
 
 		Button forward = (Button) findViewById(R.id.cmd_forward);
 		forward.setOnTouchListener(new OnTouchListener() {
@@ -36,7 +74,7 @@ public class ControlActivity extends BaseActivity {
 				if (event.getAction() == MotionEvent.ACTION_DOWN)
 					cm.forward(20);
 				else if (event.getAction() == MotionEvent.ACTION_UP)
-					drone.stop();
+					cm.stop();
 
 				return true;
 			}
@@ -143,45 +181,72 @@ public class ControlActivity extends BaseActivity {
 		Button emergency = (Button) findViewById(R.id.cmd_emergency);
 		emergency.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				cm.reset();
+				cm.emergency();
 			}
 		});
 
-		Button test = (Button) findViewById(R.id.PHI_M30_DEG);
-		test.setOnClickListener(new OnClickListener() {
+		Button trim = (Button) findViewById(R.id.cmd_trim);
+		trim.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				cm.animate(null);
+				cm.flatTrim();
 			}
 		});
 
-		final int animIds[] = { R.id.PHI_M30_DEG, R.id.PHI_30_DEG, R.id.THETA_M30_DEG, R.id.THETA_30_DEG,
-				R.id.THETA_20DEG_YAW_200DEG, R.id.THETA_20DEG_YAW_M200DEG, R.id.TURNAROUND, R.id.TURNAROUND_GODOWN,
-				R.id.YAW_SHAKE, R.id.YAW_DANCE, R.id.PHI_DANCE, R.id.THETA_DANCE, R.id.VZ_DANCE, R.id.WAVE,
-				R.id.PHI_THETA_MIXED, R.id.DOUBLE_PHI_THETA_MIXED, R.id.FLIP_AHEAD, R.id.FLIP_BEHIND, R.id.FLIP_LEFT,
-				R.id.FLIP_RIGHT };
-		final FlightAnimation animCmds[] = { FlightAnimation.PHI_M30_DEG, FlightAnimation.PHI_30_DEG,
-				FlightAnimation.THETA_M30_DEG, FlightAnimation.THETA_30_DEG, FlightAnimation.THETA_20DEG_YAW_200DEG,
-				FlightAnimation.THETA_20DEG_YAW_M200DEG, FlightAnimation.TURNAROUND, FlightAnimation.TURNAROUND_GODOWN,
-				FlightAnimation.YAW_SHAKE, FlightAnimation.YAW_DANCE, FlightAnimation.PHI_DANCE,
-				FlightAnimation.THETA_DANCE, FlightAnimation.VZ_DANCE, FlightAnimation.WAVE,
-				FlightAnimation.PHI_THETA_MIXED, FlightAnimation.DOUBLE_PHI_THETA_MIXED, FlightAnimation.FLIP_AHEAD,
-				FlightAnimation.FLIP_BEHIND, FlightAnimation.FLIP_LEFT, FlightAnimation.FLIP_RIGHT };
+		final int BUTTONSPERROW = 5;
+		final FlightAnimation anims[] = FlightAnimation.values();
 
-		for (int n = 0; n < animCmds.length; n++) {
-			final FlightAnimation a = animCmds[n];
-			Button b = (Button) findViewById(animIds[n]);
+		TableLayout table = (TableLayout) findViewById(R.id.animations);
+		TableRow row = null;
+		for (int n = 0; n < anims.length; n++) {
+			final FlightAnimation a = anims[n];
+			if (n % BUTTONSPERROW == 0) {
+				row = new TableRow(this);
+				row.setGravity(Gravity.CENTER_HORIZONTAL);
+				table.addView(row);
+			}
+			Button b = new Button(this);
+			b.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 10);
+			String s = a.name().replace("_", "");
+			int middle = s.length() / 2;
+			b.setText(s.substring(0, middle) + "\n" + s.substring(middle));
 			b.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					cm.animate(a);
 				}
 			});
+			row.addView(b);
 		}
+
+	}
+
+	private void setStates(final int s) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				ViewGroup vg = (ViewGroup) findViewById(R.id.states);
+				for (int n = 0; n < 32; n++) {
+					CheckedTextView v = (CheckedTextView) vg.getChildAt(n);
+					boolean b = (s & (1 << n)) != 0;
+					v.setChecked(b);
+				}
+			}
+		});
+
 	}
 
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu_control, menu);
 		return true;
+	}
+
+	@Override
+	public void stateChanged(DroneState state) {
+		setStates(state.getStateBits());
+	}
+
+	@Override
+	public void controlStateChanged(ControlState state) {
 	}
 
 }

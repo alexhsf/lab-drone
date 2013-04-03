@@ -3,6 +3,6 @@ package gui_desktop;
 public interface ISpeedListener
 {
 
-	public void speedUpdated(int speed);
+	public void setSpeed(int speed);
 	
 }

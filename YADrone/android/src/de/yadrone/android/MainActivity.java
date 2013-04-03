@@ -24,7 +24,7 @@ import com.shigeodayo.ardrone.navdata.NavDataManager;
 import com.shigeodayo.ardrone.navdata.StateListener;
 import com.shigeodayo.ardrone.navdata.VisionData;
 import com.shigeodayo.ardrone.navdata.VisionListener;
-import com.shigeodayo.ardrone.navdata.VisionPerormance;
+import com.shigeodayo.ardrone.navdata.VisionPerformance;
 import com.shigeodayo.ardrone.navdata.VisionTag;
 
 public class MainActivity extends BaseActivity implements StateListener, VisionListener {
@@ -177,7 +177,7 @@ public class MainActivity extends BaseActivity implements StateListener, VisionL
 	}
 
 	@Override
-	public void receivedPerformanceData(VisionPerormance d) {
+	public void receivedPerformanceData(VisionPerformance d) {
 		// System.out.println("Visionperf: " + d);
 	}
 

@@ -33,7 +33,7 @@ public class SpeedPanel extends JPanel
 			public void stateChanged(ChangeEvent e)
 			{
 				System.out.println("Setting game speed: " + slider.getValue());
-				cmdManager.speedUpdated(slider.getValue());
+				cmdManager.setSpeed(slider.getValue());
 			}
 		});
 		
@@ -42,7 +42,7 @@ public class SpeedPanel extends JPanel
 		
 		cmdManager.setSpeedListener(new ISpeedListener() {
 			
-			public void speedUpdated(int speed)
+			public void setSpeed(int speed)
 			{
 				slider.setValue(speed);
 			}
