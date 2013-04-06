@@ -16,4 +16,6 @@ public interface VisionListener extends EventListener {
 	public void receivedData(VisionData d);
 
 	public void receivedVisionOf(float[] of_dx, float[] of_dy);
+
+	public void typeDetected(int detection_camera_type);
 }

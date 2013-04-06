@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import com.shigeodayo.ardrone.manager.AbstractManager;
+import com.shigeodayo.ardrone.navdata.CadType;
 import com.shigeodayo.ardrone.utils.ARDroneUtils;
 
 public class CommandManager extends AbstractManager {
@@ -192,19 +193,29 @@ public class CommandManager extends AbstractManager {
 		q.add(new ConfigureCommand("detect:enemy_colors", c.getValue()));
 	}
 
-	public void setVerticalDetectionType(int mask) {
-		//q.add(new ConfigureCommand("detect:detect_type", 10));
-		q.add(new ConfigureCommand("detect:detections_select_v", mask));
+	/*
+	 * Select the detection that should be enabled Note: It is advised to enable the multiple detection mode, and then
+	 * configure the detection needed using the other methods
+	 * 
+	 * NOTE: You should NEVER enable one detection on two different cameras.
+	 */
+	public void setDetectionType(CadType type) {
+		// TODO: push VisionCadType into special ConfigureCommand 
+		int t = type.ordinal(); 
+		q.add(new ConfigureCommand("detect:detect_type", t));
 	}
 
-	public void setHorizonalDetectionType(int mask) {
-		//q.add(new ConfigureCommand("detect:detect_type", 10));
-		q.add(new ConfigureCommand("detect:detections_select_h", mask));
-	}
-
-	public void setVerticalHsyncDetectionType(int mask) {
-		//q.add(new ConfigureCommand("detect:detect_type", 10));
-		q.add(new ConfigureCommand("detect:detections_select_v_hsync", mask));
+	/*
+	 * Select the detections that should be enabled on a specific camera.
+	 * 
+	 * 
+	 * NOTE: You should NEVER enable one detection on two different cameras.
+	 */
+	public void setDetectionType(DetectionType dt, VisionTagType[] tagtypes) {
+		setDetectionType(CadType.MULTIPLE_DETECTION_MODE);
+		// TODO: refactor into new ConfigureCommand
+		int mask = VisionTagType.getMask(tagtypes);
+		q.add(new ConfigureCommand("detect:" + dt.getCmdSuffix(), mask));
 	}
 
 	public void setVisionParameters(int coarse_scale, int nb_pair, int loss_per, int nb_tracker_width,

@@ -1,5 +1,7 @@
 package de.yadrone.android;
 
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -25,6 +27,10 @@ import com.shigeodayo.ardrone.navdata.ControlState;
 import com.shigeodayo.ardrone.navdata.DroneState;
 import com.shigeodayo.ardrone.navdata.NavDataManager;
 import com.shigeodayo.ardrone.navdata.StateListener;
+import com.shigeodayo.ardrone.navdata.VisionData;
+import com.shigeodayo.ardrone.navdata.VisionListener;
+import com.shigeodayo.ardrone.navdata.VisionPerformance;
+import com.shigeodayo.ardrone.navdata.VisionTag;
 
 public class ControlActivity extends BaseActivity implements StateListener {
 
@@ -40,7 +46,68 @@ public class ControlActivity extends BaseActivity implements StateListener {
 		initButtons(cm);
 		initStateView(nd);
 
-		//setStates(0xAAAAAAAA);
+		// setStates(0xAAAAAAAA);
+		nd.setVisionListener(new VisionListener() {
+			private final FlightAnimation[] anims = new FlightAnimation[] { FlightAnimation.FLIP_AHEAD, FlightAnimation.FLIP_BEHIND, FlightAnimation.FLIP_LEFT, FlightAnimation.FLIP_RIGHT }; 
+			private int nanim = 0;
+			private long tlast = 0;
+			private long timeout = 0;
+
+			FlightAnimation current() {
+				return anims[nanim];
+			}
+
+			private void next() {
+				nanim = (nanim + 1) % anims.length;				
+			}			
+			
+			@Override
+			public void trackersSend(int[][] locked, int[][][] point) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void tagsDetected(ArrayList<VisionTag> list) {
+				long t = System.currentTimeMillis();
+				if (t - tlast > timeout) {
+					FlightAnimation a = current();
+					cm.animate(a);
+					timeout = a.getDefaultDuration() + 5000;
+					tlast = t;
+					next();
+				}
+			}
+
+			@Override
+			public void receivedVisionOf(float[] of_dx, float[] of_dy) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void receivedRawData(float[] vision_raw) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void receivedPerformanceData(VisionPerformance d) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void receivedData(VisionData d) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void typeDetected(int detection_camera_type) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 
 		Toast.makeText(this, "Touch and hold the buttons", Toast.LENGTH_SHORT).show();
 	}

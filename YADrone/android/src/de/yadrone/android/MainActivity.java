@@ -16,18 +16,18 @@ import android.widget.TextView;
 
 import com.shigeodayo.ardrone.ARDrone;
 import com.shigeodayo.ardrone.command.CommandManager;
+import com.shigeodayo.ardrone.command.DetectionType;
+import com.shigeodayo.ardrone.command.EnemyColor;
 import com.shigeodayo.ardrone.command.FlyingMode;
+import com.shigeodayo.ardrone.command.VisionTagType;
 import com.shigeodayo.ardrone.configuration.ConfigurationManager;
-import com.shigeodayo.ardrone.navdata.ControlState;
-import com.shigeodayo.ardrone.navdata.DroneState;
 import com.shigeodayo.ardrone.navdata.NavDataManager;
-import com.shigeodayo.ardrone.navdata.StateListener;
 import com.shigeodayo.ardrone.navdata.VisionData;
 import com.shigeodayo.ardrone.navdata.VisionListener;
 import com.shigeodayo.ardrone.navdata.VisionPerformance;
 import com.shigeodayo.ardrone.navdata.VisionTag;
 
-public class MainActivity extends BaseActivity implements StateListener, VisionListener {
+public class MainActivity extends BaseActivity implements VisionListener {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -54,17 +54,20 @@ public class MainActivity extends BaseActivity implements StateListener, VisionL
 			CommandManager cmd = drone.getCommandManager();
 
 			cmd.setAutonomousFlight(false);
-			
-			cmd.setVerticalDetectionType((1 << 9) - 1);
 
-			cmd.setHorizonalDetectionType((1 << 9) - 1);
+			// Do we need video to enable horizontal detection?
+			cmd.setVideoData(true);
+			cmd.setEnemyColors(EnemyColor.ORANGE_BLUE);
+			cmd.setDetectionType(DetectionType.HORIZONTAL, new VisionTagType[] { VisionTagType.ORIENTED_ROUNDEL,
+					VisionTagType.BLACK_ROUNDEL, VisionTagType.ROUNDEL, VisionTagType.SHELL_TAG_V2 });
+			//cmd.setDetectionType(DetectionType.VERTICAL, new VisionTagType[] { VisionTagType.SHELL_TAG_V2 });
 
-			//cmd.setFlyingMode(FlyingMode.HOVER_ON_TOP_OF_ORIENTED_ROUNDEL);
+			// cmd.setFlyingMode(FlyingMode.HOVER_ON_TOP_OF_ORIENTED_ROUNDEL);
 			cmd.setFlyingMode(FlyingMode.FREE_FLIGHT);
 			cmd.setHoveringRange(500);
-			
+
 			NavDataManager nav = drone.getNavDataManager();
-			nav.setStateListener(this);
+			// nav.setStateListener(this);
 			nav.setVisionListener(this);
 
 			text.append(configureDrone(drone));
@@ -106,7 +109,7 @@ public class MainActivity extends BaseActivity implements StateListener, VisionL
 
 		double maxAltitude = Double.parseDouble(sharedPrefs.getString("pref_altitude", "3"));
 		text.append(String.format("Set max. Altitude to %1$f m\n", maxAltitude));
-		drone.setMaxAltitude(1500);
+		drone.setMaxAltitude(2000);
 
 		double maxVerticalSpeed = Double.parseDouble(sharedPrefs.getString("pref_vertical_speed", "1"));
 		text.append(String.format("Set max. verticalspeed to %1$f m/s\n", maxVerticalSpeed));
@@ -165,16 +168,6 @@ public class MainActivity extends BaseActivity implements StateListener, VisionL
 	}
 
 	@Override
-	public void stateChanged(DroneState state) {
-		//
-	}
-
-	@Override
-	public void controlStateChanged(ControlState state) {
-		// System.out.println("ControlState: " + state);
-	}
-
-	@Override
 	public void tagsDetected(ArrayList<VisionTag> list) {
 		if (list.size() > 0) {
 			System.out.println("tagsDetected: " + list);
@@ -204,6 +197,11 @@ public class MainActivity extends BaseActivity implements StateListener, VisionL
 	@Override
 	public void receivedVisionOf(float[] of_dx, float[] of_dy) {
 		// System.out.println("Visionof: " + of_dx + " " + of_dy);
+	}
+
+	@Override
+	public void typeDetected(int type) {
+		System.out.println("type detected: " + type);		
 	}
 
 }

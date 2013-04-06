@@ -50,14 +50,7 @@ public class ConfigurationManager extends AbstractTCPManager {
 			// TODO better have connect throw IOException if connection fails
 			// this allows to call close only when connect succeeded
 			connect(ARDroneUtils.CONTROL_PORT);
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 
-			manager.setCommand(new ControlCommand(p1, p2));
 			manager.setCommand(new ControlCommand(p1, p2));
 
 			try {

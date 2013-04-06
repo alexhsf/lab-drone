@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.zip.CRC32;
 
 import com.shigeodayo.ardrone.command.CommandManager;
+import com.shigeodayo.ardrone.command.DetectionType;
 import com.shigeodayo.ardrone.manager.AbstractManager;
 import com.shigeodayo.ardrone.utils.ARDroneUtils;
 
@@ -43,6 +44,8 @@ public class NavDataManager extends AbstractManager {
 
 	private static final int DEFAULT_NB_TRACKERS_WIDTH = NB_CORNER_TRACKERS_WIDTH + 1;
 	private static final int DEFAULT_NB_TRACKERS_HEIGHT = NB_CORNER_TRACKERS_HEIGHT + 1;
+
+	private static final int NB_NAVDATA_DETECTION_RESULTS = 4;
 
 	// source: navdata_common.h
 	private static final int NAVDATA_MAX_CUSTOM_TIME_SAVE = 20;
@@ -130,7 +133,7 @@ public class NavDataManager extends AbstractManager {
 
 	public void setVisionListener(VisionListener visionListener) {
 		this.visionListener = visionListener;
-		setMask(visionListener == null, new int[] { TRACKERS_SEND_TAG, VISION_DETECT_TAG, VISION_OF_TAG, VISION_TAG,
+		setMask(visionListener == null, new int[] { DEMO_TAG, TRACKERS_SEND_TAG, VISION_DETECT_TAG, VISION_OF_TAG, VISION_TAG,
 				VISION_PERF_TAG, VISION_RAW_TAG });
 	}
 
@@ -268,10 +271,11 @@ public class NavDataManager extends AbstractManager {
 		long sequence = getUInt32(b);
 		int vision = b.getInt();
 
-		if (sequence <= lastSequenceNumber && sequence != 1) {
-			throw new NavDataException("Invalid sequence number received (received=" + sequence + "last="
-					+ lastSequenceNumber);
-		}
+//		if (sequence <= lastSequenceNumber && sequence != 1) {
+//			// TODO sometimes we seem to receive a previous packet, find out why
+//			throw new NavDataException("Invalid sequence number received (received=" + sequence + " last="
+//					+ lastSequenceNumber);
+//		}
 		lastSequenceNumber = sequence;
 
 		DroneState s = new DroneState(state, vision);
@@ -677,8 +681,8 @@ public class NavDataManager extends AbstractManager {
 			float time_update = b.getFloat();
 			float[] time_custom = getFloat(b, NAVDATA_MAX_CUSTOM_TIME_SAVE);
 
-			VisionPerformance d = new VisionPerformance(time_szo, time_corners, time_compute, time_tracking, time_trans,
-					time_update, time_custom);
+			VisionPerformance d = new VisionPerformance(time_szo, time_corners, time_compute, time_tracking,
+					time_trans, time_update, time_custom);
 			visionListener.receivedPerformanceData(d);
 		}
 	}
@@ -839,26 +843,49 @@ public class NavDataManager extends AbstractManager {
 
 	private void parseRawMeasuresOption(ByteBuffer b) {
 		if (batteryListener != null || acceleroListener != null || gyroListener != null || ultrasoundListener != null) {
-			// filtered accelerometers
+			// see http://blog.perquin.com/blog/ar-drone-navboard/
+			// speculative: Raw data (10-bit) of the accelerometers multiplied by 4
 			int[] raw_accs = getUInt16(b, NB_ACCS);
 
-			// filtered gyrometers
+			// see http://blog.perquin.com/blog/ar-drone-navboard/
+			// speculative: Raw data for the gyros, 12-bit A/D converted voltage of the gyros. X,Y=IDG, Z=Epson 
 			short[] raw_gyros = getShort(b, NB_GYROS);
 
-			// gyrometers x/y 110 deg/s
+			// see http://blog.perquin.com/blog/ar-drone-navboard/
+			// speculative: 4.5x Raw data (IDG), gyro values (x/y) with another resolution (see IDG-500 datasheet)
 			short[] raw_gyros_110 = getShort(b, 2);
 
 			// Assumption: value well below Integer.MAX_VALUE
 			// battery voltage raw (mV)
 			int vbat_raw = b.getInt();
 
-			int us_debut_echo = getUInt16(b);
-			int us_fin_echo = getUInt16(b);
+			// see http://blog.perquin.com/blog/ar-drone-navboard/
+			// probably: Array with starts of echos (8 array values @ 25Hz, 9 values @ 22.22Hz)
+			int us_echo_start = getUInt16(b);
+
+			// see http://blog.perquin.com/blog/ar-drone-navboard/
+			// probably: array with ends of echos (8 array values @ 25Hz, 9 values @ 22.22Hz)
+			int us_echo_end = getUInt16(b);
+			
+			// see http://blog.perquin.com/blog/ar-drone-navboard/
+			// Ultrasonic parameter. speculative: echo number starting with 0. max value 3758. examples: 0,1,2,3,4,5,6,7  ; 0,1,2,3,4,86,6,9
 			int us_association_echo = getUInt16(b);
+			
+			// see http://blog.perquin.com/blog/ar-drone-navboard/
+			// Ultrasonic parameter. speculative: No clear pattern
 			int us_distance_echo = getUInt16(b);
-			int us_courbe_temps = getUInt16(b);
-			int us_courbe_valeur = getUInt16(b);
-			int us_courbe_ref = getUInt16(b);
+			
+			// see http://blog.perquin.com/blog/ar-drone-navboard/
+			// Ultrasonic parameter. Counts up from 0 to approx 24346 in 192 sample cycles of which 12 cylces have value 0
+			int us_cycle_time = getUInt16(b);
+
+			// see http://blog.perquin.com/blog/ar-drone-navboard/
+			// Ultrasonic parameter. Value between 0 and 4000, no clear pattern. 192 sample cycles of which 12 cycles have value 0
+			int us_cycle_value = getUInt16(b);
+			
+			// see http://blog.perquin.com/blog/ar-drone-navboard/
+			// Ultrasonic parameter. Counts down from 4000 to 0 in 192 sample cycles of which 12 cycles have value 0			
+			int us_cycle_ref = getUInt16(b);
 			int flag_echo_ini = getUInt16(b);
 			int nb_echo = getUInt16(b);
 			long sum_echo = getUInt32(b);
@@ -880,8 +907,8 @@ public class NavDataManager extends AbstractManager {
 			}
 
 			if (ultrasoundListener != null) {
-				UltrasoundData d = new UltrasoundData(us_debut_echo, us_fin_echo, us_association_echo,
-						us_distance_echo, us_courbe_temps, us_courbe_valeur, us_courbe_ref, flag_echo_ini, nb_echo,
+				UltrasoundData d = new UltrasoundData(us_echo_start, us_echo_end, us_association_echo,
+						us_distance_echo, us_cycle_time, us_cycle_value, us_cycle_ref, flag_echo_ini, nb_echo,
 						sum_echo, alt_temp_raw, gradient);
 				ultrasoundListener.receivedRawData(d);
 			}
@@ -943,19 +970,37 @@ public class NavDataManager extends AbstractManager {
 
 	private void parseDemoOption(ByteBuffer b) {
 		if (stateListener != null || batteryListener != null || attitudeListener != null || altitudeListener != null
-				|| velocityListener != null) {
+				|| velocityListener != null || visionListener != null) {
 			int controlState = b.getInt();
 
 			// batteryPercentage is <=100 so sign is not an issue
 			int batteryPercentage = b.getInt();
 
-			float theta = b.getFloat() / 1000;
-			float phi = b.getFloat() / 1000;
-			float psi = b.getFloat() / 1000;
+			float theta = b.getFloat();
+			float phi = b.getFloat();
+			float psi = b.getFloat();
 
 			int altitude = b.getInt();
 
 			float v[] = getFloat(b, 3);
+			
+			/* Deprecated ! Don't use ! */
+			float detection_camera_rot[] = getFloat(b, 9);
+			/* Deprecated ! Don't use ! */
+			float detection_camera_trans[] = getFloat(b, 3);
+			/* Deprecated ! Don't use ! */
+			long detection_tag_index = getUInt32(b);
+			
+			int detection_camera_type = b.getInt();
+
+			/* Deprecated ! Don't use ! */
+			float drone_camera_rot[] = getFloat(b, 9);
+			/* Deprecated ! Don't use ! */
+			float drone_camera_trans[] = getFloat(b, 3);
+
+			if (visionListener != null && detection_camera_type != 0) {
+				visionListener.typeDetected(detection_camera_type);
+			}
 
 			if (stateListener != null) {
 				stateListener.controlStateChanged(ControlState.fromInt(controlState >> 16));
@@ -1010,68 +1055,62 @@ public class NavDataManager extends AbstractManager {
 
 	private void parseVisionDetectOption(ByteBuffer b) {
 		if (visionListener != null) {
-			int n = b.getInt();
+			int ndetected = b.getInt();
 
-			int type[] = getInt(b, n);
+			if (ndetected > 0) {
 
-			// assumption: values are well below Integer.MAX_VALUE, so sign is
-			// no
-			// issue
-			int xc[] = getInt(b, n);
+				int type[] = getInt(b, NB_NAVDATA_DETECTION_RESULTS);
 
-			// assumption: values are well below Integer.MAX_VALUE, so sign is
-			// no
-			// issue
-			int yc[] = getInt(b, n);
+				// assumption: values are well below Integer.MAX_VALUE, so sign is no issue
+				int xc[] = getInt(b, NB_NAVDATA_DETECTION_RESULTS);
 
-			// assumption: values are well below Integer.MAX_VALUE, so sign is
-			// no
-			// issue
-			int width[] = getInt(b, n);
+				// assumption: values are well below Integer.MAX_VALUE, so sign is no issue
+				int yc[] = getInt(b, NB_NAVDATA_DETECTION_RESULTS);
 
-			// assumption: values are well below Integer.MAX_VALUE, so sign is
-			// no
-			// issue
-			int height[] = getInt(b, n);
+				// assumption: values are well below Integer.MAX_VALUE, so sign is no issue
+				int width[] = getInt(b, NB_NAVDATA_DETECTION_RESULTS);
 
-			// assumption: values are well below Integer.MAX_VALUE, so sign is
-			// no
-			// issue
-			int dist[] = getInt(b, n);
+				// assumption: values are well below Integer.MAX_VALUE, so sign is no issue
+				int height[] = getInt(b, NB_NAVDATA_DETECTION_RESULTS);
 
-			float[] orientation_angle = getFloat(b, n);
+				// assumption: values are well below Integer.MAX_VALUE, so sign is no issue
+				int dist[] = getInt(b, NB_NAVDATA_DETECTION_RESULTS);
 
-			// could extend Bytebuffer to read matrix types
-			float[][][] rotation = new float[n][3][3];
-			for (int i = 0; i < n; i++) {
-				for (int r = 0; r < 3; r++) {
-					for (int c = 0; c < 3; c++) {
-						rotation[i][r][c] = b.getFloat();
+				float[] orientation_angle = getFloat(b, NB_NAVDATA_DETECTION_RESULTS);
+
+				// could extend Bytebuffer to read matrix types
+				float[][][] rotation = new float[NB_NAVDATA_DETECTION_RESULTS][3][3];
+				for (int i = 0; i < NB_NAVDATA_DETECTION_RESULTS; i++) {
+					for (int r = 0; r < 3; r++) {
+						for (int c = 0; c < 3; c++) {
+							rotation[i][r][c] = b.getFloat();
+						}
 					}
 				}
-			}
 
-			// could extend Bytebuffer to read vector types
-			float[][] translation = new float[n][3];
-			for (int i = 0; i < n; i++) {
-				for (int r = 0; r < 3; r++) {
-					translation[i][r] = b.getFloat();
+				// could extend Bytebuffer to read vector types
+				float[][] translation = new float[NB_NAVDATA_DETECTION_RESULTS][3];
+				for (int i = 0; i < NB_NAVDATA_DETECTION_RESULTS; i++) {
+					for (int r = 0; r < 3; r++) {
+						translation[i][r] = b.getFloat();
+					}
 				}
+
+				// assumption: values are well below Integer.MAX_VALUE, so sign is
+				// no
+				// issue
+				int camera_source[] = getInt(b, NB_NAVDATA_DETECTION_RESULTS);
+
+				ArrayList<VisionTag> tags = new ArrayList<VisionTag>(ndetected);
+				for (int i = 0; i < ndetected; i++) {
+					// TODO: does this also contain a mask if not multiple detect?
+					VisionTag tag = new VisionTag(type[i], xc[i], yc[i], width[i], height[i],
+							dist[i], orientation_angle[i], rotation[i], translation[i], DetectionType.fromInt(camera_source[i]));
+					tags.add(tag);
+				}
+
+				visionListener.tagsDetected(tags);
 			}
-
-			// assumption: values are well below Integer.MAX_VALUE, so sign is
-			// no
-			// issue
-			int camera_source[] = getInt(b, n);
-
-			ArrayList<VisionTag> tags = new ArrayList<VisionTag>(n);
-			for (int i = 0; i < n; i++) {
-				VisionTag tag = new VisionTag(VisionTagType.fromInt(type[i]), xc[i], yc[i], width[i], height[i],
-						dist[i], orientation_angle[i], rotation[i], translation[i], camera_source[i]);
-				tags.add(tag);
-			}
-
-			visionListener.tagsDetected(tags);
 		}
 	}
 

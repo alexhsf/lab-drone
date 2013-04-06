@@ -2,10 +2,12 @@ package com.shigeodayo.ardrone.navdata;
 
 import java.util.Arrays;
 
+import com.shigeodayo.ardrone.command.DetectionType;
+
 public class VisionTag {
 
 	// Type of the detected tag #i ; see the CAD_TYPE enumeration.
-	private VisionTagType type;
+	private int type;
 
 	/**
 	 * X and Y coordinates of detected 2D-tag #i inside the picture, with (0, 0)
@@ -31,10 +33,10 @@ public class VisionTag {
 	float orientationAngle;
 	float[][] rotation;
 	float[] translation;
-	int cameraSource;
+	DetectionType source;
 
-	public VisionTag(VisionTagType type, int x, int y, int width, int height, int distance, float orientation_angle,
-			float[][] rotation, float[] translation, int camera_source) {
+	public VisionTag(int type, int x, int y, int width, int height, int distance, float orientation_angle,
+			float[][] rotation, float[] translation, DetectionType source) {
 		super();
 		this.type = type;
 		this.x = x;
@@ -45,10 +47,10 @@ public class VisionTag {
 		this.orientationAngle = orientation_angle;
 		this.rotation = rotation;
 		this.translation = translation;
-		this.cameraSource = camera_source;
+		this.source = source;
 	}
 
-	public VisionTagType getType() {
+	public int getType() {
 		return type;
 	}
 
@@ -96,8 +98,8 @@ public class VisionTag {
 	/**
 	 * @return the camera_source
 	 */
-	public int getCameraSource() {
-		return cameraSource;
+	public DetectionType getSource() {
+		return source;
 	}
 
 	/* (non-Javadoc)
@@ -125,7 +127,7 @@ public class VisionTag {
 		builder.append(", translation=");
 		builder.append(Arrays.toString(translation));
 		builder.append(", cameraSource=");
-		builder.append(cameraSource);
+		builder.append(source);
 		builder.append("]");
 		return builder.toString();
 	}
