@@ -2,6 +2,8 @@ package com.example.jsonreading;
 
 import java.util.List;
 
+import com.shigeodayo.ardrone.command.DroneCommand;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -33,6 +35,7 @@ public class MainActivity extends Activity {
 		StringBuilder text = new StringBuilder();
 		for (DroneCommand command : flightPlan) {
 			text.append(command.toString());
+			text.append("\n");
 		}
 		return text.toString();
 	}
