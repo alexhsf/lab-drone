@@ -9,12 +9,12 @@ import com.shigeodayo.ardrone.command.CommandManager;
 
 public class DroneSchedulingCommand {
 	
-	private List<ATCommand> mDroneCommands;
+	private ATCommand mCommand;
 	private int mDuration;
 	private int mRepetitions;
 	
-	DroneSchedulingCommand(List<ATCommand> droneCommands, int duration, int repetitions) {
-		this.mDroneCommands = droneCommands;
+	DroneSchedulingCommand(ATCommand command, int duration, int repetitions) {
+		this.mCommand = command;
 		this.mDuration = duration;
 		this.mRepetitions = repetitions;
 	}
@@ -22,11 +22,8 @@ public class DroneSchedulingCommand {
 	public void execute(CommandManager commandManager) throws InterruptedException {
 		int repetitions = mRepetitions > 0 ? mRepetitions : 1;
 		for (int i = 0; i < repetitions; i++) {
-			for (ATCommand command : mDroneCommands)
-			{
-				Log.d("FlyRoute", command.toString());
-				commandManager.setCommand(command);
-			}
+			Log.d("FlyRoute", mCommand.toString());
+			commandManager.setCommand(mCommand);
 			Thread.sleep(mDuration/repetitions);
 		}
 	}

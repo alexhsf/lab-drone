@@ -1,16 +1,16 @@
 package de.yadrone.android;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
+import com.shigeodayo.ardrone.command.ControlMode;
 import com.shigeodayo.ardrone.command.ATCommand;
 import com.shigeodayo.ardrone.command.ConfigureCommand;
 import com.shigeodayo.ardrone.command.ControlCommand;
-import com.shigeodayo.ardrone.command.ATCommand;
 import com.shigeodayo.ardrone.command.EmergencyCommand;
 import com.shigeodayo.ardrone.command.FlatTrimCommand;
 import com.shigeodayo.ardrone.command.FlightAnimation;
@@ -41,109 +41,114 @@ import com.shigeodayo.ardrone.command.VisionParametersCommand;
 public class DroneSchedulingCommandFactory {
 	static DroneSchedulingCommand getDroneSchedulingCommand(String key, Object value)
 	{
-		DroneSchedulingCommand command = null;
+		DroneSchedulingCommand schedulingCommand = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
+			ATCommand command = null;
 			int duration = parameters.optInt("Duration", 0);
 			int repetitions = parameters.optInt("Repetitions", 1);
 			try {
 				Object commandValues = parameters.optJSONObject(key);
 				if (key.equals("Configure"))
 				{
-					command = getConfigureCommand(commandValues, duration, repetitions);
+					command = getConfigureCommand(commandValues);
 				}
 				else if (key.equals("Control"))
 				{
-					command = getControlCommand(commandValues, duration, repetitions);
+					command = getControlCommand(commandValues);
 				}
 				else if (key.equals("Emergency"))
 				{
-					command = getEmergencyCommand(commandValues, duration, repetitions);
+					command = getEmergencyCommand(commandValues);
 				}
 				else if (key.equals("FlatTrim"))
 				{
-					command = getFlatTrimCommand(commandValues, duration, repetitions);
+					command = getFlatTrimCommand(commandValues);
 				}
 				else if (key.equals("FlightAnimation"))
 				{
-					command = getFlightAnimationCommand(commandValues, duration, repetitions);
+					command = getFlightAnimationCommand(commandValues);
 				}
 				else if (key.equals("Gains"))
 				{
-					command = getGainsCommand(commandValues, duration, repetitions);
+					command = getGainsCommand(commandValues);
 				}
 				else if (key.equals("Hover"))
 				{
-					command = getHoverCommand(commandValues, duration, repetitions);
+					command = getHoverCommand(commandValues);
 				}
 				else if (key.equals("KeepAlive"))
 				{
-					command = getKeepAliveCommand(commandValues, duration, repetitions);
+					command = getKeepAliveCommand(commandValues);
 				}
 				else if (key.equals("Land"))
 				{
-					command = getLandCommand(commandValues, duration, repetitions);
+					command = getLandCommand(commandValues);
 				}
 				else if (key.equals("LEDAnimation"))
 				{
-					command = getLEDAnimationCommand(commandValues, duration, repetitions);
+					command = getLEDAnimationCommand(commandValues);
 				}
 				else if (key.equals("ManualTrim"))
 				{
-					command = getManualTrimCommand(commandValues, duration, repetitions);
+					command = getManualTrimCommand(commandValues);
 				}
 				else if (key.equals("Misc"))
 				{
-					command = getMiscCommand(commandValues, duration, repetitions);
+					command = getMiscCommand(commandValues);
 				}
 				else if (key.equals("Move"))
 				{
-					command = getMoveCommand(commandValues, duration, repetitions);
+					command = getMoveCommand(commandValues);
 				}
 				else if (key.equals("PCMD"))
 				{
-					command = getPCMDCommand(commandValues, duration, repetitions);
+					command = getPCMDCommand(commandValues);
 				}
 				else if (key.equals("PCMDMag"))
 				{
-					command = getPCMDMagCommand(commandValues, duration, repetitions);
+					command = getPCMDMagCommand(commandValues);
 				}
 				else if (key.equals("PlayAnimation"))
 				{
-					command = getPlayAnimationCommand(commandValues, duration, repetitions);
+					command = getPlayAnimationCommand(commandValues);
 				}
 				else if (key.equals("PMODE"))
 				{
-					command = getPMODECommand(commandValues, duration, repetitions);
+					command = getPMODECommand(commandValues);
 				}
 //				else if (key.equals("Quit"))
 //				{
-//					command = getQuitCommand(commandValues, duration, repetitions);
+//					command = getQuitCommand(commandValues);
 //				}
 				else if (key.equals("RawCapture"))
 				{
-					command = getRawCaptureCommand(commandValues, duration, repetitions);
+					command = getRawCaptureCommand(commandValues);
 				}
 				else if (key.equals("Stop"))
 				{
-					command = getStopCommand(commandValues, duration, repetitions);
+					command = getStopCommand(commandValues);
 				}
 				else if (key.equals("TakeOff"))
 				{
-					command = getTakeOffCommand(commandValues, duration, repetitions);
+					command = getTakeOffCommand(commandValues);
 				}
 				else if (key.equals("VideoChannel"))
 				{
-					command = getVideoChannelCommand(commandValues, duration, repetitions);
+					command = getVideoChannelCommand(commandValues);
 				}
 				else if (key.equals("VisionOption"))
 				{
-					command = getVisionOptionCommand(commandValues, duration, repetitions);
+					command = getVisionOptionCommand(commandValues);
 				}
 				else if (key.equals("VisionParameters"))
 				{
-					command = getVisionParametersCommand(commandValues, duration, repetitions);
+					command = getVisionParametersCommand(commandValues);
+				}
+				if (command != null)
+				{
+					schedulingCommand = new DroneSchedulingCommand(command, duration, repetitions);
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -155,57 +160,64 @@ public class DroneSchedulingCommandFactory {
 				e.printStackTrace();
 			}
 		}
-		return command;
+		return schedulingCommand;
 	}
 
-	private static DroneSchedulingCommand getConfigureCommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getConfigureCommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
-			List<ATCommand> commands = new ArrayList<ATCommand>();
-			Iterator<String> keys = parameters.keys();
-			while (keys.hasNext())
+			if (parameters.length() == 1)
 			{
-				String configKey = keys.next();
-				if (configKey.equals("control:control_level") ||
-						configKey.equals("control:flying_mode") ||
-						configKey.equals("control:hovering_range") ||
-						configKey.equals("control:altitude_max") ||
-						configKey.equals("control:altitude_min") ||
-						configKey.equals("control:control_vz_max") ||
-						configKey.equals("control:control_yaw") ||
-						configKey.equals("detect:enemy_colors") ||
-						configKey.equals("detect:detections_select_v") ||
-						configKey.equals("detect:detections_select_h") ||
-						configKey.equals("detect:detections_select_v_hsync") ||
-						configKey.equals("pic:ultrasound_freq") ||
-						configKey.equals("network:wifi_mode")) {
-					int configValue = parameters.getInt(configKey); 
-					commands.add(new ConfigureCommand(configKey, configValue));
-				} 
-				else if (configKey.equals("control:outdoor") ||
-						configKey.equals("control:flight_without_shell") ||
-						configKey.equals("control:autonomous_flight")) {
-					boolean configValue = parameters.getBoolean(configKey);
-					commands.add(new ConfigureCommand(configKey, configValue));
-				}
-				else if (configKey.equals("gps:latitude") ||
-						configKey.equals("gps:longitude") ||
-						configKey.equals("gps:altitude")) {
-					double configValue = parameters.getDouble(configKey);
-					commands.add(new ConfigureCommand(configKey, configValue));
-				}
-				else if (configKey.equals("network:ssid_single_player") ||
-						configKey.equals("network:ssid_multi_player") ||
-						configKey.equals("network:owner_mac") ||
-						configKey.equals("control:control_iphone_tilt") ||	// Float as string!
-						configKey.equals("control:euler_angle_max")) {		// Float as string!
-					String configValue = parameters.getString(configKey);
-					commands.add(new ConfigureCommand(configKey, configValue));
+				Iterator<String> keys = parameters.keys();
+				while (keys.hasNext())
+				{
+					String configKey = keys.next();
+					if (configKey.equals("control:control_level") ||
+							configKey.equals("control:flying_mode") ||
+							configKey.equals("control:hovering_range") ||
+							configKey.equals("control:altitude_max") ||
+							configKey.equals("control:altitude_min") ||
+							configKey.equals("control:control_vz_max") ||
+							configKey.equals("control:control_yaw") ||
+							configKey.equals("detect:enemy_colors") ||
+							configKey.equals("detect:detections_select_v") ||
+							configKey.equals("detect:detections_select_h") ||
+							configKey.equals("detect:detections_select_v_hsync") ||
+							configKey.equals("pic:ultrasound_freq") ||
+							configKey.equals("network:wifi_mode")) {
+						int configValue = parameters.getInt(configKey); 
+						command = new ConfigureCommand(configKey, configValue);
+					} 
+					else if (configKey.equals("control:outdoor") ||
+							configKey.equals("control:flight_without_shell") ||
+							configKey.equals("control:autonomous_flight")) {
+						boolean configValue = parameters.getBoolean(configKey);
+						command = new ConfigureCommand(configKey, configValue);
+					}
+					else if (configKey.equals("gps:latitude") ||
+							configKey.equals("gps:longitude") ||
+							configKey.equals("gps:altitude")) {
+						double configValue = parameters.getDouble(configKey);
+						command = new ConfigureCommand(configKey, configValue);
+					}
+					else if (configKey.equals("network:ssid_single_player") ||
+							configKey.equals("network:ssid_multi_player") ||
+							configKey.equals("network:owner_mac") ||
+							configKey.equals("control:control_iphone_tilt") ||	// Float as string!
+							configKey.equals("control:euler_angle_max")) {		// Float as string!
+						String configValue = parameters.getString(configKey);
+						command = new ConfigureCommand(configKey, configValue);
+					}
 				}
 			}
-			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+			else
+			{
+				Log.e("DroneSchedulingCommandFactory", 
+						String.format("'Configure' json command only supports a single configuration option, found %d options", 
+								parameters.length()));
+			}
 		}
 		// TODO: add support for video recording
 		//SLA EVEN OVER "userbox:userbox_cmd", String.valueOf(UserBox.START.ordinal()) + "," + dirname)
@@ -214,39 +226,69 @@ public class DroneSchedulingCommandFactory {
 		//SLA EVEN OVER "userbox:userbox_cmd", String.valueOf(UserBox.SCREENSHOT.ordinal()) + ","
 		//              + String.valueOf(delay) + "," + String.valueOf(nshots) + "," + dirname
 		
-		return schedulingCommand;
+		return command;
 	}
 	
-	private static DroneSchedulingCommand getControlCommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getControlCommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
-			int arg1 = parameters.getInt("arg1");
-			int arg2 = parameters.getInt("arg2");
-			List<ATCommand> commands = new ArrayList<ATCommand>();
-			commands.add(new ControlCommand(arg1, arg2));
-			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+			String mode = parameters.getString("mode");
+			ControlMode controlMode = null;
+			if (mode.equals("NONE"))
+			{
+				controlMode = ControlMode.NONE;
+			}
+			else if (mode.equals("ARDRONE_UPDATE"))
+			{
+				controlMode = ControlMode.ARDRONE_UPDATE;
+			}
+			else if (mode.equals("PIC_UPDATE"))
+			{
+				controlMode = ControlMode.PIC_UPDATE;
+			}
+			else if (mode.equals("LOGS_GET"))
+			{
+				controlMode = ControlMode.LOGS_GET;
+			}
+			else if (mode.equals("LOGS_GET"))
+			{
+				controlMode = ControlMode.LOGS_GET;
+			}
+			else if (mode.equals("CFG_GET"))
+			{
+				controlMode = ControlMode.CFG_GET;
+			}
+			else if (mode.equals("ACK"))
+			{
+				controlMode = ControlMode.ACK;
+			}
+			else if (mode.equals("CUSTOM_CFG_GET"))
+			{
+				controlMode = ControlMode.CUSTOM_CFG_GET;
+			}
+			if (controlMode != null)
+			{
+				int arg2 = parameters.getInt("arg2");
+				command = new ControlCommand(controlMode, arg2);
+			}
 		}
-		return schedulingCommand;
+		return command;
 	}
 
-	private static DroneSchedulingCommand getEmergencyCommand(Object value, int duration, int repetitions) {
-		List<ATCommand> commands = new ArrayList<ATCommand>();
-		commands.add(new EmergencyCommand());
-		return new DroneSchedulingCommand(commands, duration, repetitions);
+	private static ATCommand getEmergencyCommand(Object value) {
+		return new EmergencyCommand();
 	}
 
-	private static DroneSchedulingCommand getFlatTrimCommand(Object value, int duration, int repetitions) {
-		List<ATCommand> commands = new ArrayList<ATCommand>();
-		commands.add(new FlatTrimCommand());
-		return new DroneSchedulingCommand(commands, duration, repetitions);
+	private static ATCommand getFlatTrimCommand(Object value) {
+		return new FlatTrimCommand();
 	}
 
-	private static DroneSchedulingCommand getFlightAnimationCommand(Object value, int duration, int repetitions) 
+	private static ATCommand getFlightAnimationCommand(Object value) 
 			throws JSONException, InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
-		DroneSchedulingCommand schedulingCommand = null;
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
@@ -336,16 +378,14 @@ public class DroneSchedulingCommandFactory {
 			}
 			if  (anim != null)
 			{
-				List<ATCommand> commands = new ArrayList<ATCommand>();
-				commands.add(new FlightAnimationCommand(anim, animationDuration));
-				schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+				command = new FlightAnimationCommand(anim, animationDuration);
 			}
 		}
-		return schedulingCommand;
+		return command;
 	}
 
-	private static DroneSchedulingCommand getGainsCommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getGainsCommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
@@ -362,34 +402,26 @@ public class DroneSchedulingCommandFactory {
 			int hovering_ki = parameters.getInt("hovering_ki");
 			int hovering_b_kp = parameters.getInt("hovering_b_kp");
 			int hovering_b_ki = parameters.getInt("hovering_b_ki");
-			List<ATCommand> commands = new ArrayList<ATCommand>();
-			commands.add(new GainsCommand(pq_kp, r_kp, r_ki, ea_kp, ea_ki, alt_kp, alt_ki,
-					vz_kp, vz_ki, hovering_kp, hovering_ki, hovering_b_kp, hovering_b_ki));
-			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+			command = new GainsCommand(pq_kp, r_kp, r_ki, ea_kp, ea_ki, alt_kp, alt_ki,
+					vz_kp, vz_ki, hovering_kp, hovering_ki, hovering_b_kp, hovering_b_ki);
 		}
-		return schedulingCommand;
+		return command;
 	}
 
-	private static DroneSchedulingCommand getHoverCommand(Object value, int duration, int repetitions) {
-		List<ATCommand> commands = new ArrayList<ATCommand>();
-		commands.add(new HoverCommand());
-		return new DroneSchedulingCommand(commands, duration, repetitions);
+	private static ATCommand getHoverCommand(Object value) {
+		return new HoverCommand();
 	}
 
-	private static DroneSchedulingCommand getKeepAliveCommand(Object value, int duration, int repetitions) {
-		List<ATCommand> commands = new ArrayList<ATCommand>();
-		commands.add(new KeepAliveCommand());
-		return new DroneSchedulingCommand(commands, duration, repetitions);
+	private static ATCommand getKeepAliveCommand(Object value) {
+		return new KeepAliveCommand();
 	}
 
-	private static DroneSchedulingCommand getLandCommand(Object value, int duration, int repetitions) {
-		List<ATCommand> commands = new ArrayList<ATCommand>();
-		commands.add(new LandCommand());
-		return new DroneSchedulingCommand(commands, duration, repetitions);
+	private static ATCommand getLandCommand(Object value) {
+		return new LandCommand();
 	}
 
-	private static DroneSchedulingCommand getLEDAnimationCommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getLEDAnimationCommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
@@ -484,31 +516,27 @@ public class DroneSchedulingCommandFactory {
 			}
 			if  (anim != null)
 			{
-				List<ATCommand> commands = new ArrayList<ATCommand>();
-				commands.add(new LEDAnimationCommand(anim, frequency, animationDuration));
-				schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+				command = new LEDAnimationCommand(anim, frequency, animationDuration);
 			}
 		}
-		return schedulingCommand;
+		return command;
 	}
 
-	private static DroneSchedulingCommand getManualTrimCommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getManualTrimCommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
 			float pitch = (float) parameters.getDouble("pitch");
 			float roll = (float) parameters.getDouble("roll");
 			float yaw = (float) parameters.getDouble("yaw");
-			List<ATCommand> commands = new ArrayList<ATCommand>();
-			commands.add(new ManualTrimCommand(pitch, roll, yaw)); 
-			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+			command = new ManualTrimCommand(pitch, roll, yaw); 
 		}
-		return schedulingCommand;
+		return command;
 	}
 
-	private static DroneSchedulingCommand getMiscCommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getMiscCommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
@@ -516,15 +544,13 @@ public class DroneSchedulingCommandFactory {
 			int p2 = parameters.getInt("p2");
 			int p3 = parameters.getInt("p3");
 			int p4 = parameters.getInt("p4");
-			List<ATCommand> commands = new ArrayList<ATCommand>();
-			commands.add(new MiscCommand(p1, p2, p3, p4)); 
-			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+			command = new MiscCommand(p1, p2, p3, p4); 
 		}
-		return schedulingCommand;
+		return command;
 	}
 
-	private static DroneSchedulingCommand getMoveCommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getMoveCommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
@@ -533,16 +559,14 @@ public class DroneSchedulingCommandFactory {
 			float front_back_tilt = (float)parameters.getDouble("front_back_tilt");
 			float vertical_speed = (float)parameters.getDouble("vertical_speed");
 			float angular_speed = (float)parameters.getDouble("angular_speed");
-			List<ATCommand> commands = new ArrayList<ATCommand>();
-			commands.add(new MoveCommand(combined_yaw_enabled, 
-					left_right_tilt, front_back_tilt, vertical_speed, angular_speed)); 
-			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+			command = new MoveCommand(combined_yaw_enabled, 
+					left_right_tilt, front_back_tilt, vertical_speed, angular_speed);
 		}
-		return schedulingCommand;
+		return command;
 	}
 
-	private static DroneSchedulingCommand getPCMDCommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getPCMDCommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
@@ -552,16 +576,14 @@ public class DroneSchedulingCommandFactory {
 			float front_back_tilt = (float)parameters.getDouble("front_back_tilt");
 			float vertical_speed = (float)parameters.getDouble("vertical_speed");
 			float angular_speed = (float)parameters.getDouble("angular_speed");
-			List<ATCommand> commands = new ArrayList<ATCommand>();
-			commands.add(new PCMDCommand(hover, combined_yaw_enabled, 
-					left_right_tilt, front_back_tilt, vertical_speed, angular_speed)); 
-			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+			command = new PCMDCommand(hover, combined_yaw_enabled, 
+					left_right_tilt, front_back_tilt, vertical_speed, angular_speed); 
 		}
-		return schedulingCommand;
+		return command;
 	}
 
-	private static DroneSchedulingCommand getPCMDMagCommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getPCMDMagCommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
@@ -574,76 +596,62 @@ public class DroneSchedulingCommandFactory {
 			float angular_speed = (float)parameters.getDouble("angular_speed");
 			float magneto_psi = (float)parameters.getDouble("magneto_psi");
 			float magneto_psi_accuracy = (float)parameters.getDouble("magneto_psi_accuracy");
-			List<ATCommand> commands = new ArrayList<ATCommand>();
-			commands.add(new PCMDMagCommand(hover, combined_yaw_enabled, absolute_control, 
+			command = new PCMDMagCommand(hover, combined_yaw_enabled, absolute_control, 
 					left_right_tilt, front_back_tilt, vertical_speed, angular_speed, 
-					magneto_psi, magneto_psi_accuracy));
-			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+					magneto_psi, magneto_psi_accuracy);
 		}
-		return schedulingCommand;
+		return command;
 	}
 
-	private static DroneSchedulingCommand getPlayAnimationCommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getPlayAnimationCommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
 			int animation_no = parameters.getInt("animation_no");
 			int animationDuration = parameters.getInt("duration");
-			List<ATCommand> commands = new ArrayList<ATCommand>();
-			commands.add(new PlayAnimationCommand(animation_no, animationDuration));
-			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+			command = new PlayAnimationCommand(animation_no, animationDuration);
 		}
-		return schedulingCommand;
+		return command;
 	}
 
-	private static DroneSchedulingCommand getPMODECommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getPMODECommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
 			int mode = parameters.getInt("mode");
-			List<ATCommand> commands = new ArrayList<ATCommand>();
-			commands.add(new PMODECommand(mode));
-			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+			command = new PMODECommand(mode);
 		}
-		return schedulingCommand;
+		return command;
 	}
 
-//	private static DroneSchedulingCommand getQuitCommand(Object value, int duration, int repetitions) {
-//		List<ATCommand> commands = new ArrayList<ATCommand>();
-//		commands.add(new QuitCommand());
-//		return new DroneSchedulingCommand(commands, duration, repetitions);
+//	private static ATCommand getQuitCommand(Object value) {
+//		return new QuitCommand();
 //	}
 
-	private static DroneSchedulingCommand getRawCaptureCommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getRawCaptureCommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
 			boolean picture = parameters.getBoolean("picture");
 			boolean video = parameters.getBoolean("video");
-			List<ATCommand> commands = new ArrayList<ATCommand>();
-			commands.add(new RawCaptureCommand(picture, video));
-			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+			command = new RawCaptureCommand(picture, video);
 		}
-		return schedulingCommand;
+		return command;
 	}
 
-	private static DroneSchedulingCommand getStopCommand(Object value, int duration, int repetitions) {
-		List<ATCommand> commands = new ArrayList<ATCommand>();
-		commands.add(new StopCommand());
-		return new DroneSchedulingCommand(commands, duration, repetitions);
+	private static ATCommand getStopCommand(Object value) {
+		return new StopCommand();
 	}
 
-	private static DroneSchedulingCommand getTakeOffCommand(Object value, int duration, int repetitions) {
-		List<ATCommand> commands = new ArrayList<ATCommand>();
-		commands.add(new TakeOffCommand());
-		return new DroneSchedulingCommand(commands, duration, repetitions);
+	private static ATCommand getTakeOffCommand(Object value) {
+		return new TakeOffCommand();
 	}
 
-	private static DroneSchedulingCommand getVideoChannelCommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getVideoChannelCommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
@@ -672,29 +680,25 @@ public class DroneSchedulingCommandFactory {
 			}
 			if (channel != null)
 			{
-				List<ATCommand> commands = new ArrayList<ATCommand>();
-				commands.add(new VideoChannelCommand(videoChannel));
-				schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+				command = new VideoChannelCommand(videoChannel);
 			}
 		}
-		return schedulingCommand;
+		return command;
 	}
 
-	private static DroneSchedulingCommand getVisionOptionCommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getVisionOptionCommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
 			int option = parameters.getInt("option");
-			List<ATCommand> commands = new ArrayList<ATCommand>();
-			commands.add(new VisionOptionCommand(option));
-			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+			command = new VisionOptionCommand(option);
 		}
-		return schedulingCommand;
+		return command;
 	}
 
-	private static DroneSchedulingCommand getVisionParametersCommand(Object value, int duration, int repetitions) throws JSONException {
-		DroneSchedulingCommand schedulingCommand = null;
+	private static ATCommand getVisionParametersCommand(Object value) throws JSONException {
+		ATCommand command = null;
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
@@ -707,11 +711,9 @@ public class DroneSchedulingCommandFactory {
 			int trans_max = parameters.getInt("trans_max");
 			int max_pair_dist = parameters.getInt("max_pair_dist");
 			int noise = parameters.getInt("noise");
-			List<ATCommand> commands = new ArrayList<ATCommand>();
-			commands.add(new VisionParametersCommand(coarse_scale, nb_pair, loss_per, nb_tracker_width,
-					nb_tracker_height, scale, trans_max, max_pair_dist, noise));
-			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
+			command = new VisionParametersCommand(coarse_scale, nb_pair, loss_per, nb_tracker_width,
+					nb_tracker_height, scale, trans_max, max_pair_dist, noise);
 		}
-		return schedulingCommand;
+		return command;
 	}
 }
