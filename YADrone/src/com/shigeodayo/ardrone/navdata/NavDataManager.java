@@ -228,11 +228,13 @@ public class NavDataManager extends AbstractManager {
 				// according to 7.1.2. of the ARDrone Developpper Guide demo
 				// mode must be set after exiting bootstrap mode
 				// TODO can we receive multiple bootstrap packets?
-				if (bootstrapping && s.isNavDataBootstrap()) {
-					// presumably iso setting the demo option we can ask for the options we want here
-					manager.setNavDataDemo(false);
-					manager.setNavDataOptions(mask);
-					maskChanged = false;
+				if (bootstrapping) {
+					if (s.isNavDataBootstrap()) {
+						// presumably iso setting the demo option we can ask for the options we want here
+						manager.setNavDataDemo(false);
+						manager.setNavDataOptions(mask);
+						maskChanged = false;
+					}
 					bootstrapping = false;
 				}
 
@@ -677,8 +679,8 @@ public class NavDataManager extends AbstractManager {
 			float time_update = b.getFloat();
 			float[] time_custom = getFloat(b, NAVDATA_MAX_CUSTOM_TIME_SAVE);
 
-			VisionPerformance d = new VisionPerformance(time_szo, time_corners, time_compute, time_tracking, time_trans,
-					time_update, time_custom);
+			VisionPerformance d = new VisionPerformance(time_szo, time_corners, time_compute, time_tracking,
+					time_trans, time_update, time_custom);
 			visionListener.receivedPerformanceData(d);
 		}
 	}

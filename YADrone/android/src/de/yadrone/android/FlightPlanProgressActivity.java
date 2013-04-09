@@ -1,34 +1,21 @@
 package de.yadrone.android;
 
-//import java.io.BufferedInputStream;
-//import java.io.File;
-//import java.io.FileInputStream;
-//import java.io.FileNotFoundException;
-//import java.io.IOException;
-//import java.io.InputStream;
-//import java.io.InputStreamReader;
-import java.util.ArrayList;
-//import java.util.Collection;
-//import java.util.Iterator;
 import java.util.List;
-//import java.util.ListIterator;
-
-//import org.json.JSONArray;
-//import org.json.JSONException;
-//import org.json.JSONObject;
-//import org.json.JSONTokener;
 
 import com.shigeodayo.ardrone.ARDrone;
-import com.shigeodayo.ardrone.command.DroneCommand;
+import com.shigeodayo.ardrone.navdata.NavDataManager;
+import com.shigeodayo.ardrone.navdata.VelocityListener;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 public class FlightPlanProgressActivity extends BaseActivity {
 
 	private String mFlightPlanUri;
-	private DroneCommandScheduler mScheduler;
+//	private DroneCommandScheduler mScheduler;
 	private List<DroneSchedulingCommand> mFlightPlan;
+	private Thread mThread;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,20 +25,35 @@ public class FlightPlanProgressActivity extends BaseActivity {
 		// Get the flight plan from the intent
 		Intent intent = getIntent();
 		mFlightPlanUri = intent.getStringExtra(FlightPlanActivity.FLIGHTPLAN_URI);
-
-//    	YADroneApplication app = (YADroneApplication)getApplication();
-//    	final ARDrone drone = app.getARDrone();
-//		mScheduler = new DroneCommandScheduler(drone);
-		
 		LoadFlightPlan();
-//		new Thread() {
-//			public void run() {
-//				FlyRoute();
-//			}
-//		}.start();
+		
+		// TODO: start threat in onResumed and stop thread in onPaused?
+		mThread = new Thread() {
+			public void run() {
+				FlyRoute();
+			}
+		};
+	}
+	
+
+    @SuppressWarnings("deprecation")
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		mThread.interrupt();
 	}
 
-    private void LoadFlightPlan() {
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		mThread.start();
+	}
+
+
+	private void LoadFlightPlan() {
 //    	mDroneCommands = new ArrayList<DroneCommand>();
 //    	mDroneCommands.add(new DroneCommandMove(mScheduler, 2000,    0, 0,  0, 10000));
 //    	mDroneCommands.add(new DroneCommandMove(mScheduler, 1000,    0, 0, 90, 1000));
@@ -62,17 +64,29 @@ public class FlightPlanProgressActivity extends BaseActivity {
     	mFlightPlan = jsonParser.getFlightPlan(jsonFlightPLan);
     }
 
-//	private void FlyRoute() {
-//	YADroneApplication app = (YADroneApplication)getApplication();
-//	final ARDrone drone = app.getARDrone();
-//	drone.takeOff();
-//
-//	for (DroneSchedulingCommand command : mDroneCommands) {
-//		command.execute();
-//	}
-//	
-//	drone.landing();
-//}
+	private void FlyRoute() {
+		YADroneApplication app = (YADroneApplication)getApplication();
+		final ARDrone drone = app.getARDrone();
+		NavDataManager nd = drone.getNavDataManager();
+		nd.setVelocityListener(new VelocityListener() {
+			
+			@Override
+			public void velocityChanged(float vx, float vy, float vz) {
+				System.out.println("Velocity vx:" + vx + " vy:" + vy + "vz: " + vz);
+				
+			}
+		});
+	
+		for (DroneSchedulingCommand command : mFlightPlan) {
+			try {
+				Log.d("FlyRoute", command.toString());
+				command.execute(drone.getCommandManager());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				break;
+			}
+		}
+	}
 
 
 	// public boolean onCreateOptionsMenu(Menu menu)

@@ -20,7 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
-        android:text="@string/take_off_spin_and_land" />
+        android:text="@string/take_off_spin_and_land"
+        android:onClick="onButtonClick" />
 
     <Button
         android:id="@+id/buttonTakeOffFly2MetersLand"
@@ -28,7 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
-        android:text="@string/take_off_fly_2_meter_and_land" />
+        android:text="@string/take_off_fly_2_meter_and_land"
+        android:onClick="onButtonClick" />
 
     <Button
         android:id="@+id/buttonTakeOffFly2mSpinFlyBackLand"
@@ -36,6 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
-        android:text="@string/take_off_fly_2m_spin_fly_back_and_land" />
+        android:text="@string/take_off_fly_2m_spin_fly_back_and_land"
+        android:onClick="onButtonClick" />
 
 </LinearLayout>

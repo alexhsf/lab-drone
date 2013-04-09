@@ -106,7 +106,7 @@ public class MainActivity extends BaseActivity implements StateListener, VisionL
 
 		double maxAltitude = Double.parseDouble(sharedPrefs.getString("pref_altitude", "3"));
 		text.append(String.format("Set max. Altitude to %1$f m\n", maxAltitude));
-		drone.setMaxAltitude(1500);
+		drone.setMaxAltitude(2200);
 
 		double maxVerticalSpeed = Double.parseDouble(sharedPrefs.getString("pref_vertical_speed", "1"));
 		text.append(String.format("Set max. verticalspeed to %1$f m/s\n", maxVerticalSpeed));
