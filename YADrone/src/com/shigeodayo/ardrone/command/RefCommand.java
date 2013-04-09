@@ -34,7 +34,7 @@ public class RefCommand extends ATCommand {
 	}
 
 	@Override
-	public Priority getPriority() {
-		return Priority.HIGH_PRIORITY;
+	public byte getPriority() {
+		return HIGH_PRIORITY;
 	}
 }

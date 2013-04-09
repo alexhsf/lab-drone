@@ -6,14 +6,12 @@ public class ResetControlAckCommand extends ControlCommand {
 		super(ControlMode.ACK, 0);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/* (non-Javadoc)
 	 * @see com.shigeodayo.ardrone.command.ATCommand#getPriority()
 	 */
 	@Override
-	public Priority getPriority() {
-		return Priority.MAX_PRIORITY;
+	public byte getPriority() {
+		return MAX_PRIORITY;
 	}
 
 }

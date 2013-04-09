@@ -6,7 +6,7 @@ public class EmergencyCommand extends RefCommand {
 	}
 	
 	@Override
-	public Priority getPriority() {
-		return Priority.MAX_PRIORITY;
+	public byte getPriority() {
+		return MAX_PRIORITY;
 	}
 }
