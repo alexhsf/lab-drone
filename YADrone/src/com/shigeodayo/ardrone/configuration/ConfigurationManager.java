@@ -27,6 +27,7 @@ import android.util.Log;
 
 import com.shigeodayo.ardrone.command.CommandManager;
 import com.shigeodayo.ardrone.command.ControlCommand;
+import com.shigeodayo.ardrone.command.ControlMode;
 import com.shigeodayo.ardrone.manager.AbstractTCPManager;
 import com.shigeodayo.ardrone.utils.ARDroneUtils;
 
@@ -45,11 +46,10 @@ public class ConfigurationManager extends AbstractTCPManager {
 	public void run() {
 	}
 
-	private String getControlCommandResult(int p1, int p2) {
+	private String getControlCommandResult(ControlMode p1, int p2) {
 		try {
 			// TODO better have connect throw IOException if connection fails
 			// this allows to call close only when connect succeeded
-			connect(ARDroneUtils.CONTROL_PORT);
 
 			manager.setCommand(new ControlCommand(p1, p2));
 
@@ -79,25 +79,23 @@ public class ConfigurationManager extends AbstractTCPManager {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			close();
 		}
 		return "";
 
 	}
-	
+
 	public String getCustomCofigurationIds() {
-		String s = getControlCommandResult(6,0);
+		String s = getControlCommandResult(ControlMode.CUSTOM_CFG_GET, 0);
 		return s;
 	}
 
 	public String getPreviousRunLogs() {
-		String s = getControlCommandResult(3,0);
+		String s = getControlCommandResult(ControlMode.LOGS_GET, 0);
 		return s;
 	}
 
 	public String getConfiguration() {
-		String s = getControlCommandResult(4,0);
+		String s = getControlCommandResult(ControlMode.CFG_GET, 0);
 		return s;
 	}
 

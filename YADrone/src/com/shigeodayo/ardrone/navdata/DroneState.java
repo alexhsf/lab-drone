@@ -202,7 +202,7 @@ public class DroneState {
 	    sb.append("controlAlgo: " + getControlAlgorithm() + "\n");
 	    sb.append("AltitudeControlActive: " + isAltitudeControlActive() + "\n");
 	    sb.append("isUserFeedbackOn: " + isUserFeedbackOn() + "\n");
-	    sb.append("ControlReceived: " + isVideoEnabled() + "\n");
+	    sb.append("ControlReceived: " + isControlReceived() + "\n");
 	    if (VERSION == ARDRONE20) {
 	        sb.append("isCameraReady: " + isCameraReady() + "\n");
 	        sb.append("isTravellingMask: " + isTravellingMask() + "\n");

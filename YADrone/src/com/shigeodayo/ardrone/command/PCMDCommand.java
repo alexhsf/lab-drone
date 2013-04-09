@@ -9,6 +9,12 @@ public class PCMDCommand extends ATCommand {
 	protected float angular_speed;
 	protected int mode;
 
+	/*
+	 * TODO There is a small design flaw in here: PCMD is a generic version of Hover, Stop, and Move so it's fine to
+	 * have hover and combined_yaw_enabled as parameters however, PCMDMag is an extension of PCMD that also allows
+	 * absolute control (for example) Either PCMD should also generalize that concept, or PCMD becomes an abstract
+	 * command that is extended by Stop, Hover and Move
+	 */
 	public PCMDCommand(boolean hover, boolean combined_yaw_enabled, float left_right_tilt, float front_back_tilt,
 			float vertical_speed, float angular_speed) {
 		super();
@@ -37,7 +43,8 @@ public class PCMDCommand extends ATCommand {
 	 */
 	@Override
 	public boolean isSticky() {
-		return left_right_tilt != 0f || front_back_tilt != 0f || vertical_speed != 0f || angular_speed != 0f;
+		return (mode & 1) != 0
+				&& (left_right_tilt != 0f || front_back_tilt != 0f || vertical_speed != 0f || angular_speed != 0f);
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package de.yadrone.android;
 
-import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -15,7 +15,10 @@ import android.view.MenuInflater;
 import android.widget.TextView;
 
 import com.shigeodayo.ardrone.ARDrone;
+import com.shigeodayo.ardrone.command.ATCommand;
 import com.shigeodayo.ardrone.command.CommandManager;
+import com.shigeodayo.ardrone.command.CommandQueue;
+import com.shigeodayo.ardrone.command.ConfigureCommand;
 import com.shigeodayo.ardrone.command.DetectionType;
 import com.shigeodayo.ardrone.command.EnemyColor;
 import com.shigeodayo.ardrone.command.FlyingMode;
@@ -42,14 +45,15 @@ public class MainActivity extends BaseActivity implements VisionListener {
 		final ARDrone drone = app.getARDrone();
 
 		try {
-			text.append("\n\nConnect Drone Controller\n");
-			drone.connect();
-			text.append("Connect Drone Navdata Socket\n");
-			drone.connectNav();
-			// text.append("Connect Drone Video Socket\n");
-			// ardrone.connectVideo();
-			text.append("Start Drone\n");
-			drone.start();
+			text.append("\n\nConnect to Drone\n");
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					drone.connect();
+					drone.start();
+				}
+			}).start();
 
 			CommandManager cmd = drone.getCommandManager();
 
@@ -60,7 +64,7 @@ public class MainActivity extends BaseActivity implements VisionListener {
 			cmd.setEnemyColors(EnemyColor.ORANGE_BLUE);
 			cmd.setDetectionType(DetectionType.HORIZONTAL, new VisionTagType[] { VisionTagType.ORIENTED_ROUNDEL,
 					VisionTagType.BLACK_ROUNDEL, VisionTagType.ROUNDEL, VisionTagType.SHELL_TAG_V2 });
-			//cmd.setDetectionType(DetectionType.VERTICAL, new VisionTagType[] { VisionTagType.SHELL_TAG_V2 });
+			// cmd.setDetectionType(DetectionType.VERTICAL, new VisionTagType[] { VisionTagType.SHELL_TAG_V2 });
 
 			// cmd.setFlyingMode(FlyingMode.HOVER_ON_TOP_OF_ORIENTED_ROUNDEL);
 			cmd.setFlyingMode(FlyingMode.FREE_FLIGHT);
@@ -78,8 +82,8 @@ public class MainActivity extends BaseActivity implements VisionListener {
 					ConfigurationManager cfg = drone.getConfigurationManager();
 					final StringBuilder builder = new StringBuilder();
 					builder.append(cfg.getConfiguration());
-					builder.append(cfg.getPreviousRunLogs());
-					builder.append(cfg.getCustomCofigurationIds());
+					// builder.append(cfg.getPreviousRunLogs());
+					// builder.append(cfg.getCustomCofigurationIds());
 					final String configs = builder.toString();
 					runOnUiThread(new Runnable() {
 						@Override
@@ -99,6 +103,42 @@ public class MainActivity extends BaseActivity implements VisionListener {
 
 	}
 
+	private void test() {
+		final CommandQueue q = new CommandQueue(100);
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				ATCommand c = q.poll();
+				while (c != null) {
+					System.out.println("poll: " + q);
+					System.out.println("poll: " + c);
+					try {
+						c = q.poll(50, TimeUnit.MILLISECONDS);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
+		q.add(new ConfigureCommand("a", false));
+		q.add(new ConfigureCommand("b", true));
+		q.add(new ConfigureCommand("c", 3));
+		q.add(new ConfigureCommand("d", 10));
+		q.add(new ConfigureCommand("e", 0));
+		q.add(new ConfigureCommand("f", 6));
+		q.add(new ConfigureCommand("g", 7));
+		q.add(new ConfigureCommand("h", 8));
+		q.add(new ConfigureCommand("i", "9"));
+		q.add(new ConfigureCommand("j", "10"));
+		q.add(new ConfigureCommand("k", "11"));
+		q.add(new ConfigureCommand("l", "12"));
+		q.add(new ConfigureCommand("m", "13"));
+		q.add(new ConfigureCommand("n", "14"));
+		q.add(new ConfigureCommand("o", "15"));
+		q.add(new ConfigureCommand("p", "16"));
+	}
+
 	private String configureDrone(ARDrone drone) {
 		StringBuilder text = new StringBuilder();
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -109,7 +149,8 @@ public class MainActivity extends BaseActivity implements VisionListener {
 
 		double maxAltitude = Double.parseDouble(sharedPrefs.getString("pref_altitude", "3"));
 		text.append(String.format("Set max. Altitude to %1$f m\n", maxAltitude));
-		drone.setMaxAltitude(2000);
+		drone.setMaxAltitude(2500);
+		drone.setMinAltitude(1000);
 
 		double maxVerticalSpeed = Double.parseDouble(sharedPrefs.getString("pref_vertical_speed", "1"));
 		text.append(String.format("Set max. verticalspeed to %1$f m/s\n", maxVerticalSpeed));
@@ -168,9 +209,10 @@ public class MainActivity extends BaseActivity implements VisionListener {
 	}
 
 	@Override
-	public void tagsDetected(ArrayList<VisionTag> list) {
-		if (list.size() > 0) {
-			System.out.println("tagsDetected: " + list);
+	public void tagsDetected(VisionTag[] tags) {
+		System.out.println("tagsDetected: ");
+		for (int n = 0; n < tags.length; n++) {
+			System.out.println("tagsDetected: " + tags[n]);
 		}
 	}
 
@@ -201,7 +243,7 @@ public class MainActivity extends BaseActivity implements VisionListener {
 
 	@Override
 	public void typeDetected(int type) {
-		System.out.println("type detected: " + type);		
+		System.out.println("type detected: " + type);
 	}
 
 }

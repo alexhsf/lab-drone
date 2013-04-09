@@ -5,7 +5,4 @@ public class TakeOffCommand extends RefCommand {
 		super(true, false);
 	}
 
-	public String getCategory() {
-		return LAND_TAKEOFF_CATEGORY;
-	}
 }

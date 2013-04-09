@@ -20,7 +20,7 @@ package com.shigeodayo.ardrone.command;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import com.shigeodayo.ardrone.manager.AbstractManager;
 import com.shigeodayo.ardrone.navdata.CadType;
@@ -28,7 +28,7 @@ import com.shigeodayo.ardrone.utils.ARDroneUtils;
 
 public class CommandManager extends AbstractManager {
 
-	private PriorityBlockingQueue<ATCommand> q;
+	private CommandQueue q;
 
 	private static int seq = 1;
 
@@ -200,8 +200,8 @@ public class CommandManager extends AbstractManager {
 	 * NOTE: You should NEVER enable one detection on two different cameras.
 	 */
 	public void setDetectionType(CadType type) {
-		// TODO: push VisionCadType into special ConfigureCommand 
-		int t = type.ordinal(); 
+		// TODO: push VisionCadType into special ConfigureCommand
+		int t = type.ordinal();
 		q.add(new ConfigureCommand("detect:detect_type", t));
 	}
 
@@ -255,10 +255,6 @@ public class CommandManager extends AbstractManager {
 
 	public void setHoveringRange(int range) {
 		q.add(new ConfigureCommand("control:hovering_range", range));
-	}
-
-	public void sendControlAck() {
-		q.add(new ControlCommand(5, 0));
 	}
 
 	public void setMaxEulerAngle(float angle) {
@@ -394,23 +390,60 @@ public class CommandManager extends AbstractManager {
 		q.add(new PMODECommand(mode));
 	}
 
+	/**
+	 * Some assumptions:
+	 * <ul>
+	 * <li>sticky commands do not need confirmation
+	 * <li>there can be only one sticky command active
+	 * <li>one sticky command replaced the previous one by definition
+	 * <li>sticky commands do not need acknowledgement
+	 * </ul>
+	 */
 	@Override
 	public void run() {
 		ATCommand c;
+		ATCommand cs = null;
+		final ATCommand cAck = new ResetControlAckCommand();
+		final ATCommand cAlive = new KeepAliveCommand();
+		long t0 = 0;
 		while (!doStop) {
 			try {
-				c = q.take();
-				if (c.isSticky()) {
-					if (c.getStickyCounter() > 0) {
-						// TODO try to measure iso blind sleep
-						Thread.sleep(30);// <50ms
+				long dt;
+				if (cs == null) {
+					// we need to reset the watchdog within 50ms
+					dt = 45;
+				} else {
+					// if there is a sticky command, we can wait until we need to deliver it.
+					long t = System.currentTimeMillis();
+					dt = t - t0;
+					dt = (dt < 0 ? 0 : 50 - dt);
+				}
+				c = q.poll(dt, TimeUnit.MILLISECONDS);
+				if (c == null) {
+					if (cs == null) {
+						c = cAlive;
+					} else {
+						c = cs;
+						t0 = System.currentTimeMillis();
 					}
-					c.incrementStickyCounter();
-					if (q.isEmpty()) {
-						q.add(c);
+				} else {
+					if (c.isSticky()) {
+						// sticky commands replace previous sticky
+						cs = c;
+						t0 = System.currentTimeMillis();
+					} else if (c.clearSticky()) {
+						// only some commands can clear sticky commands
+						cs = null;
 					}
 				}
-				sendCommand(c);
+				if (c.needControlAck()) {
+					waitForControlAck(false);
+					sendCommand(c);
+					waitForControlAck(true);
+					sendCommand(cAck);
+				} else {
+					sendCommand(c);
+				}
 			} catch (InterruptedException e) {
 				doStop = true;
 			} catch (Throwable t) {
@@ -441,6 +474,34 @@ public class CommandManager extends AbstractManager {
 
 	private float limit(float f, float min, float max) {
 		return (f > max ? max : (f < min ? min : f));
+	}
+
+	/*
+	 * TODO consider to refactor controlAck handling into a separate class shared by NavDataManager and CommandManager
+	 */
+	private Object controlAckLock = new Object();
+	private boolean controlAck = false;
+
+	public void setControlAck(boolean b) {
+		synchronized (controlAckLock) {
+			controlAck = b;
+			controlAckLock.notifyAll();
+		}
+	}
+
+	private void waitForControlAck(boolean b) throws InterruptedException {
+		int n = 10;
+		if (controlAck != b) {
+			synchronized (controlAckLock) {
+				while (n > 0 && controlAck != b) {
+					controlAckLock.wait(30);
+					n--;
+				}
+			}
+			if (n == 0 && controlAck != b) {
+				System.err.println("Control ack timeout " + String.valueOf(b));
+			}
+		}
 	}
 
 }

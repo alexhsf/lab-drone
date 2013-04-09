@@ -15,6 +15,14 @@ public class RefCommand extends ATCommand {
 		}
 	}
 
+	/**
+	 * Defines if this command clears a previous sticky command
+	 */
+	@Override
+	public boolean clearSticky() {
+		return true;
+	}
+
 	@Override
 	protected String getID() {
 		return "REF";
@@ -23,5 +31,10 @@ public class RefCommand extends ATCommand {
 	@Override
 	protected Object[] getParameters() {
 		return new Object[] { value };
+	}
+
+	@Override
+	public byte getPriority() {
+		return HIGH_PRIORITY;
 	}
 }

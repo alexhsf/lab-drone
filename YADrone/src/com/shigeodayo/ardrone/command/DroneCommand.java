@@ -1,59 +1,42 @@
 package com.shigeodayo.ardrone.command;
 
 public abstract class DroneCommand {
-	protected static final int MIN_PRIORITY = 0;
-	protected static final int HIGH_PRIORITY = 50;
-	protected static final int VERY_HIGH_PRIORITY = 90;
-	protected static final int MAX_PRIORITY = 100;
-	protected static final long DEFAULT_STICKY_RATE_MS = 100;
+	protected static final byte MIN_PRIORITY = 100;
+	protected static final byte HIGH_PRIORITY = 50;
+	protected static final byte VERY_HIGH_PRIORITY = 10;
+	protected static final byte MAX_PRIORITY = 0;
+	protected static final byte DEFAULT_STICKY_RATE_MS = 100;
 
-	protected static final String LAND_TAKEOFF_CATEGORY = "takeoffland";
+	public abstract byte getPriority();
 
-	private int sticky_counter = 0;
+	// TODO hide this into the CommandQueue
+	// a command should not know about the queue order
+	protected long qorder;
+	
+	public long getQorder() {
+		return qorder;
+	}
 
-	public abstract int getPriority();
-
-	public String getCategory() {
-		return null;
+	public void setQorder(long qorder) {
+		this.qorder = qorder;
 	}
 
 	public boolean isSticky() {
 		return false;
 	}
-
+	
 	/**
-	 * For sticky packets indicates how many times it has been sent.
-	 * 
-	 * @return current value
+	 * Defines if this command clears a previous sticky command
 	 */
-	public int incrementStickyCounter() {
-		return ++sticky_counter;
+	public boolean clearSticky() {
+		return false;
 	}
-
-	public int getStickyCounter() {
-		return sticky_counter;
-	}
-
+		
 	/**
 	 * For sticky packets indicates delay between sending repeated packets;
 	 */
 	public long getStickyRate() {
 		return DEFAULT_STICKY_RATE_MS;
-	}
-
-	/**
-	 * This method is used to check if 2 commands are are replaceable by each other.
-	 * 
-	 * @param cmd
-	 * @return true if they are replaceable
-	 */
-	public boolean replaces(DroneCommand cmd) {
-		if (equals(cmd)) {
-			return true;
-		} else {
-			String c = getCategory();
-			return c != null && c.equals(cmd.getCategory());
-		}
 	}
 
 }

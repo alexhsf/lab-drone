@@ -26,8 +26,6 @@ public interface ARDroneInterface {
 	
 	//connection
 	public boolean connect();
-	public boolean connectVideo();
-	public boolean connectNav();
 	public void disconnect();
 
 	public void start();

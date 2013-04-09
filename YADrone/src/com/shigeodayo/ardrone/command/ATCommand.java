@@ -52,7 +52,7 @@ public abstract class ATCommand extends DroneCommand
     }
 
     @Override
-    public int getPriority()
+    public byte getPriority()
     {
         return MIN_PRIORITY;
     }
@@ -78,4 +78,8 @@ public abstract class ATCommand extends DroneCommand
         return o.getCommandString(0).equals(getCommandString(0));
     }
 
+	public boolean needControlAck() {
+		return false;
+	}
+	
 }

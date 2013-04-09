@@ -67,12 +67,15 @@ public class ControlActivity extends BaseActivity implements StateListener {
 			}
 
 			@Override
-			public void tagsDetected(ArrayList<VisionTag> list) {
+			public void tagsDetected(VisionTag[] tags) {
 				long t = System.currentTimeMillis();
+				long dt = t - tlast;
+				System.out.println("TAGS DETECTED: " + tags.length + " dt: " + dt);
 				if (t - tlast > timeout) {
 					FlightAnimation a = current();
+					System.out.println("ANIMATION: " + a);
 					cm.animate(a);
-					timeout = a.getDefaultDuration() + 5000;
+					timeout = a.getDefaultDuration() + 1000;
 					tlast = t;
 					next();
 				}
@@ -140,7 +143,7 @@ public class ControlActivity extends BaseActivity implements StateListener {
 		forward.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN)
-					cm.forward(20);
+					cm.forward(40);
 				else if (event.getAction() == MotionEvent.ACTION_UP)
 					cm.stop();
 
@@ -152,7 +155,7 @@ public class ControlActivity extends BaseActivity implements StateListener {
 		backward.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN)
-					cm.backward(20);
+					cm.backward(40);
 				else if (event.getAction() == MotionEvent.ACTION_UP)
 					cm.stop();
 
@@ -212,7 +215,7 @@ public class ControlActivity extends BaseActivity implements StateListener {
 		spinLeft.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN)
-					cm.spinLeft(20);
+					cm.spinLeft(40);
 				else if (event.getAction() == MotionEvent.ACTION_UP)
 					cm.stop();
 
@@ -224,7 +227,7 @@ public class ControlActivity extends BaseActivity implements StateListener {
 		spinRight.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN)
-					cm.spinRight(20);
+					cm.spinRight(40);
 				else if (event.getAction() == MotionEvent.ACTION_UP)
 					cm.stop();
 

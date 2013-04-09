@@ -16,4 +16,12 @@ public class StopCommand extends PCMDCommand {
 		return false;
 	}
 
+	/**
+	 * Defines if this command clears a previous sticky command
+	 */
+	@Override
+	public boolean clearSticky() {
+		return true;
+	}
+	
 }

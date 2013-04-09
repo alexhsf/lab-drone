@@ -133,8 +133,8 @@ public class NavDataManager extends AbstractManager {
 
 	public void setVisionListener(VisionListener visionListener) {
 		this.visionListener = visionListener;
-		setMask(visionListener == null, new int[] { DEMO_TAG, TRACKERS_SEND_TAG, VISION_DETECT_TAG, VISION_OF_TAG, VISION_TAG,
-				VISION_PERF_TAG, VISION_RAW_TAG });
+		setMask(visionListener == null, new int[] { DEMO_TAG, TRACKERS_SEND_TAG, VISION_DETECT_TAG, VISION_OF_TAG,
+				VISION_TAG, VISION_PERF_TAG, VISION_RAW_TAG });
 	}
 
 	public void setMagnetoListener(MagnetoListener magnetoListener) {
@@ -216,7 +216,8 @@ public class NavDataManager extends AbstractManager {
 	public void run() {
 		ticklePort(ARDroneUtils.NAV_PORT);
 		boolean bootstrapping = true;
-		boolean controlreceived = false;
+		// TODO: can we assume controlAck is false initially?
+		boolean controlAck = false;
 
 		DatagramPacket packet = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
 		while (!doStop) {
@@ -231,24 +232,33 @@ public class NavDataManager extends AbstractManager {
 				// according to 7.1.2. of the ARDrone Developpper Guide demo
 				// mode must be set after exiting bootstrap mode
 				// TODO can we receive multiple bootstrap packets?
-				if (bootstrapping && s.isNavDataBootstrap()) {
-					// presumably iso setting the demo option we can ask for the options we want here
-					manager.setNavDataDemo(false);
-					manager.setNavDataOptions(mask);
-					maskChanged = false;
+				if (bootstrapping) {
+					controlAck = s.isControlReceived();
+					manager.setControlAck(controlAck);
+					if (s.isNavDataBootstrap()) {
+						// presumably iso setting the demo option we can already ask for the options we want here
+						manager.setNavDataDemo(false);
+						System.out.println("Bootstrapped");
+					} else {
+						System.out.println("Already bootstrapped");
+					}
 					bootstrapping = false;
 				}
 
-				if (!controlreceived && s.isControlReceived()) {
-					manager.sendControlAck();
-					controlreceived = true;
+				// detect control Ack change
+				boolean newcontrolAck = s.isControlReceived();
+				if (newcontrolAck != controlAck) {
+					manager.setControlAck(newcontrolAck);
+					controlAck = newcontrolAck;
 				}
 
+				// TODO should we reset the communication watchdog always?
 				if (s.isCommunicationProblemOccurred()) {
 					manager.resetCommunicationWatchDog();
 				}
 
-				if (!bootstrapping && controlreceived && maskChanged) {
+				// TODO bootstrapping probably be handled by commandmanager
+				if (!bootstrapping && maskChanged) {
 					manager.setNavDataOptions(mask);
 					maskChanged = false;
 				}
@@ -271,11 +281,11 @@ public class NavDataManager extends AbstractManager {
 		long sequence = getUInt32(b);
 		int vision = b.getInt();
 
-//		if (sequence <= lastSequenceNumber && sequence != 1) {
-//			// TODO sometimes we seem to receive a previous packet, find out why
-//			throw new NavDataException("Invalid sequence number received (received=" + sequence + " last="
-//					+ lastSequenceNumber);
-//		}
+		// if (sequence <= lastSequenceNumber && sequence != 1) {
+		// // TODO sometimes we seem to receive a previous packet, find out why
+		// throw new NavDataException("Invalid sequence number received (received=" + sequence + " last="
+		// + lastSequenceNumber);
+		// }
 		lastSequenceNumber = sequence;
 
 		DroneState s = new DroneState(state, vision);
@@ -848,7 +858,7 @@ public class NavDataManager extends AbstractManager {
 			int[] raw_accs = getUInt16(b, NB_ACCS);
 
 			// see http://blog.perquin.com/blog/ar-drone-navboard/
-			// speculative: Raw data for the gyros, 12-bit A/D converted voltage of the gyros. X,Y=IDG, Z=Epson 
+			// speculative: Raw data for the gyros, 12-bit A/D converted voltage of the gyros. X,Y=IDG, Z=Epson
 			short[] raw_gyros = getShort(b, NB_GYROS);
 
 			// see http://blog.perquin.com/blog/ar-drone-navboard/
@@ -866,25 +876,28 @@ public class NavDataManager extends AbstractManager {
 			// see http://blog.perquin.com/blog/ar-drone-navboard/
 			// probably: array with ends of echos (8 array values @ 25Hz, 9 values @ 22.22Hz)
 			int us_echo_end = getUInt16(b);
-			
+
 			// see http://blog.perquin.com/blog/ar-drone-navboard/
-			// Ultrasonic parameter. speculative: echo number starting with 0. max value 3758. examples: 0,1,2,3,4,5,6,7  ; 0,1,2,3,4,86,6,9
+			// Ultrasonic parameter. speculative: echo number starting with 0. max value 3758. examples: 0,1,2,3,4,5,6,7
+			// ; 0,1,2,3,4,86,6,9
 			int us_association_echo = getUInt16(b);
-			
+
 			// see http://blog.perquin.com/blog/ar-drone-navboard/
 			// Ultrasonic parameter. speculative: No clear pattern
 			int us_distance_echo = getUInt16(b);
-			
+
 			// see http://blog.perquin.com/blog/ar-drone-navboard/
-			// Ultrasonic parameter. Counts up from 0 to approx 24346 in 192 sample cycles of which 12 cylces have value 0
+			// Ultrasonic parameter. Counts up from 0 to approx 24346 in 192 sample cycles of which 12 cylces have value
+			// 0
 			int us_cycle_time = getUInt16(b);
 
 			// see http://blog.perquin.com/blog/ar-drone-navboard/
-			// Ultrasonic parameter. Value between 0 and 4000, no clear pattern. 192 sample cycles of which 12 cycles have value 0
+			// Ultrasonic parameter. Value between 0 and 4000, no clear pattern. 192 sample cycles of which 12 cycles
+			// have value 0
 			int us_cycle_value = getUInt16(b);
-			
+
 			// see http://blog.perquin.com/blog/ar-drone-navboard/
-			// Ultrasonic parameter. Counts down from 4000 to 0 in 192 sample cycles of which 12 cycles have value 0			
+			// Ultrasonic parameter. Counts down from 4000 to 0 in 192 sample cycles of which 12 cycles have value 0
 			int us_cycle_ref = getUInt16(b);
 			int flag_echo_ini = getUInt16(b);
 			int nb_echo = getUInt16(b);
@@ -983,14 +996,14 @@ public class NavDataManager extends AbstractManager {
 			int altitude = b.getInt();
 
 			float v[] = getFloat(b, 3);
-			
+
 			/* Deprecated ! Don't use ! */
 			float detection_camera_rot[] = getFloat(b, 9);
 			/* Deprecated ! Don't use ! */
 			float detection_camera_trans[] = getFloat(b, 3);
 			/* Deprecated ! Don't use ! */
 			long detection_tag_index = getUInt32(b);
-			
+
 			int detection_camera_type = b.getInt();
 
 			/* Deprecated ! Don't use ! */
@@ -1101,12 +1114,12 @@ public class NavDataManager extends AbstractManager {
 				// issue
 				int camera_source[] = getInt(b, NB_NAVDATA_DETECTION_RESULTS);
 
-				ArrayList<VisionTag> tags = new ArrayList<VisionTag>(ndetected);
+				VisionTag[] tags = new VisionTag[ndetected];
 				for (int i = 0; i < ndetected; i++) {
 					// TODO: does this also contain a mask if not multiple detect?
-					VisionTag tag = new VisionTag(type[i], xc[i], yc[i], width[i], height[i],
-							dist[i], orientation_angle[i], rotation[i], translation[i], DetectionType.fromInt(camera_source[i]));
-					tags.add(tag);
+					VisionTag tag = new VisionTag(type[i], xc[i], yc[i], width[i], height[i], dist[i],
+							orientation_angle[i], rotation[i], translation[i], DetectionType.fromInt(camera_source[i]));
+					tags[i] = tag;
 				}
 
 				visionListener.tagsDetected(tags);
