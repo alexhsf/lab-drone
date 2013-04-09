@@ -66,9 +66,9 @@ public class ARDroneTest extends JFrame {
 		System.out.println("connect drone controller");
 		ardrone.connect();
 		System.out.println("connect drone navdata");
-		ardrone.connectNav();
+		//ardrone.connectNav();
 		System.out.println("connect drone video");
-		ardrone.connectVideo();
+		//ardrone.connectVideo();
 		System.out.println("start drone");
 		ardrone.start();
 
