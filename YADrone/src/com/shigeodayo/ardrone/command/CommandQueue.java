@@ -24,15 +24,12 @@ public class CommandQueue extends PriorityBlockingQueue<ATCommand> {
 
 			@Override
 			public int compare(final ATCommand l, final ATCommand r) {
-				final byte lp = l.getPriority();
-				final byte rp = r.getPriority();
-				if (lp < rp) {
-					return -1;
+				final Priority lp = l.getPriority();
+				final Priority rp = r.getPriority();
+				if (lp != rp) {
+					return lp.compareTo(rp);
 				}
-				if (lp > rp) {
-					return 1;
-				}
-
+				
 				final long lo = l.getQorder();
 				final long ro = r.getQorder();
 
