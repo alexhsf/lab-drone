@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import com.shigeodayo.ardrone.command.ATCommand;
 import com.shigeodayo.ardrone.command.ConfigureCommand;
 import com.shigeodayo.ardrone.command.ControlCommand;
-import com.shigeodayo.ardrone.command.ATCommand;
+import com.shigeodayo.ardrone.command.ControlMode;
 import com.shigeodayo.ardrone.command.EmergencyCommand;
 import com.shigeodayo.ardrone.command.FlatTrimCommand;
 import com.shigeodayo.ardrone.command.FlightAnimation;
@@ -28,11 +28,9 @@ import com.shigeodayo.ardrone.command.PCMDCommand;
 import com.shigeodayo.ardrone.command.PCMDMagCommand;
 import com.shigeodayo.ardrone.command.PMODECommand;
 import com.shigeodayo.ardrone.command.PlayAnimationCommand;
-import com.shigeodayo.ardrone.command.QuitCommand;
 import com.shigeodayo.ardrone.command.RawCaptureCommand;
 import com.shigeodayo.ardrone.command.StopCommand;
 import com.shigeodayo.ardrone.command.TakeOffCommand;
-import com.shigeodayo.ardrone.command.UserBox;
 import com.shigeodayo.ardrone.command.VideoChannel;
 import com.shigeodayo.ardrone.command.VideoChannelCommand;
 import com.shigeodayo.ardrone.command.VisionOptionCommand;
@@ -224,8 +222,9 @@ public class DroneSchedulingCommandFactory {
 			JSONObject parameters = (JSONObject)value;
 			int arg1 = parameters.getInt("arg1");
 			int arg2 = parameters.getInt("arg2");
+			ControlMode mode = ControlMode.values()[arg1];
 			List<ATCommand> commands = new ArrayList<ATCommand>();
-			commands.add(new ControlCommand(arg1, arg2));
+			commands.add(new ControlCommand(mode, arg2));
 			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
 		}
 		return schedulingCommand;
@@ -253,93 +252,10 @@ public class DroneSchedulingCommandFactory {
 			String animation = parameters.getString("animation");
 			int animationDuration = parameters.getInt("duration");
 			FlightAnimation anim = null;
-			// TODO: can this be done in a more easy way?
-			if (animation.equals("PHI_M30_DEG"))
-			{
-				anim = FlightAnimation.PHI_M30_DEG;
-			}
-			else if (animation.equals("PHI_30_DEG"))
-			{
-				anim = FlightAnimation.PHI_M30_DEG;
-			}
-			else if (animation.equals("THETA_M30_DEG"))
-			{
-				anim = FlightAnimation.THETA_M30_DEG;
-			}
-			else if (animation.equals("THETA_30_DEG"))
-			{
-				anim = FlightAnimation.THETA_30_DEG;
-			}
-			else if (animation.equals("THETA_20DEG_YAW_200DEG"))
-			{
-				anim = FlightAnimation.THETA_20DEG_YAW_200DEG;
-			}
-			else if (animation.equals("THETA_20DEG_YAW_M200DEG"))
-			{
-				anim = FlightAnimation.THETA_20DEG_YAW_M200DEG;
-			}
-			else if (animation.equals("TURNAROUND"))
-			{
-				anim = FlightAnimation.TURNAROUND;
-			}
-			else if (animation.equals("TURNAROUND_GODOWN"))
-			{
-				anim = FlightAnimation.TURNAROUND_GODOWN;
-			}
-			else if (animation.equals("YAW_SHAKE"))
-			{
-				anim = FlightAnimation.YAW_SHAKE;
-			}
-			else if (animation.equals("YAW_DANCE"))
-			{
-				anim = FlightAnimation.YAW_DANCE;
-			}
-			else if (animation.equals("PHI_DANCE"))
-			{
-				anim = FlightAnimation.PHI_DANCE;
-			}
-			else if (animation.equals("THETA_DANCE"))
-			{
-				anim = FlightAnimation.THETA_DANCE;
-			}
-			else if (animation.equals("VZ_DANCE"))
-			{
-				anim = FlightAnimation.VZ_DANCE;
-			}
-			else if (animation.equals("WAVE"))
-			{
-				anim = FlightAnimation.WAVE;
-			}
-			else if (animation.equals("PHI_THETA_MIXED"))
-			{
-				anim = FlightAnimation.PHI_THETA_MIXED;
-			}
-			else if (animation.equals("DOUBLE_PHI_THETA_MIXED"))
-			{
-				anim = FlightAnimation.DOUBLE_PHI_THETA_MIXED;
-			}
-			else if (animation.equals("FLIP_AHEAD"))
-			{
-				anim = FlightAnimation.FLIP_AHEAD;
-			}
-			else if (animation.equals("FLIP_BEHIND"))
-			{
-				anim = FlightAnimation.FLIP_BEHIND;
-			}
-			else if (animation.equals("FLIP_LEFT"))
-			{
-				anim = FlightAnimation.FLIP_LEFT;
-			}
-			else if (animation.equals("FLIP_RIGHT"))
-			{
-				anim = FlightAnimation.FLIP_RIGHT;
-			}
-			if  (anim != null)
-			{
-				List<ATCommand> commands = new ArrayList<ATCommand>();
-				commands.add(new FlightAnimationCommand(anim, animationDuration));
-				schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
-			}
+			anim = FlightAnimation.valueOf(animation);
+			List<ATCommand> commands = new ArrayList<ATCommand>();
+			commands.add(new FlightAnimationCommand(anim, animationDuration));
+			schedulingCommand = new DroneSchedulingCommand(commands, duration, repetitions);
 		}
 		return schedulingCommand;
 	}
