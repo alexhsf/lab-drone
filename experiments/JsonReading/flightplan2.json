@@ -1,0 +1,79 @@
+{
+	"FlightPlan" :
+	[
+		{
+			"Configure" :
+			{
+				"control:outdoor" : false
+			}
+		},
+		{
+			"FlatTrim" : ""
+		},
+		{
+			"TakeOff" : ""
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 3.4,
+               "front_back_tilt" : 4.5,
+			   "vertical_speed" : 5.6,
+			   "angular_speed" : 6.7
+			}
+		},
+		{
+			"Hover" : ""
+		},
+
+		{
+			"KeepAlive" : ""
+		},
+		{
+			"FlightAnimation" :
+			{
+               "animation" : "FLIP_LEFT",
+               "duration" : 10"
+			}
+		},
+		{
+			"PCMDMag" :
+			{
+               "hover" : true,
+			   "combined_yaw_enabled" : false,
+			   "absolute_control" : true,
+			   "left_right_tilt" : 3.4,
+               "front_back_tilt" : 4.5,
+			   "vertical_speed" : 5.6,
+			   "angular_speed" : 6.7,
+			   "magneto_psi" : 7.8,
+			   "magneto_psi_accuracy" : 8.9 
+			}
+		},
+		{
+			"PlayAnimation" :
+			{
+               "animation_no" : 12,
+			   "duration" : 13
+			}
+		},
+		{
+			"PCMD" :
+			{
+               "hover" : true,
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 3.4,
+               "front_back_tilt" : 4.5,
+			   "vertical_speed" : 5.6,
+			   "angular_speed" : 6.7
+			}
+		},
+		{
+			"Land" : ""
+		},
+		{
+			"Stop" : ""
+		}
+	]
+}

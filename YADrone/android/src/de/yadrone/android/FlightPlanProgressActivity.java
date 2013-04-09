@@ -19,6 +19,7 @@ import java.util.List;
 //import org.json.JSONTokener;
 
 import com.shigeodayo.ardrone.ARDrone;
+import com.shigeodayo.ardrone.command.DroneCommand;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,7 +28,7 @@ public class FlightPlanProgressActivity extends BaseActivity {
 
 	private String mFlightPlanUri;
 	private DroneCommandScheduler mScheduler;
-	private List<DroneCommand> mDroneCommands;
+	private List<DroneSchedulingCommand> mFlightPlan;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,141 +39,41 @@ public class FlightPlanProgressActivity extends BaseActivity {
 		Intent intent = getIntent();
 		mFlightPlanUri = intent.getStringExtra(FlightPlanActivity.FLIGHTPLAN_URI);
 
-    	YADroneApplication app = (YADroneApplication)getApplication();
-    	final ARDrone drone = app.getARDrone();
-		mScheduler = new DroneCommandScheduler(drone);
+//    	YADroneApplication app = (YADroneApplication)getApplication();
+//    	final ARDrone drone = app.getARDrone();
+//		mScheduler = new DroneCommandScheduler(drone);
 		
 		LoadFlightPlan();
-		new Thread() {
-			public void run() {
-				FlyRoute();
-			}
-		}.start();
+//		new Thread() {
+//			public void run() {
+//				FlyRoute();
+//			}
+//		}.start();
 	}
 
     private void LoadFlightPlan() {
-    	mDroneCommands = new ArrayList<DroneCommand>();
-    	mDroneCommands.add(new DroneCommandMove(mScheduler, 2000,    0, 0,  0, 10000));
+//    	mDroneCommands = new ArrayList<DroneCommand>();
+//    	mDroneCommands.add(new DroneCommandMove(mScheduler, 2000,    0, 0,  0, 10000));
 //    	mDroneCommands.add(new DroneCommandMove(mScheduler, 1000,    0, 0, 90, 1000));
 //    	mDroneCommands.add(new DroneCommandMove(mScheduler, 1000, 1000, 0, 90, 3000));
+    	FlightPlanFileReader reader = new FlightPlanFileReader();
+    	String jsonFlightPLan = reader.getFlightPlan(mFlightPlanUri);
+    	JsonFlightPlanParser jsonParser = new JsonFlightPlanParser();
+    	mFlightPlan = jsonParser.getFlightPlan(jsonFlightPLan);
     }
 
-	private void FlyRoute() {
-    	YADroneApplication app = (YADroneApplication)getApplication();
-    	final ARDrone drone = app.getARDrone();
-    	drone.takeOff();
-
-    	for (DroneCommand command : mDroneCommands) {
-			command.execute();
-		}
-    	
-    	drone.landing();
-	}
-
-//    private void LoadFlightPlan() {
-//		String json = "{" +
-//				"\"commands\" : " +
-//				"[" +
-//				"{" +
-//				"\"command\" : \"move\"" +
-//				"\"x\" : 100" +
-//				"\"y\" : 200" +
-//				"\"z\" : 300" +
-//				"}" +
-//				"]" +
-//				"}";
-//		try {
-//			ArrayList<DroneCommand> droneCommands = new ArrayList<DroneCommand>();
-//			JSONObject object = (JSONObject) new JSONTokener(json).nextValue();
-//			JSONArray commands = object.getJSONArray("commands");
-//			int l = commands.length();
-//			
-//			for (int i = 0; i < commands.length(); i++)
-//			{
-//				JSONObject command = commands.optJSONObject(i);
-//				if (command != null)
-//				{
-//					String cmd = command.getString("command");
-//					if (cmd.equals("command"))
-//					{
-//						double x = command.getDouble("x");
-//						double y = command.getDouble("y");
-//						double z = command.getDouble("z");
-//						double orientation = command.getDouble("orientation");
-//						double timespan = command.getDouble("timespan");
-//						
-//						droneCommands.add(new DroneCommandMove(x,y,z, orientation, timespan));
-//					}
-//				}
-//			}
-//		} catch (JSONException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-
-//	private void LoadFlightPlan() {
-//		mCommands = null;
-//		File file = new File(mFlightPlanUri);
-//		InputStream in = null;
-//		try {
-//			in = new BufferedInputStream(new FileInputStream(file));
-////			mCommands = readJsonStream(in);
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} finally {
-//			if (in != null) {
-//				try {
-//					in.close();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//	}
-	
-	
-
-//	private List<DroneCommand> readJsonStream(InputStream in) throws IOException {
-//		JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
-//		try {
-//			return readDroneCommandsArray(reader);
-//		} finally {
-//			reader.close();
-//		}
-//	}
+//	private void FlyRoute() {
+//	YADroneApplication app = (YADroneApplication)getApplication();
+//	final ARDrone drone = app.getARDrone();
+//	drone.takeOff();
 //
-//	private List<DroneCommand> readDroneCommandsArray(JsonReader reader) throws IOException {
-//		List<DroneCommand> droneCommands = new ArrayList<DroneCommand>();
-//
-//		reader.beginArray();
-//		while (reader.hasNext()) {
-//			droneCommands.add(readDroneCommand(reader));
-//		}
-//		reader.endArray();
-//		return droneCommands;
+//	for (DroneSchedulingCommand command : mDroneCommands) {
+//		command.execute();
 //	}
-//
-//	public DroneCommand readDroneCommand(JsonReader reader) throws IOException {
-//		long id = -1;
-//		String text = null;
-//
-//		reader.beginObject();
-//		while (reader.hasNext()) {
-//			String name = reader.nextName();
-//			if (name.equals("id")) {
-//				id = reader.nextLong();
-//			} else if (name.equals("text")) {
-//				text = reader.nextString();
-//			} else {
-//				reader.skipValue();
-//			}
-//		}
-//		reader.endObject();
-//		return new DroneCommand(id, text);
-//	}
+//	
+//	drone.landing();
+//}
+
 
 	// public boolean onCreateOptionsMenu(Menu menu)
 	// {

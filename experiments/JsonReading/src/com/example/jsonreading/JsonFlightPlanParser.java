@@ -56,28 +56,6 @@ public class JsonFlightPlanParser {
 //	}
 
 	private String stubJson() {
-//		String json = 
-//				"{" +
-//				"    \"FlightPlan\" : " +
-//				"    [" +
-//				"        {" +
-//				"            \"FlatTrim\" : \"\"" +
-//				"        }," +
-//				"        {" +
-//				"            \"TakeOff\" : \"\"" +
-//				"        }," +
-//				"        {" +
-//				"            \"FlightAnimation\" : " +
-//				"			 {" +
-//				"                \"Animation\" : \"FLIP_LEFT\"" +
-//				"                \"Duration\" : 10" +
-//				"            }" +
-//				"        }," +
-//				"        {" +
-//				"            \"Land\" : \"\"" +
-//				"        }" +
-//				"    ]" +
-//				"}";
 		String json = 
 		"{" +
 		"	\"FlightPlan\" :" +
