@@ -1,4 +1,4 @@
-package com.example.jsonreading;
+package de.yadrone.android;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -9,18 +9,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import com.shigeodayo.ardrone.command.DroneCommand;
-
 public class JsonFlightPlanParser {
 
-	public List<DroneCommand> getFlightPlan(String jsonFlightPlan) {
-//		return getDroneCommands(jsonFlightPlan);
-		return getDroneCommands(stubJson());
+	public List<DroneSchedulingCommand> getFlightPlan(String jsonFlightPlan) {
+		return getDroneCommands(jsonFlightPlan);
+//		return getDroneCommands(stubJson());
 //		return stubDroneCommandList();
 	}
 
-	private List<DroneCommand> getDroneCommands(String jsonFlightPlan) {
-		ArrayList<DroneCommand> droneCommands = new ArrayList<DroneCommand>();
+	private List<DroneSchedulingCommand> getDroneCommands(String jsonFlightPlan) {
+		ArrayList<DroneSchedulingCommand> droneCommands = new ArrayList<DroneSchedulingCommand>();
 		try {
 			JSONObject root = (JSONObject) new JSONTokener(jsonFlightPlan).nextValue();
 			JSONArray flightplan = root.getJSONArray("FlightPlan");
@@ -31,9 +29,12 @@ public class JsonFlightPlanParser {
 					while(keys.hasNext())
 					{
 						String key = keys.next();
-						DroneCommand droneCommand = DroneCommandFactory.getDroneCommand(key, jsonObject.get(key));
-						if (droneCommand != null) {
-							droneCommands.add(droneCommand);
+						if (!key.equals("Duration") && !key.equals("Repetitions"))
+						{
+							DroneSchedulingCommand command = DroneSchedulingCommandFactory.getDroneSchedulingCommand(key, jsonObject);
+							if (command != null) {
+								droneCommands.add(command);
+							}
 						}
 					}
 				}

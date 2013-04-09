@@ -1,0 +1,59 @@
+{
+	"FlightPlan" :
+	[
+		{
+			"Configure" :
+			{
+				"control:outdoor" : false
+			}
+		},
+		{
+			"FlatTrim" : ""
+		},
+		{
+			"TakeOff" : ""
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0.1,
+               "front_back_tilt" : -0.1,
+			   "vertical_speed" : -0.4,
+			   "angular_speed" : 0.05
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : ""
+		},
+		{
+			"FlightAnimation" :
+			{
+               "animation" : "FLIP_LEFT",
+               "duration" : 10
+			},
+			"Repetitions" : 2,
+			"Duration" : 4000
+		},
+		{
+			"Hover" : ""
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : -0.1,
+               "front_back_tilt" : 0.1,
+			   "vertical_speed" : 0.4,
+			   "angular_speed" : -0.05
+			}
+		},
+		{
+			"Stop" : ""
+		},
+		{
+			"Land" : ""
+		}
+	]
+}

@@ -1,10 +1,10 @@
 package com.example.jsonreading;
 
-public class DroneCommandMove extends DroneCommand {
+public class MyDroneCommandMove extends MyDroneCommand {
 
 	private DroneMovement targetLocation; // in the room
 
-	DroneCommandMove(float x, float y, float z, float orientation, float timespan) {
+	MyDroneCommandMove(float x, float y, float z, float orientation, float timespan) {
 		targetLocation = new DroneMovement(x, y, z, orientation, timespan);
 	}
 

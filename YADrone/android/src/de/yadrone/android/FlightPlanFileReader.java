@@ -1,31 +1,19 @@
-package com.example.jsonreading;
+package de.yadrone.android;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
-
-import com.shigeodayo.ardrone.command.DroneCommand;
-
 import android.os.Environment;
 import android.util.Log;
 
-public class FlightPlanFileReader implements IFlightPlanReader {
-
-	private JsonFlightPlanParser jsonParser;
+public class FlightPlanFileReader {
 
 	public FlightPlanFileReader() {
-		jsonParser = new JsonFlightPlanParser();
+		
 	}
 
-	@Override
-	public List<DroneCommand> getFlightPlan(String filename) {
-		String jsonFlightPlan = getJsonFlightPlan(filename);
-		return jsonParser.getFlightPlan(jsonFlightPlan);
-	}
-
-	private String getJsonFlightPlan(String filename) {
+	public String getFlightPlan(String filename) {
 		String jsonFlightPlan = "";
 		if (isExternalStorageReadable()) {
 			File jsonFile = getAlbumStorageDir(filename);

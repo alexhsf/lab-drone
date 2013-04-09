@@ -1,6 +1,6 @@
 package com.example.jsonreading;
 
-public abstract class DroneCommand {
+public abstract class MyDroneCommand {
 	
 	public String toString(){
 		return "";

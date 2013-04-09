@@ -1,0 +1,47 @@
+{
+	"configuration" : 
+	{
+		"max_vertical_speed" : "3",
+		"max_yaw" : "2",
+		"max_tilt" : "2.5"
+	},
+	"flightplan" :
+	[
+		{
+			"cmd" : "connect"
+		},
+		{
+			"delay", "500"
+		},
+		{
+			"cmd" : "take_off"
+		},
+		{
+			"delay", "1000"
+		},
+		{
+			"cmd", "forward",
+			"distance" : "2000"
+		},
+		{
+			"delay", "1000"
+		},
+		{
+			"cmd", "spin",
+			"angle" : "180"
+		},
+		{
+			"delay", "1000"
+		},
+		{
+			"cmd", "forward",
+			"distance" : "2000"
+		},
+		{
+			"delay", "1000"
+		},
+		{
+			"cmd"  : "land"
+		}
+	]
+}

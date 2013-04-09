@@ -1,0 +1,30 @@
+{
+	"FlightPlan" :
+	[
+		{
+			"FlatTrim" : ""
+		},
+		{
+			"TakeOff" : "",
+			"Duration" : 5000
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0.1,
+               "front_back_tilt" : -0.1,
+			   "vertical_speed" : -0.4,
+			   "angular_speed" : 0.05
+			},
+			"Duration" : 5000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 3000
+		},
+		{
+			"Land" : ""
+		}
+	]
+}
