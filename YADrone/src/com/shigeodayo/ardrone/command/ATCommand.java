@@ -52,9 +52,9 @@ public abstract class ATCommand extends DroneCommand
     }
 
     @Override
-    public byte getPriority()
+    public Priority getPriority()
     {
-        return MIN_PRIORITY;
+        return Priority.MIN_PRIORITY;
     }
 
     @Override
