@@ -125,20 +125,26 @@ public class ARDrone implements ARDroneInterface {
 	public void disconnect() {
 		stop();
 		landing();
-		getCommandManager().close();
-		getConfigurationManager().close();
-		getNavDataManager().close();
-		getVideoManager().close();
+		CommandManager cm = getCommandManager();
+		cm.close();
+		ConfigurationManager cfgm = getConfigurationManager();
+		cfgm.close();
+		NavDataManager nm = getNavDataManager();
+		nm.close();
+		VideoManager vm = getVideoManager();
+		vm.close();
 	}
 
 	@Override
 	public void start() {
 		CommandManager cm = getCommandManager();
-		new Thread(cm, cm.getClass().getName()).start();
+		cm.start();
+		ConfigurationManager cfgm = getConfigurationManager();
+		cfgm.start();
 		NavDataManager nm = getNavDataManager();
-		new Thread(nm, nm.getClass().getName()).start();
+		nm.start();
 		VideoManager vm = getVideoManager();
-		new Thread(vm, vm.getClass().getName()).start();
+		vm.start();
 	}
 
 	@Override

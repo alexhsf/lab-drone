@@ -23,12 +23,14 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
+// TODO: investigate if we can refactor common parts with AbstractTCPManager
 public abstract class AbstractManager implements Runnable {
 
 	protected InetAddress inetaddr = null;
 	protected DatagramSocket socket = null;
 	protected boolean doStop = false;
 	protected boolean connected = false;
+	protected Thread thread = null;
 
 	public AbstractManager(InetAddress inetaddr) {
 		this.inetaddr = inetaddr;
@@ -52,7 +54,9 @@ public abstract class AbstractManager implements Runnable {
 	}
 
 	public void close() {
-		socket.close();
+		if (socket != null) {
+			socket.close();
+		}
 		connected = false;
 		doStop = true;
 	}
@@ -61,9 +65,22 @@ public abstract class AbstractManager implements Runnable {
 		byte[] buf = { 0x01, 0x00, 0x00, 0x00 };
 		DatagramPacket packet = new DatagramPacket(buf, buf.length, inetaddr, port);
 		try {
-			socket.send(packet);
+			if (socket != null) {
+				socket.send(packet);
+			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void start() {
+		if (thread == null || thread.getState() == Thread.State.TERMINATED) {
+			String name = getClass().getSimpleName();
+			thread = new Thread(this, name);
+		}
+		if (thread.getState() == Thread.State.NEW) {
+			thread.start();
 		}
 	}
 }
