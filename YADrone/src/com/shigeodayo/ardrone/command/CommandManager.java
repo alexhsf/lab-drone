@@ -411,7 +411,7 @@ public class CommandManager extends AbstractManager {
 				long dt;
 				if (cs == null) {
 					// we need to reset the watchdog within 50ms
-					dt = 45;
+					dt = 40;
 				} else {
 					// if there is a sticky command, we can wait until we need to deliver it.
 					long t = System.currentTimeMillis();
@@ -490,15 +490,13 @@ public class CommandManager extends AbstractManager {
 	}
 
 	private void waitForControlAck(boolean b) throws InterruptedException {
-		int n = 10;
 		if (controlAck != b) {
 			synchronized (controlAckLock) {
-				while (n > 0 && controlAck != b) {
-					controlAckLock.wait(30);
-					n--;
+				while (controlAck != b) {
+					controlAckLock.wait(50);
 				}
 			}
-			if (n == 0 && controlAck != b) {
+			if (controlAck != b) {
 				System.err.println("Control ack timeout " + String.valueOf(b));
 			}
 		}
