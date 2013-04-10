@@ -1,7 +1,5 @@
 package de.yadrone.android;
 
-import java.util.concurrent.TimeUnit;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,10 +13,7 @@ import android.view.MenuInflater;
 import android.widget.TextView;
 
 import com.shigeodayo.ardrone.ARDrone;
-import com.shigeodayo.ardrone.command.ATCommand;
 import com.shigeodayo.ardrone.command.CommandManager;
-import com.shigeodayo.ardrone.command.CommandQueue;
-import com.shigeodayo.ardrone.command.ConfigureCommand;
 import com.shigeodayo.ardrone.command.DetectionType;
 import com.shigeodayo.ardrone.command.EnemyColor;
 import com.shigeodayo.ardrone.command.FlyingMode;
@@ -44,6 +39,8 @@ public class MainActivity extends BaseActivity implements VisionListener {
 		YADroneApplication app = (YADroneApplication) getApplication();
 		final ARDrone drone = app.getARDrone();
 
+		// actually this does not belong to the activity, but to the start of the complete application
+		// TODO: refactor into (?) YADroneApplication
 		try {
 			text.append("\n\nConnect to Drone\n");
 			new Thread(new Runnable() {
@@ -60,11 +57,12 @@ public class MainActivity extends BaseActivity implements VisionListener {
 			cmd.setAutonomousFlight(false);
 
 			// Do we need video to enable horizontal detection?
-			cmd.setVideoData(true);
+			// cmd.setVideoData(true);
 			cmd.setEnemyColors(EnemyColor.ORANGE_BLUE);
-			cmd.setDetectionType(DetectionType.HORIZONTAL, new VisionTagType[] { VisionTagType.ORIENTED_ROUNDEL,
-					VisionTagType.BLACK_ROUNDEL, VisionTagType.ROUNDEL, VisionTagType.SHELL_TAG_V2 });
-			// cmd.setDetectionType(DetectionType.VERTICAL, new VisionTagType[] { VisionTagType.SHELL_TAG_V2 });
+			cmd.setDetectionType(DetectionType.VERTICAL, new VisionTagType[] { VisionTagType.ORIENTED_ROUNDEL,
+					VisionTagType.BLACK_ROUNDEL, VisionTagType.ROUNDEL });
+			cmd.setDetectionType(DetectionType.HORIZONTAL, new VisionTagType[] { VisionTagType.SHELL_TAG_V2,
+					VisionTagType.STRIPE, VisionTagType.TOWER_SIDE });
 
 			// cmd.setFlyingMode(FlyingMode.HOVER_ON_TOP_OF_ORIENTED_ROUNDEL);
 			cmd.setFlyingMode(FlyingMode.FREE_FLIGHT);
@@ -98,45 +96,12 @@ public class MainActivity extends BaseActivity implements VisionListener {
 			exc.printStackTrace();
 
 			if (drone != null)
+				// TODO: separate disconnect and stop, symmetric to connect and start
+				// or should be integrate connect in the run methods?
+				// should we be able to connect/disconnect without stopping?
 				drone.disconnect();
 		}
 
-	}
-
-	private void test() {
-		final CommandQueue q = new CommandQueue(100);
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				ATCommand c = q.poll();
-				while (c != null) {
-					System.out.println("poll: " + q);
-					System.out.println("poll: " + c);
-					try {
-						c = q.poll(50, TimeUnit.MILLISECONDS);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}).start();
-		q.add(new ConfigureCommand("a", false));
-		q.add(new ConfigureCommand("b", true));
-		q.add(new ConfigureCommand("c", 3));
-		q.add(new ConfigureCommand("d", 10));
-		q.add(new ConfigureCommand("e", 0));
-		q.add(new ConfigureCommand("f", 6));
-		q.add(new ConfigureCommand("g", 7));
-		q.add(new ConfigureCommand("h", 8));
-		q.add(new ConfigureCommand("i", "9"));
-		q.add(new ConfigureCommand("j", "10"));
-		q.add(new ConfigureCommand("k", "11"));
-		q.add(new ConfigureCommand("l", "12"));
-		q.add(new ConfigureCommand("m", "13"));
-		q.add(new ConfigureCommand("n", "14"));
-		q.add(new ConfigureCommand("o", "15"));
-		q.add(new ConfigureCommand("p", "16"));
 	}
 
 	private String configureDrone(ARDrone drone) {
@@ -149,7 +114,7 @@ public class MainActivity extends BaseActivity implements VisionListener {
 
 		double maxAltitude = Double.parseDouble(sharedPrefs.getString("pref_altitude", "3"));
 		text.append(String.format("Set max. Altitude to %1$f m\n", maxAltitude));
-		drone.setMaxAltitude(2500);
+		drone.setMaxAltitude(2000);
 		drone.setMinAltitude(1000);
 
 		double maxVerticalSpeed = Double.parseDouble(sharedPrefs.getString("pref_vertical_speed", "1"));
