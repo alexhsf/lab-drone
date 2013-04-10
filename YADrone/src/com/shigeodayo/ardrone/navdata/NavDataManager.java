@@ -238,9 +238,9 @@ public class NavDataManager extends AbstractManager {
 					if (s.isNavDataBootstrap()) {
 						// presumably iso setting the demo option we can already ask for the options we want here
 						manager.setNavDataDemo(false);
-						System.out.println("Bootstrapped");
+						System.out.println("Navdata Bootstrapped");
 					} else {
-						System.out.println("Already bootstrapped");
+						System.out.println("Navdata was already bootstrapped");
 					}
 					bootstrapping = false;
 				}
