@@ -27,7 +27,6 @@ public class FlightPlanProgressActivity extends BaseActivity {
 		mFlightPlanUri = intent.getStringExtra(FlightPlanActivity.FLIGHTPLAN_URI);
 		LoadFlightPlan();
 		
-		// TODO: start threat in onResumed and stop thread in onPaused?
 		mThread = new Thread() {
 			public void run() {
 				FlyRoute();
@@ -36,10 +35,8 @@ public class FlightPlanProgressActivity extends BaseActivity {
 	}
 	
 
-    @SuppressWarnings("deprecation")
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
 		mThread.interrupt();
 	}
@@ -47,17 +44,11 @@ public class FlightPlanProgressActivity extends BaseActivity {
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		mThread.start();
 	}
 
-
 	private void LoadFlightPlan() {
-//    	mDroneCommands = new ArrayList<DroneCommand>();
-//    	mDroneCommands.add(new DroneCommandMove(mScheduler, 2000,    0, 0,  0, 10000));
-//    	mDroneCommands.add(new DroneCommandMove(mScheduler, 1000,    0, 0, 90, 1000));
-//    	mDroneCommands.add(new DroneCommandMove(mScheduler, 1000, 1000, 0, 90, 3000));
     	FlightPlanFileReader reader = new FlightPlanFileReader();
     	String jsonFlightPLan = reader.getFlightPlan(mFlightPlanUri);
     	JsonFlightPlanParser jsonParser = new JsonFlightPlanParser();
