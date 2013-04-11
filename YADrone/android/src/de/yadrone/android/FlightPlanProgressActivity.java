@@ -61,16 +61,16 @@ public class FlightPlanProgressActivity extends BaseActivity {
 	private void FlyRoute() {
 		YADroneApplication app = (YADroneApplication) getApplication();
 		final ARDrone drone = app.getARDrone();
-		NavDataManager nd = drone.getNavDataManager();
-		nd.setVelocityListener(new VelocityListener() {
-
-			@Override
-			public void velocityChanged(float vx, float vy, float vz) {
-				if (vx != 0f || vy != 0f || vz != 0f) {
-					System.out.println("Velocity vx:" + vx + " vy:" + vy + " vz: " + vz);
-				}
-			}
-		});
+//		NavDataManager nd = drone.getNavDataManager();
+//		nd.setVelocityListener(new VelocityListener() {
+//
+//			@Override
+//			public void velocityChanged(float vx, float vy, float vz) {
+//				if (vx != 0f || vy != 0f || vz != 0f) {
+//					System.out.println("Velocity vx:" + vx + " vy:" + vy + " vz: " + vz);
+//				}
+//			}
+//		});
 
 		for (DroneSchedulingCommand command : mFlightPlan) {
 			try {
