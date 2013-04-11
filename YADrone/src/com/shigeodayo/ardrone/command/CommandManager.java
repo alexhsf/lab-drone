@@ -212,8 +212,6 @@ public class CommandManager extends AbstractManager {
 	 * NOTE: You should NEVER enable one detection on two different cameras.
 	 */
 	public void setDetectionType(DetectionType dt, VisionTagType[] tagtypes) {
-		setDetectionType(CadType.MULTIPLE_DETECTION_MODE);
-		// TODO: refactor into new ConfigureCommand
 		int mask = VisionTagType.getMask(tagtypes);
 		q.add(new ConfigureCommand("detect:" + dt.getCmdSuffix(), mask));
 	}
@@ -401,6 +399,14 @@ public class CommandManager extends AbstractManager {
 	 */
 	@Override
 	public void run() {
+		// workaround: navdata should be bootstrapped?
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 		ATCommand c;
 		ATCommand cs = null;
 		final ATCommand cAck = new ResetControlAckCommand();
@@ -419,6 +425,7 @@ public class CommandManager extends AbstractManager {
 					dt = (dt < 0 ? 0 : 50 - dt);
 				}
 				c = q.poll(dt, TimeUnit.MILLISECONDS);
+				// System.out.println(c);
 				if (c == null) {
 					if (cs == null) {
 						c = cAlive;
@@ -436,14 +443,14 @@ public class CommandManager extends AbstractManager {
 						cs = null;
 					}
 				}
-				if (c.needControlAck()) {
-					waitForControlAck(false);
-					sendCommand(c);
-					waitForControlAck(true);
-					sendCommand(cAck);
-				} else {
-					sendCommand(c);
-				}
+				// if (c.needControlAck()) {
+				// waitForControlAck(false);
+				// sendCommand(c);
+				// waitForControlAck(true);
+				// sendCommand(cAck);
+				// } else {
+				sendCommand(c);
+				// }
 			} catch (InterruptedException e) {
 				doStop = true;
 			} catch (Throwable t) {
