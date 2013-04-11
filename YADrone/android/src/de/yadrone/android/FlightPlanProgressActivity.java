@@ -13,7 +13,7 @@ import android.util.Log;
 public class FlightPlanProgressActivity extends BaseActivity {
 
 	private String mFlightPlanUri;
-//	private DroneCommandScheduler mScheduler;
+	// private DroneCommandScheduler mScheduler;
 	private List<DroneSchedulingCommand> mFlightPlan;
 	private Thread mThread;
 
@@ -26,21 +26,19 @@ public class FlightPlanProgressActivity extends BaseActivity {
 		Intent intent = getIntent();
 		mFlightPlanUri = intent.getStringExtra(FlightPlanActivity.FLIGHTPLAN_URI);
 		LoadFlightPlan();
-		
+
 		mThread = new Thread() {
 			public void run() {
 				FlyRoute();
 			}
 		};
 	}
-	
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 		mThread.interrupt();
 	}
-
 
 	@Override
 	protected void onResume() {
@@ -49,25 +47,26 @@ public class FlightPlanProgressActivity extends BaseActivity {
 	}
 
 	private void LoadFlightPlan() {
-    	FlightPlanFileReader reader = new FlightPlanFileReader();
-    	String jsonFlightPLan = reader.getFlightPlan(mFlightPlanUri);
-    	JsonFlightPlanParser jsonParser = new JsonFlightPlanParser();
-    	mFlightPlan = jsonParser.getFlightPlan(jsonFlightPLan);
-    }
+		FlightPlanFileReader reader = new FlightPlanFileReader();
+		String jsonFlightPLan = reader.getFlightPlan(mFlightPlanUri);
+		JsonFlightPlanParser jsonParser = new JsonFlightPlanParser();
+		mFlightPlan = jsonParser.getFlightPlan(jsonFlightPLan);
+	}
 
 	private void FlyRoute() {
-		YADroneApplication app = (YADroneApplication)getApplication();
+		YADroneApplication app = (YADroneApplication) getApplication();
 		final ARDrone drone = app.getARDrone();
 		NavDataManager nd = drone.getNavDataManager();
 		nd.setVelocityListener(new VelocityListener() {
-			
+
 			@Override
 			public void velocityChanged(float vx, float vy, float vz) {
-				System.out.println("Velocity vx:" + vx + " vy:" + vy + "vz: " + vz);
-				
+				if (vx != 0f || vy != 0f || vz != 0f) {
+					System.out.println("Velocity vx:" + vx + " vy:" + vy + " vz: " + vz);
+				}
 			}
 		});
-	
+
 		for (DroneSchedulingCommand command : mFlightPlan) {
 			try {
 				Log.d("FlyRoute", command.toString());
@@ -78,7 +77,6 @@ public class FlightPlanProgressActivity extends BaseActivity {
 			}
 		}
 	}
-
 
 	// public boolean onCreateOptionsMenu(Menu menu)
 	// {
