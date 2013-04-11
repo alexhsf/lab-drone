@@ -75,11 +75,9 @@ public abstract class AbstractManager implements Runnable {
 	}
 
 	public void start() {
-		if (thread == null || thread.getState() == Thread.State.TERMINATED) {
+		if (thread == null) {
 			String name = getClass().getSimpleName();
 			thread = new Thread(this, name);
-		}
-		if (thread.getState() == Thread.State.NEW) {
 			thread.start();
 		}
 	}

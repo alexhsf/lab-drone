@@ -92,8 +92,6 @@ public abstract class AbstractTCPManager implements Runnable {
 		if (thread == null || thread.getState() == Thread.State.TERMINATED) {
 			String name = getClass().getSimpleName();
 			thread = new Thread(this, name);
-		}
-		if (thread.getState() == Thread.State.NEW) {
 			thread.start();
 		}
 	}
