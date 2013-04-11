@@ -162,12 +162,18 @@ public class DroneSchedulingCommandFactory {
 
 	private static ATCommand getControlCommand(Object value) throws JSONException {
 		ATCommand command = null;
-		if (value instanceof JSONObject) {
-			JSONObject parameters = (JSONObject) value;
-			String mode = parameters.getString("mode");
+		if (value instanceof JSONObject)
+		{
+			JSONObject parameters = (JSONObject)value;
+			String modeString = parameters.getString("mode");
 			int arg2 = parameters.getInt("arg2");
-			ControlMode cm = ControlMode.valueOf(mode);
-			command = new ControlCommand(cm, arg2);
+			try
+			{
+				ControlMode mode  = ControlMode.valueOf(modeString);
+				command = new ControlCommand(mode, arg2);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			}
 		}
 		return command;
 	}
@@ -182,13 +188,18 @@ public class DroneSchedulingCommandFactory {
 
 	private static ATCommand getFlightAnimationCommand(Object value) throws JSONException {
 		ATCommand command = null;
-		if (value instanceof JSONObject) {
-			JSONObject parameters = (JSONObject) value;
-			String animation = parameters.getString("animation");
+		if (value instanceof JSONObject)
+		{
+			JSONObject parameters = (JSONObject)value;
+			String animationString = parameters.getString("animation");
 			int animationDuration = parameters.getInt("duration");
-			FlightAnimation anim = null;
-			anim = FlightAnimation.valueOf(animation);
-			command = new FlightAnimationCommand(anim, animationDuration);
+			try
+			{
+				FlightAnimation animation = FlightAnimation.valueOf(animationString);
+				command = new FlightAnimationCommand(animation, animationDuration);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			}
 		}
 		return command;
 	}
@@ -230,58 +241,18 @@ public class DroneSchedulingCommandFactory {
 
 	private static ATCommand getLEDAnimationCommand(Object value) throws JSONException {
 		ATCommand command = null;
-		if (value instanceof JSONObject) {
-			JSONObject parameters = (JSONObject) value;
-			String animation = parameters.getString("animation");
-			float frequency = (float) parameters.getDouble("frequency");
+		if (value instanceof JSONObject)
+		{
+			JSONObject parameters = (JSONObject)value;
+			String animationString = parameters.getString("animation");
+			float frequency = (float)parameters.getDouble("frequency");
 			int animationDuration = parameters.getInt("duration");
-			LEDAnimation anim = null;
-			// TODO: can this be done in a more easy way?
-			if (animation.equals("BLINK_GREEN_RED")) {
-				anim = LEDAnimation.BLINK_GREEN_RED;
-			} else if (animation.equals("BLINK_GREEN")) {
-				anim = LEDAnimation.BLINK_GREEN;
-			} else if (animation.equals("BLINK_RED")) {
-				anim = LEDAnimation.BLINK_RED;
-			} else if (animation.equals("BLINK_ORANGE")) {
-				anim = LEDAnimation.BLINK_ORANGE;
-			} else if (animation.equals("SNAKE_GREEN_RED")) {
-				anim = LEDAnimation.SNAKE_GREEN_RED;
-			} else if (animation.equals("FIRE")) {
-				anim = LEDAnimation.FIRE;
-			} else if (animation.equals("STANDARD")) {
-				anim = LEDAnimation.STANDARD;
-			} else if (animation.equals("RED")) {
-				anim = LEDAnimation.RED;
-			} else if (animation.equals("GREEN")) {
-				anim = LEDAnimation.GREEN;
-			} else if (animation.equals("RED_SNAKE")) {
-				anim = LEDAnimation.RED_SNAKE;
-			} else if (animation.equals("BLANK")) {
-				anim = LEDAnimation.BLANK;
-			} else if (animation.equals("RIGHT_MISSILE")) {
-				anim = LEDAnimation.RIGHT_MISSILE;
-			} else if (animation.equals("LEFT_MISSILE")) {
-				anim = LEDAnimation.LEFT_MISSILE;
-			} else if (animation.equals("DOUBLE_MISSILE")) {
-				anim = LEDAnimation.DOUBLE_MISSILE;
-			} else if (animation.equals("FRONT_LEFT_GREEN_OTHERS_RED")) {
-				anim = LEDAnimation.FRONT_LEFT_GREEN_OTHERS_RED;
-			} else if (animation.equals("FRONT_RIGHT_GREEN_OTHERS_RED")) {
-				anim = LEDAnimation.FRONT_RIGHT_GREEN_OTHERS_RED;
-			} else if (animation.equals("REAR_RIGHT_GREEN_OTHERS_RED")) {
-				anim = LEDAnimation.REAR_RIGHT_GREEN_OTHERS_RED;
-			} else if (animation.equals("REAR_LEFT_GREEN_OTHERS_RED")) {
-				anim = LEDAnimation.REAR_LEFT_GREEN_OTHERS_RED;
-			} else if (animation.equals("LEFT_GREEN_RIGHT_RED")) {
-				anim = LEDAnimation.LEFT_GREEN_RIGHT_RED;
-			} else if (animation.equals("LEFT_RED_RIGHT_GREEN")) {
-				anim = LEDAnimation.LEFT_RED_RIGHT_GREEN;
-			} else if (animation.equals("BLINK_STANDARD")) {
-				anim = LEDAnimation.BLINK_STANDARD;
-			}
-			if (anim != null) {
-				command = new LEDAnimationCommand(anim, frequency, animationDuration);
+			try
+			{
+				LEDAnimation animation = LEDAnimation.valueOf(animationString);
+				command = new LEDAnimationCommand(animation, frequency, animationDuration);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
 			}
 		}
 		return command;
@@ -408,24 +379,17 @@ public class DroneSchedulingCommandFactory {
 
 	private static ATCommand getVideoChannelCommand(Object value) throws JSONException {
 		ATCommand command = null;
-		if (value instanceof JSONObject) {
-			JSONObject parameters = (JSONObject) value;
-			String channel = parameters.getString("video_channel");
+		if (value instanceof JSONObject)
+		{
+			JSONObject parameters = (JSONObject)value;
+			String videoChannelString = parameters.getString("video_channel");
 			VideoChannel videoChannel = null;
-			// TODO: can this be done in a more easy way?
-			if (channel.equals("HORI")) {
-				videoChannel = VideoChannel.HORI;
-			} else if (channel.equals("VERT")) {
-				videoChannel = VideoChannel.VERT;
-			} else if (channel.equals("LARGE_HORI_SMALL_VERT")) {
-				videoChannel = VideoChannel.LARGE_HORI_SMALL_VERT;
-			} else if (channel.equals("LARGE_VERT_SMALL_HORI")) {
-				videoChannel = VideoChannel.LARGE_VERT_SMALL_HORI;
-			} else if (channel.equals("NEXT")) {
-				videoChannel = VideoChannel.HORI;
-			}
-			if (channel != null) {
+			try
+			{
+				videoChannel = VideoChannel.valueOf(videoChannelString);
 				command = new VideoChannelCommand(videoChannel);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
 			}
 		}
 		return command;

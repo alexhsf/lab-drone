@@ -47,7 +47,12 @@ public class FlightPlanProgressActivity extends BaseActivity {
 	}
 
 	private void LoadFlightPlan() {
-		FlightPlanFileReader reader = new FlightPlanFileReader();
+		IFlightPlanReader reader;
+		if (mFlightPlanUri.startsWith("ftp") || mFlightPlanUri.startsWith("http")) {
+			reader = new FlightPlanFtpReader();
+		} else {
+			reader = new FlightPlanFileReader();
+		}
 		String jsonFlightPLan = reader.getFlightPlan(mFlightPlanUri);
 		JsonFlightPlanParser jsonParser = new JsonFlightPlanParser();
 		mFlightPlan = jsonParser.getFlightPlan(jsonFlightPLan);
