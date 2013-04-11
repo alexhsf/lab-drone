@@ -16,4 +16,10 @@ public class PMODECommand extends ATCommand {
 	protected Object[] getParameters() {
 		return new Object[] { mode };
 	}
+
+	@Override
+	public Priority getPriority() {
+		return Priority.MAX_PRIORITY;
+	}
+
 }

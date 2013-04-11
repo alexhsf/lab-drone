@@ -22,4 +22,10 @@ public class MiscCommand extends ATCommand {
 	protected Object[] getParameters() {
 		return new Object[] { arg1, arg2, arg3, arg4 };
 	}
+
+	@Override
+	public Priority getPriority() {
+		return Priority.MAX_PRIORITY;
+	}
+
 }
