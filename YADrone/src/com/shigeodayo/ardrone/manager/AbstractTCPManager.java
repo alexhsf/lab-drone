@@ -31,6 +31,7 @@ public abstract class AbstractTCPManager implements Runnable {
 	protected InetAddress inetaddr = null;
 	protected Socket socket = null;
 	protected boolean connected = false;
+	protected Thread thread;
 
 	public AbstractTCPManager(InetAddress inetaddr) {
 		this.inetaddr = inetaddr;
@@ -86,4 +87,15 @@ public abstract class AbstractTCPManager implements Runnable {
 		}
 		return null;
 	}
+
+	public void start() {
+		if (thread == null || thread.getState() == Thread.State.TERMINATED) {
+			String name = getClass().getSimpleName();
+			thread = new Thread(this, name);
+		}
+		if (thread.getState() == Thread.State.NEW) {
+			thread.start();
+		}
+	}
+
 }

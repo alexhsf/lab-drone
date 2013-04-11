@@ -13,7 +13,7 @@ public class KeepAliveCommand extends ATCommand {
 	}
 
 	@Override
-	public byte getPriority() {
-		return VERY_HIGH_PRIORITY;
+	public Priority getPriority() {
+		return Priority.VERY_HIGH_PRIORITY;
 	}
 }
