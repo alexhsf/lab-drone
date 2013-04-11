@@ -234,44 +234,14 @@ public class DroneSchedulingCommandFactory {
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
-			String mode = parameters.getString("mode");
-			ControlMode controlMode = null;
-			if (mode.equals("NONE"))
+			String modeString = parameters.getString("mode");
+			int arg2 = parameters.getInt("arg2");
+			try
 			{
-				controlMode = ControlMode.NONE;
-			}
-			else if (mode.equals("ARDRONE_UPDATE"))
-			{
-				controlMode = ControlMode.ARDRONE_UPDATE;
-			}
-			else if (mode.equals("PIC_UPDATE"))
-			{
-				controlMode = ControlMode.PIC_UPDATE;
-			}
-			else if (mode.equals("LOGS_GET"))
-			{
-				controlMode = ControlMode.LOGS_GET;
-			}
-			else if (mode.equals("LOGS_GET"))
-			{
-				controlMode = ControlMode.LOGS_GET;
-			}
-			else if (mode.equals("CFG_GET"))
-			{
-				controlMode = ControlMode.CFG_GET;
-			}
-			else if (mode.equals("ACK"))
-			{
-				controlMode = ControlMode.ACK;
-			}
-			else if (mode.equals("CUSTOM_CFG_GET"))
-			{
-				controlMode = ControlMode.CUSTOM_CFG_GET;
-			}
-			if (controlMode != null)
-			{
-				int arg2 = parameters.getInt("arg2");
-				command = new ControlCommand(controlMode, arg2);
+				ControlMode mode  = ControlMode.valueOf(modeString);
+				command = new ControlCommand(mode, arg2);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
 			}
 		}
 		return command;
@@ -292,93 +262,14 @@ public class DroneSchedulingCommandFactory {
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
-			String animation = parameters.getString("animation");
+			String animationString = parameters.getString("animation");
 			int animationDuration = parameters.getInt("duration");
-			FlightAnimation anim = null;
-			// TODO: can this be done in a more easy way?
-			if (animation.equals("PHI_M30_DEG"))
+			try
 			{
-				anim = FlightAnimation.PHI_M30_DEG;
-			}
-			else if (animation.equals("PHI_30_DEG"))
-			{
-				anim = FlightAnimation.PHI_M30_DEG;
-			}
-			else if (animation.equals("THETA_M30_DEG"))
-			{
-				anim = FlightAnimation.THETA_M30_DEG;
-			}
-			else if (animation.equals("THETA_30_DEG"))
-			{
-				anim = FlightAnimation.THETA_30_DEG;
-			}
-			else if (animation.equals("THETA_20DEG_YAW_200DEG"))
-			{
-				anim = FlightAnimation.THETA_20DEG_YAW_200DEG;
-			}
-			else if (animation.equals("THETA_20DEG_YAW_M200DEG"))
-			{
-				anim = FlightAnimation.THETA_20DEG_YAW_M200DEG;
-			}
-			else if (animation.equals("TURNAROUND"))
-			{
-				anim = FlightAnimation.TURNAROUND;
-			}
-			else if (animation.equals("TURNAROUND_GODOWN"))
-			{
-				anim = FlightAnimation.TURNAROUND_GODOWN;
-			}
-			else if (animation.equals("YAW_SHAKE"))
-			{
-				anim = FlightAnimation.YAW_SHAKE;
-			}
-			else if (animation.equals("YAW_DANCE"))
-			{
-				anim = FlightAnimation.YAW_DANCE;
-			}
-			else if (animation.equals("PHI_DANCE"))
-			{
-				anim = FlightAnimation.PHI_DANCE;
-			}
-			else if (animation.equals("THETA_DANCE"))
-			{
-				anim = FlightAnimation.THETA_DANCE;
-			}
-			else if (animation.equals("VZ_DANCE"))
-			{
-				anim = FlightAnimation.VZ_DANCE;
-			}
-			else if (animation.equals("WAVE"))
-			{
-				anim = FlightAnimation.WAVE;
-			}
-			else if (animation.equals("PHI_THETA_MIXED"))
-			{
-				anim = FlightAnimation.PHI_THETA_MIXED;
-			}
-			else if (animation.equals("DOUBLE_PHI_THETA_MIXED"))
-			{
-				anim = FlightAnimation.DOUBLE_PHI_THETA_MIXED;
-			}
-			else if (animation.equals("FLIP_AHEAD"))
-			{
-				anim = FlightAnimation.FLIP_AHEAD;
-			}
-			else if (animation.equals("FLIP_BEHIND"))
-			{
-				anim = FlightAnimation.FLIP_BEHIND;
-			}
-			else if (animation.equals("FLIP_LEFT"))
-			{
-				anim = FlightAnimation.FLIP_LEFT;
-			}
-			else if (animation.equals("FLIP_RIGHT"))
-			{
-				anim = FlightAnimation.FLIP_RIGHT;
-			}
-			if  (anim != null)
-			{
-				command = new FlightAnimationCommand(anim, animationDuration);
+				FlightAnimation animation = FlightAnimation.valueOf(animationString);
+				command = new FlightAnimationCommand(animation, animationDuration);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
 			}
 		}
 		return command;
@@ -425,98 +316,15 @@ public class DroneSchedulingCommandFactory {
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
-			String animation = parameters.getString("animation");
+			String animationString = parameters.getString("animation");
 			float frequency = (float)parameters.getDouble("frequency");
 			int animationDuration = parameters.getInt("duration");
-			LEDAnimation anim = null;
-			// TODO: can this be done in a more easy way?
-			if (animation.equals("BLINK_GREEN_RED"))
+			try
 			{
-				anim = LEDAnimation.BLINK_GREEN_RED;
-			}
-			else if (animation.equals("BLINK_GREEN"))
-			{
-				anim = LEDAnimation.BLINK_GREEN;
-			}
-			else if (animation.equals("BLINK_RED"))
-			{
-				anim = LEDAnimation.BLINK_RED;
-			}
-			else if (animation.equals("BLINK_ORANGE"))
-			{
-				anim = LEDAnimation.BLINK_ORANGE;
-			}
-			else if (animation.equals("SNAKE_GREEN_RED"))
-			{
-				anim = LEDAnimation.SNAKE_GREEN_RED;
-			}
-			else if (animation.equals("FIRE"))
-			{
-				anim = LEDAnimation.FIRE;
-			}
-			else if (animation.equals("STANDARD"))
-			{
-				anim = LEDAnimation.STANDARD;
-			}
-			else if (animation.equals("RED"))
-			{
-				anim = LEDAnimation.RED;
-			}
-			else if (animation.equals("GREEN"))
-			{
-				anim = LEDAnimation.GREEN;
-			}
-			else if (animation.equals("RED_SNAKE"))
-			{
-				anim = LEDAnimation.RED_SNAKE;
-			}
-			else if (animation.equals("BLANK"))
-			{
-				anim = LEDAnimation.BLANK;
-			}
-			else if (animation.equals("RIGHT_MISSILE"))
-			{
-				anim = LEDAnimation.RIGHT_MISSILE;
-			}
-			else if (animation.equals("LEFT_MISSILE"))
-			{
-				anim = LEDAnimation.LEFT_MISSILE;
-			}
-			else if (animation.equals("DOUBLE_MISSILE"))
-			{
-				anim = LEDAnimation.DOUBLE_MISSILE;
-			}
-			else if (animation.equals("FRONT_LEFT_GREEN_OTHERS_RED"))
-			{
-				anim = LEDAnimation.FRONT_LEFT_GREEN_OTHERS_RED;
-			}
-			else if (animation.equals("FRONT_RIGHT_GREEN_OTHERS_RED"))
-			{
-				anim = LEDAnimation.FRONT_RIGHT_GREEN_OTHERS_RED;
-			}
-			else if (animation.equals("REAR_RIGHT_GREEN_OTHERS_RED"))
-			{
-				anim = LEDAnimation.REAR_RIGHT_GREEN_OTHERS_RED;
-			}
-			else if (animation.equals("REAR_LEFT_GREEN_OTHERS_RED"))
-			{
-				anim = LEDAnimation.REAR_LEFT_GREEN_OTHERS_RED;
-			}
-			else if (animation.equals("LEFT_GREEN_RIGHT_RED"))
-			{
-				anim = LEDAnimation.LEFT_GREEN_RIGHT_RED;
-			}
-			else if (animation.equals("LEFT_RED_RIGHT_GREEN"))
-			{
-				anim = LEDAnimation.LEFT_RED_RIGHT_GREEN;
-			}
-			else if (animation.equals("BLINK_STANDARD"))
-			{
-				anim = LEDAnimation.BLINK_STANDARD;
-			}
-			if  (anim != null)
-			{
-				command = new LEDAnimationCommand(anim, frequency, animationDuration);
+				LEDAnimation animation = LEDAnimation.valueOf(animationString);
+				command = new LEDAnimationCommand(animation, frequency, animationDuration);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
 			}
 		}
 		return command;
@@ -655,32 +463,14 @@ public class DroneSchedulingCommandFactory {
 		if (value instanceof JSONObject)
 		{
 			JSONObject parameters = (JSONObject)value;
-			String channel = parameters.getString("video_channel");
+			String videoChannelString = parameters.getString("video_channel");
 			VideoChannel videoChannel = null;
-			// TODO: can this be done in a more easy way?
-			if (channel.equals("HORI"))
+			try
 			{
-				videoChannel = VideoChannel.HORI;
-			}
-			else if (channel.equals("VERT"))
-			{
-				videoChannel = VideoChannel.VERT;
-			}
-			else if (channel.equals("LARGE_HORI_SMALL_VERT"))
-			{
-				videoChannel = VideoChannel.LARGE_HORI_SMALL_VERT;
-			}
-			else if (channel.equals("LARGE_VERT_SMALL_HORI"))
-			{
-				videoChannel = VideoChannel.LARGE_VERT_SMALL_HORI;
-			}
-			else if (channel.equals("NEXT"))
-			{
-				videoChannel = VideoChannel.HORI;
-			}
-			if (channel != null)
-			{
+				videoChannel = VideoChannel.valueOf(videoChannelString);
 				command = new VideoChannelCommand(videoChannel);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
 			}
 		}
 		return command;

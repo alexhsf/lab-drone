@@ -73,7 +73,7 @@ public class FlightPlanActivity extends BaseActivity {
         	flightPathUri = "flightplan3.json";
     		break;
     	case R.id.buttonTakeOffFly2mSpinFlyBackLand:
-        	flightPathUri = "flightplan4.json";
+        	flightPathUri = "http://www.geldropkickers.nl/lab-drone/flightplan3.json";
     		break;
     	default:
         	flightPathUri = "";

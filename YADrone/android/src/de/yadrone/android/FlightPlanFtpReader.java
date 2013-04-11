@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class FlightPlanFtpReader {
+public class FlightPlanFtpReader implements IFlightPlanReader {
 
 	public String getFlightPlan(String ftpAddress) {
 		// e.g. "ftp://mirror.csclub.uwaterloo.ca/index.html"
