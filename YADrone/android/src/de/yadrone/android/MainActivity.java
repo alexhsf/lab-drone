@@ -19,7 +19,9 @@ import com.shigeodayo.ardrone.command.EnemyColor;
 import com.shigeodayo.ardrone.command.FlyingMode;
 import com.shigeodayo.ardrone.command.VisionTagType;
 import com.shigeodayo.ardrone.configuration.ConfigurationManager;
+import com.shigeodayo.ardrone.navdata.CadType;
 import com.shigeodayo.ardrone.navdata.NavDataManager;
+import com.shigeodayo.ardrone.navdata.TrackerData;
 import com.shigeodayo.ardrone.navdata.VisionData;
 import com.shigeodayo.ardrone.navdata.VisionListener;
 import com.shigeodayo.ardrone.navdata.VisionPerformance;
@@ -59,6 +61,7 @@ public class MainActivity extends BaseActivity implements VisionListener {
 			// Do we need video to enable horizontal detection?
 			// cmd.setVideoData(true);
 			cmd.setEnemyColors(EnemyColor.ORANGE_BLUE);
+			cmd.setDetectionType(CadType.MULTIPLE_DETECTION_MODE);
 			cmd.setDetectionType(DetectionType.VERTICAL, new VisionTagType[] { VisionTagType.ORIENTED_ROUNDEL,
 					VisionTagType.BLACK_ROUNDEL, VisionTagType.ROUNDEL });
 			cmd.setDetectionType(DetectionType.HORIZONTAL, new VisionTagType[] { VisionTagType.SHELL_TAG_V2,
@@ -182,8 +185,8 @@ public class MainActivity extends BaseActivity implements VisionListener {
 	}
 
 	@Override
-	public void trackersSend(int[][] locked, int[][][] point) {
-		// System.out.println("trackersSend: " + locked + " " + point);
+	public void trackersSend(TrackerData d) {
+		//System.out.println(d);
 	}
 
 	@Override
@@ -198,7 +201,7 @@ public class MainActivity extends BaseActivity implements VisionListener {
 
 	@Override
 	public void receivedData(VisionData d) {
-		// System.out.println("Visiondata: " + d);
+		//System.out.println(d);
 	}
 
 	@Override

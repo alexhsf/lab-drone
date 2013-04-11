@@ -27,6 +27,7 @@ import com.shigeodayo.ardrone.navdata.ControlState;
 import com.shigeodayo.ardrone.navdata.DroneState;
 import com.shigeodayo.ardrone.navdata.NavDataManager;
 import com.shigeodayo.ardrone.navdata.StateListener;
+import com.shigeodayo.ardrone.navdata.TrackerData;
 import com.shigeodayo.ardrone.navdata.VisionData;
 import com.shigeodayo.ardrone.navdata.VisionListener;
 import com.shigeodayo.ardrone.navdata.VisionPerformance;
@@ -62,7 +63,7 @@ public class ControlActivity extends BaseActivity implements StateListener {
 			}			
 			
 			@Override
-			public void trackersSend(int[][] locked, int[][][] point) {
+			public void trackersSend(TrackerData d) {
 				// TODO Auto-generated method stub
 			}
 

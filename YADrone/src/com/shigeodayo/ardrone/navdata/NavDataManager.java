@@ -22,7 +22,6 @@ import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
 import java.util.zip.CRC32;
 
 import com.shigeodayo.ardrone.command.CommandManager;
@@ -216,7 +215,6 @@ public class NavDataManager extends AbstractManager {
 	public void run() {
 		ticklePort(ARDroneUtils.NAV_PORT);
 		boolean bootstrapping = true;
-		// TODO: can we assume controlAck is false initially?
 		boolean controlAck = false;
 
 		DatagramPacket packet = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
@@ -662,22 +660,26 @@ public class NavDataManager extends AbstractManager {
 	private void parseTrackersSendOption(ByteBuffer b) {
 		if (visionListener != null) {
 
-			int[][] locked = new int[DEFAULT_NB_TRACKERS_WIDTH][DEFAULT_NB_TRACKERS_HEIGHT];
+			// trackers[i][j][0]: locked
+			// trackers[i][j][1]: point.x
+			// trackers[i][j][2]: point.y
+
+			int[][][] trackers = new int[DEFAULT_NB_TRACKERS_WIDTH][DEFAULT_NB_TRACKERS_HEIGHT][3];
 			for (int i = 0; i < DEFAULT_NB_TRACKERS_WIDTH; i++) {
 				for (int j = 0; j < DEFAULT_NB_TRACKERS_HEIGHT; j++) {
-					locked[i][j] = b.getInt();
+					trackers[i][j][0] = b.getInt();
 				}
 			}
 
-			int[][][] point = new int[DEFAULT_NB_TRACKERS_WIDTH][DEFAULT_NB_TRACKERS_HEIGHT][2];
 			for (int i = 0; i < DEFAULT_NB_TRACKERS_WIDTH; i++) {
 				for (int j = 0; j < DEFAULT_NB_TRACKERS_HEIGHT; j++) {
-					point[i][j] = getInt(b, 2);
+					trackers[i][j][1] = b.getInt();
+					trackers[i][j][2] = b.getInt();
 				}
 			}
 
 			// TODO: create Tracker class containing locked + point?
-			visionListener.trackersSend(locked, point);
+			visionListener.trackersSend(new TrackerData(trackers));
 		}
 	}
 
@@ -998,17 +1000,22 @@ public class NavDataManager extends AbstractManager {
 			float v[] = getFloat(b, 3);
 
 			/* Deprecated ! Don't use ! */
+			@SuppressWarnings("unused")
 			float detection_camera_rot[] = getFloat(b, 9);
 			/* Deprecated ! Don't use ! */
+			@SuppressWarnings("unused")
 			float detection_camera_trans[] = getFloat(b, 3);
 			/* Deprecated ! Don't use ! */
+			@SuppressWarnings("unused")
 			long detection_tag_index = getUInt32(b);
 
 			int detection_camera_type = b.getInt();
 
 			/* Deprecated ! Don't use ! */
+			@SuppressWarnings("unused")
 			float drone_camera_rot[] = getFloat(b, 9);
 			/* Deprecated ! Don't use ! */
+			@SuppressWarnings("unused")
 			float drone_camera_trans[] = getFloat(b, 3);
 
 			if (visionListener != null && detection_camera_type != 0) {
