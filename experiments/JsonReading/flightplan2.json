@@ -2,6 +2,42 @@
 	"FlightPlan" :
 	[
 		{
+			"Configure" :
+			{
+				"control:outdoor" : false
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:flight_without_shell" : false
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:altitude_max" : 3000
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:altitude_min" : 500
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:control_vz_max" : 1000
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:euler_angle_max" : "0.25"
+			}
+		},
+		{
 			"FlatTrim" : ""
 		},
 		{
@@ -12,12 +48,23 @@
 			"Move" :
 			{
 			   "combined_yaw_enabled" : false,
-			   "left_right_tilt" : 0.1,
-               "front_back_tilt" : -0.1,
-			   "vertical_speed" : -0.4,
-			   "angular_speed" : 0.05
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0.5,
+			   "angular_speed" : 0
 			},
-			"Duration" : 5000
+			"Duration" : 3000
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0.1,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0
+			},
+			"Duration" : 3000
 		},
 		{
 			"Stop" : "",

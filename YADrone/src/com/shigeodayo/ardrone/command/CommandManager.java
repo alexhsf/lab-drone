@@ -422,7 +422,7 @@ public class CommandManager extends AbstractManager {
 					// if there is a sticky command, we can wait until we need to deliver it.
 					long t = System.currentTimeMillis();
 					dt = t - t0;
-					dt = (dt < 0 ? 0 : 50 - dt);
+					dt = (dt < 0 ? 1 : 50 - dt);
 				}
 				c = q.poll(dt, TimeUnit.MILLISECONDS);
 				// System.out.println(c);
