@@ -64,7 +64,7 @@ public class ARDrone implements ARDroneInterface {
 		this.videoDecoder = videoDecoder;
 	}
 
-	public CommandManager getCommandManager() {
+	public synchronized CommandManager getCommandManager() {
 		if (commandManager == null) {
 			InetAddress ia = getInetAddress();
 			commandManager = new CommandManager(ia);
@@ -72,7 +72,7 @@ public class ARDrone implements ARDroneInterface {
 		return commandManager;
 	}
 
-	public NavDataManager getNavDataManager() {
+	public synchronized NavDataManager getNavDataManager() {
 		if (navdataManager == null) {
 			InetAddress ia = getInetAddress();
 			CommandManager cm = getCommandManager();
@@ -81,7 +81,7 @@ public class ARDrone implements ARDroneInterface {
 		return navdataManager;
 	}
 
-	public VideoManager getVideoManager() {
+	public synchronized VideoManager getVideoManager() {
 		if (videoManager == null) {
 			InetAddress ia = getInetAddress();
 			CommandManager cm = getCommandManager();
@@ -90,7 +90,7 @@ public class ARDrone implements ARDroneInterface {
 		return videoManager;
 	}
 
-	public ConfigurationManager getConfigurationManager() {
+	public synchronized ConfigurationManager getConfigurationManager() {
 		if (configurationManager == null) {
 			InetAddress ia = getInetAddress();
 			CommandManager cm = getCommandManager();
