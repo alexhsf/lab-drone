@@ -52,6 +52,10 @@
         <activity
             android:name=".DronePreferenceActivity"
             android:label="@string/title_activity_yadrone" />
+        
+        <activity 
+            android:name=".RemoteActivity" 
+            android:label="@string/title_activity_yadrone"/>
     
     </application>
 

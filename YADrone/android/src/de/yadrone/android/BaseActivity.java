@@ -32,6 +32,8 @@ public class BaseActivity extends Activity {
         	case R.id.menuitem_video:
         		ac = VideoActivity.class;
                 break;
+        	case R.id.menuitem_remote:
+        		ac = RemoteActivity.class;
     	    default:
     	        return super.onOptionsItemSelected(item);
         }
