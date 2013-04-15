@@ -23,6 +23,7 @@ public class DronePreferenceActivity extends PreferenceActivity implements OnSha
         updateSummaryWithParameterValue("pref_max_tilt");
         updateSummaryWithParameterValue("pref_hull_type");
         updateSummaryWithParameterValue("pref_flight_location");
+        updateSummaryWithParameterValue("pref_battery_alarm_level");
     }
     
     protected void onResume() {
@@ -79,6 +80,10 @@ public class DronePreferenceActivity extends PreferenceActivity implements OnSha
     		else if (key.equals("pref_max_tilt"))
     		{
     			id = R.string.pref_max_tilt_summ;
+    		}
+    		else if (key.equals("pref_battery_alarm_level"))
+    		{
+    			id = R.string.pref_battery_alarm_level_summ;
     		}
     		else
     		{

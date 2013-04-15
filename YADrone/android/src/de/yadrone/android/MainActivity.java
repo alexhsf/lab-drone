@@ -39,19 +39,14 @@ public class MainActivity extends BaseActivity implements VisionListener {
 		final TextView text = (TextView) findViewById(R.id.text_init);
 
 		WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-		text.append("\nConnected to " + wifi.getConnectionInfo().getSSID());
-
+		text.append("\nConnected to " + wifi.getConnectionInfo().getSSID() + "\n");
+		text.append(mCreationInfo);
+		
 		YADroneApplication app = (YADroneApplication) getApplication();
 		final ARDrone drone = app.getARDrone();
 
-		// actually this does not belong to the activity, but to the start of the complete application
-		// TODO: refactor into (?) YADroneApplication
 		try {
-			text.append("\n\nStart Drone\n");
-			drone.start();
-
 			CommandManager cmd = drone.getCommandManager();
-
 			cmd.setAutonomousFlight(false);
 
 			// Do we need video to enable horizontal detection?
@@ -71,23 +66,6 @@ public class MainActivity extends BaseActivity implements VisionListener {
 			// nav.setStateListener(this);
 			nav.setVisionListener(this);
 
-			text.append(configureDrone(drone));
-
-			// not allowed to do networking on the main thread
-			ConfigurationManager cfg = drone.getConfigurationManager();
-			cfg.getConfiguration(new ConfigurationListener() {
-
-				@Override
-				public void result(final String s) {
-					runOnUiThread(new Runnable() {
-
-						@Override
-						public void run() {
-							text.append(s);
-						}
-					});
-				}
-			});
 		} catch (Exception exc) {
 			exc.printStackTrace();
 
@@ -95,42 +73,6 @@ public class MainActivity extends BaseActivity implements VisionListener {
 				drone.stop();
 		}
 
-	}
-
-	private String configureDrone(ARDrone drone) {
-		StringBuilder text = new StringBuilder();
-		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-		String ssid = sharedPrefs.getString("pref_ssid", "foo");
-		text.append(String.format("Set SSID to %1$s\n", ssid));
-		// drone.setSsid(ssid);
-
-		double maxAltitude = Double.parseDouble(sharedPrefs.getString("pref_altitude", "3"));
-		text.append(String.format("Set max. Altitude to %1$f m\n", maxAltitude));
-		drone.setMaxAltitude(2000);
-		drone.setMinAltitude(1000);
-
-		double maxVerticalSpeed = Double.parseDouble(sharedPrefs.getString("pref_vertical_speed", "1"));
-		text.append(String.format("Set max. verticalspeed to %1$f m/s\n", maxVerticalSpeed));
-		// drone.setMaxVerticalSpeed(maxVerticalSpeed);
-
-		double maxYaw = Double.parseDouble(sharedPrefs.getString("pref_max_yaw", "1"));
-		text.append(String.format("Set max. yaw to %1$f degrees\n", maxYaw));
-		// drone.setMaxYaw(maxYaw);
-
-		double maxTilt = Double.parseDouble(sharedPrefs.getString("pref_max_tilt", "1"));
-		text.append(String.format("Set max. tilt to %1$f degrees\n", maxTilt));
-		// drone.setMaxTilt(maxTilt);
-
-		String hullType = sharedPrefs.getString("pref_hull_type", "Indoor");
-		text.append(String.format("Set hull type to %1$s\n", hullType));
-		// drone.setHullType(hullType);
-
-		String flightLocation = sharedPrefs.getString("pref_flight_location", "Ïndoor");
-		text.append(String.format("Set flight location to %1$s\n", flightLocation));
-		// drone.setFlightLocation(flightLocation);
-
-		return text.toString();
 	}
 
 	/**
