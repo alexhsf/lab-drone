@@ -2,13 +2,11 @@ package de.yadrone.android;
 
 import java.util.List;
 
-import com.shigeodayo.ardrone.ARDrone;
-import com.shigeodayo.ardrone.navdata.NavDataManager;
-import com.shigeodayo.ardrone.navdata.VelocityListener;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.shigeodayo.ardrone.ARDrone;
 
 public class FlightPlanProgressActivity extends BaseActivity {
 
@@ -25,10 +23,10 @@ public class FlightPlanProgressActivity extends BaseActivity {
 		// Get the flight plan from the intent
 		Intent intent = getIntent();
 		mFlightPlanUri = intent.getStringExtra(FlightPlanActivity.FLIGHTPLAN_URI);
-		LoadFlightPlan();
 
 		mThread = new Thread() {
 			public void run() {
+				LoadFlightPlan();
 				FlyRoute();
 			}
 		};
