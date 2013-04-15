@@ -27,7 +27,9 @@
     <string name="pref_hull_type_summ">Mounted Hull Type is set to %1$s</string>
     <string name="pref_flight_location">Flight Location</string>
     <string name="pref_flight_location_summ">Flight Location is set to %1$s</string>
-
+    <string name="pref_battery_alarm_level">Battery Alarm Level</string>
+    <string name="pref_battery_alarm_level_summ">Battery Alarm Level is set to %1$s %%</string>
+    
     <string-array name="in_out_door_array">
         <item>Indoor</item>
         <item>Outdoor</item>
