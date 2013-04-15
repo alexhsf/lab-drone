@@ -54,11 +54,14 @@ public abstract class AbstractManager implements Runnable {
 	}
 
 	public void close() {
+		System.out.println("Stopping " + getClass().getSimpleName());
+		thread.interrupt();
+		doStop = true;
 		if (socket != null) {
 			socket.close();
 		}
 		connected = false;
-		doStop = true;
+		thread = null;
 	}
 
 	protected void ticklePort(int port) {
@@ -75,10 +78,14 @@ public abstract class AbstractManager implements Runnable {
 	}
 
 	public void start() {
+		System.out.println("Starting " + getClass().getSimpleName());
 		if (thread == null) {
+			doStop = false;
 			String name = getClass().getSimpleName();
 			thread = new Thread(this, name);
 			thread.start();
+		} else {
+			System.out.println("Already started before " + getClass().getSimpleName());
 		}
 	}
 }

@@ -267,6 +267,7 @@ public class NavDataManager extends AbstractManager {
 				t.printStackTrace();
 			}
 		}
+		System.out.println("Stopped " + getClass().getSimpleName());
 	}
 
 	public DroneState parse(ByteBuffer b) throws NavDataException {
