@@ -213,6 +213,7 @@ public class NavDataManager extends AbstractManager {
 
 	@Override
 	public void run() {
+		connect(ARDroneUtils.NAV_PORT);
 		ticklePort(ARDroneUtils.NAV_PORT);
 		boolean bootstrapping = true;
 		boolean controlAck = false;
@@ -267,6 +268,7 @@ public class NavDataManager extends AbstractManager {
 				t.printStackTrace();
 			}
 		}
+		close();
 		System.out.println("Stopped " + getClass().getSimpleName());
 	}
 

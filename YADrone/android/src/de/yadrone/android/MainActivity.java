@@ -1,5 +1,7 @@
 package de.yadrone.android;
 
+import java.text.RuleBasedCollator;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,6 +20,7 @@ import com.shigeodayo.ardrone.command.DetectionType;
 import com.shigeodayo.ardrone.command.EnemyColor;
 import com.shigeodayo.ardrone.command.FlyingMode;
 import com.shigeodayo.ardrone.command.VisionTagType;
+import com.shigeodayo.ardrone.configuration.ConfigurationListener;
 import com.shigeodayo.ardrone.configuration.ConfigurationManager;
 import com.shigeodayo.ardrone.navdata.CadType;
 import com.shigeodayo.ardrone.navdata.NavDataManager;
@@ -44,15 +47,8 @@ public class MainActivity extends BaseActivity implements VisionListener {
 		// actually this does not belong to the activity, but to the start of the complete application
 		// TODO: refactor into (?) YADroneApplication
 		try {
-			text.append("\n\nConnect to Drone\n");
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					drone.connect();
-					drone.start();
-				}
-			}).start();
+			text.append("\n\nStart Drone\n");
+			drone.start();
 
 			CommandManager cmd = drone.getCommandManager();
 
@@ -78,31 +74,25 @@ public class MainActivity extends BaseActivity implements VisionListener {
 			text.append(configureDrone(drone));
 
 			// not allowed to do networking on the main thread
-			new Thread() {
-				public void run() {
-					ConfigurationManager cfg = drone.getConfigurationManager();
-					final StringBuilder builder = new StringBuilder();
-					builder.append(cfg.getConfiguration());
-					// builder.append(cfg.getPreviousRunLogs());
-					// builder.append(cfg.getCustomCofigurationIds());
-					final String configs = builder.toString();
+			ConfigurationManager cfg = drone.getConfigurationManager();
+			cfg.getConfiguration(new ConfigurationListener() {
+
+				@Override
+				public void result(final String s) {
 					runOnUiThread(new Runnable() {
+
 						@Override
 						public void run() {
-							text.append(configs);
+							text.append(s);
 						}
 					});
 				}
-			}.start();
-
+			});
 		} catch (Exception exc) {
 			exc.printStackTrace();
 
 			if (drone != null)
-				// TODO: separate disconnect and stop, symmetric to connect and start
-				// or should be integrate connect in the run methods?
-				// should we be able to connect/disconnect without stopping?
-				drone.disconnect();
+				drone.stop();
 		}
 
 	}
@@ -154,7 +144,7 @@ public class MainActivity extends BaseActivity implements VisionListener {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							YADroneApplication app = (YADroneApplication) getApplication();
 							ARDrone drone = app.getARDrone();
-							drone.disconnect();
+							drone.stop();
 
 							finish();
 						}
@@ -186,7 +176,7 @@ public class MainActivity extends BaseActivity implements VisionListener {
 
 	@Override
 	public void trackersSend(TrackerData d) {
-		//System.out.println(d);
+		// System.out.println(d);
 	}
 
 	@Override
@@ -201,7 +191,7 @@ public class MainActivity extends BaseActivity implements VisionListener {
 
 	@Override
 	public void receivedData(VisionData d) {
-		//System.out.println(d);
+		// System.out.println(d);
 	}
 
 	@Override

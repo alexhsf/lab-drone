@@ -23,8 +23,6 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 
-import android.util.Log;
-
 import com.shigeodayo.ardrone.command.CommandManager;
 import com.shigeodayo.ardrone.command.ControlCommand;
 import com.shigeodayo.ardrone.command.ControlMode;
@@ -35,8 +33,6 @@ import com.shigeodayo.ardrone.utils.ARDroneUtils;
 public class ConfigurationManager extends AbstractTCPManager {
 	private CommandManager manager = null;
 
-	private static final String TAG = "YADrone";
-
 	public ConfigurationManager(InetAddress inetaddr, CommandManager manager) {
 		super(inetaddr);
 		this.manager = manager;
@@ -44,58 +40,62 @@ public class ConfigurationManager extends AbstractTCPManager {
 
 	@Override
 	public void run() {
+		connect(ARDroneUtils.CONTROL_PORT);
 	}
 
-	private String getControlCommandResult(ControlMode p1, int p2) {
-		try {
-			// TODO better have connect throw IOException if connection fails
-			// this allows to call close only when connect succeeded
+	/**
+	 * Note: not thread-safe!
+	 */
+	private String getControlCommandResult(ControlMode p1, int p2, final ConfigurationListener listener) {
+		manager.setCommand(new ControlCommand(p1, p2));
 
-			manager.setCommand(new ControlCommand(p1, p2));
+		Thread t = new Thread() {
 
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			InputStream inputStream = getInputStream();
-			// TODO better getInputStream throw IOException to fail
-			if (inputStream != null) {
-				byte[] buf = new byte[1024];
-				int n = 0;
-				StringBuilder builder = new StringBuilder();
+			public void run() {
 				try {
-					while ((n = inputStream.read(buf)) != -1) {
-						// output: multiple rows of "Parameter = value"
-						builder.append(new String(buf, 0, n, "ASCII"));
+
+					InputStream inputStream = getInputStream();
+					// TODO better getInputStream throw IOException to fail
+					if (inputStream != null) {
+						byte[] buf = new byte[1024];
+						int n = 0;
+						StringBuilder builder = new StringBuilder();
+						try {
+							while ((n = inputStream.read(buf)) != -1) {
+								// output: multiple rows of "Parameter = value"
+								builder.append(new String(buf, 0, n, "ASCII"));
+							}
+						} catch (SocketTimeoutException e) {
+							// happens if the last byte happens to coincide with the end of the buffer
+						}
+						String s = builder.toString();
+						System.out.println(s);
+						if (listener != null) {
+							listener.result(s);
+						}
 					}
-				} catch (SocketTimeoutException e) {
-					// happens if the last byte happens to coincide with the end of the buffer
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-				String s = builder.toString();
-				Log.d(TAG, s);
-				return s;
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		};
+		t.start();
 		return "";
 
 	}
 
-	public String getCustomCofigurationIds() {
-		String s = getControlCommandResult(ControlMode.CUSTOM_CFG_GET, 0);
+	public String getCustomCofigurationIds(ConfigurationListener listener) {
+		String s = getControlCommandResult(ControlMode.CUSTOM_CFG_GET, 0, listener);
 		return s;
 	}
 
-	public String getPreviousRunLogs() {
-		String s = getControlCommandResult(ControlMode.LOGS_GET, 0);
+	public String getPreviousRunLogs(ConfigurationListener listener) {
+		String s = getControlCommandResult(ControlMode.LOGS_GET, 0, listener);
 		return s;
 	}
 
-	public String getConfiguration() {
-		String s = getControlCommandResult(ControlMode.CFG_GET, 0);
+	public String getConfiguration(ConfigurationListener listener) {
+		String s = getControlCommandResult(ControlMode.CFG_GET, 0, listener);
 		return s;
 	}
 

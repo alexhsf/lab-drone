@@ -1,8 +1,8 @@
 package com.shigeodayo.ardrone.command;
 
-public class StopCommand extends PCMDCommand {
+public class FreezeCommand extends PCMDCommand {
 
-	public StopCommand() {
+	public FreezeCommand() {
 		super(false, false, 0f, 0f, 0f, 0f);
 	}
 

@@ -188,7 +188,7 @@ public class ControlActivity extends BaseActivity implements StateListener {
 				if (event.getAction() == MotionEvent.ACTION_DOWN)
 					cm.forward(40);
 				else if (event.getAction() == MotionEvent.ACTION_UP)
-					cm.stop();
+					cm.freeze();
 
 				return true;
 			}
@@ -200,7 +200,7 @@ public class ControlActivity extends BaseActivity implements StateListener {
 				if (event.getAction() == MotionEvent.ACTION_DOWN)
 					cm.backward(40);
 				else if (event.getAction() == MotionEvent.ACTION_UP)
-					cm.stop();
+					cm.freeze();
 
 				return true;
 			}
@@ -212,7 +212,7 @@ public class ControlActivity extends BaseActivity implements StateListener {
 				if (event.getAction() == MotionEvent.ACTION_DOWN)
 					cm.goLeft(20);
 				else if (event.getAction() == MotionEvent.ACTION_UP)
-					cm.stop();
+					cm.freeze();
 
 				return true;
 			}
@@ -224,7 +224,7 @@ public class ControlActivity extends BaseActivity implements StateListener {
 				if (event.getAction() == MotionEvent.ACTION_DOWN)
 					cm.goRight(20);
 				else if (event.getAction() == MotionEvent.ACTION_UP)
-					cm.stop();
+					cm.freeze();
 
 				return true;
 			}
@@ -236,7 +236,7 @@ public class ControlActivity extends BaseActivity implements StateListener {
 				if (event.getAction() == MotionEvent.ACTION_DOWN)
 					cm.up(40);
 				else if (event.getAction() == MotionEvent.ACTION_UP)
-					cm.stop();
+					cm.freeze();
 
 				return true;
 			}
@@ -248,7 +248,7 @@ public class ControlActivity extends BaseActivity implements StateListener {
 				if (event.getAction() == MotionEvent.ACTION_DOWN)
 					cm.down(40);
 				else if (event.getAction() == MotionEvent.ACTION_UP)
-					cm.stop();
+					cm.freeze();
 
 				return true;
 			}
@@ -260,7 +260,7 @@ public class ControlActivity extends BaseActivity implements StateListener {
 				if (event.getAction() == MotionEvent.ACTION_DOWN)
 					cm.spinLeft(40);
 				else if (event.getAction() == MotionEvent.ACTION_UP)
-					cm.stop();
+					cm.freeze();
 
 				return true;
 			}
@@ -272,7 +272,7 @@ public class ControlActivity extends BaseActivity implements StateListener {
 				if (event.getAction() == MotionEvent.ACTION_DOWN)
 					cm.spinRight(40);
 				else if (event.getAction() == MotionEvent.ACTION_UP)
-					cm.stop();
+					cm.freeze();
 
 				return true;
 			}

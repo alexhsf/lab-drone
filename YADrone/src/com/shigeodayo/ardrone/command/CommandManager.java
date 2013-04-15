@@ -125,8 +125,8 @@ public class CommandManager extends AbstractManager {
 		move(-perc2float(speedY), -perc2float(speedX), -perc2float(speedZ), -perc2float(speedSpin));
 	}
 
-	public void stop() {
-		q.add(new StopCommand());
+	public void freeze() {
+		q.add(new FreezeCommand());
 	}
 
 	private float perc2float(int speed) {
@@ -399,6 +399,7 @@ public class CommandManager extends AbstractManager {
 	 */
 	@Override
 	public void run() {
+		connect(ARDroneUtils.PORT);
 		ATCommand c;
 		ATCommand cs = null;
 		final ATCommand cAck = new ResetControlAckCommand();
@@ -448,6 +449,7 @@ public class CommandManager extends AbstractManager {
 				t.printStackTrace();
 			}
 		}
+		close();
 		System.out.println("Stopped " + getClass().getSimpleName());
 	}
 
@@ -455,7 +457,7 @@ public class CommandManager extends AbstractManager {
 		// pmode parameter and first misc parameter are related
 		sendPMode(2);
 		sendMisc(2, 20, 2000, 3000);
-		stop();
+		freeze();
 		landing();
 	}
 

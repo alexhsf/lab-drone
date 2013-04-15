@@ -100,37 +100,15 @@ public class ARDrone implements ARDroneInterface {
 	}
 
 	@Override
-	public boolean connect() {
-		boolean b = true;
-		CommandManager cm = getCommandManager();
-		if (!cm.isConnected()) {
-			b &= cm.connect(ARDroneUtils.PORT);
-		}
-		ConfigurationManager cfgm = getConfigurationManager();
-		if (!cfgm.isConnected()) {
-			b &= cfgm.connect(ARDroneUtils.CONTROL_PORT);
-		}
-		NavDataManager nm = getNavDataManager();
-		if (!nm.isConnected()) {
-			b &= nm.connect(ARDroneUtils.NAV_PORT);
-		}
-		VideoManager vm = getVideoManager();
-		if (!vm.isConnected()) {
-			b &= vm.connect(ARDroneUtils.VIDEO_PORT);
-		}
-		return b;
-	}
-
-	@Override
-	public void disconnect() {
-		stop();
+	public void stop() {
+		freeze();
 		landing();
 		CommandManager cm = getCommandManager();
-		cm.close();
+		cm.stop();
 		ConfigurationManager cfgm = getConfigurationManager();
 		cfgm.close();
 		NavDataManager nm = getNavDataManager();
-		nm.close();
+		nm.stop();
 		VideoManager vm = getVideoManager();
 		vm.close();
 	}
@@ -249,9 +227,9 @@ public class ARDrone implements ARDroneInterface {
 	}
 
 	@Override
-	public void stop() {
+	public void freeze() {
 		if (commandManager != null)
-			commandManager.stop();
+			commandManager.freeze();
 	}
 
 	/**

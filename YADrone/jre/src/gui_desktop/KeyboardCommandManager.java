@@ -33,7 +33,7 @@ public class KeyboardCommandManager implements KeyListener, ISpeedListener {
 	public void keyReleased(KeyEvent e) {
 		System.out.println("Key released: " + e.getKeyChar());
 
-		ardrone.stop();
+		ardrone.freeze();
 	}
 
 	public void keyPressed(KeyEvent e) {
@@ -68,7 +68,7 @@ public class KeyboardCommandManager implements KeyListener, ISpeedListener {
 			ardrone.landing();
 			break;
 		case KeyEvent.VK_S:
-			ardrone.stop();
+			ardrone.freeze();
 			break;
 		case KeyEvent.VK_LEFT:
 			if (shiftflag) {

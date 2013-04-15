@@ -33,7 +33,6 @@ public class VideoActivity extends BaseActivity {
 				new VideoProxy(cmdm).start();
 
 				ConfigurationManager cfgm = drone.getConfigurationManager();
-				System.out.println(cfgm.getConfiguration());
 
 				runOnUiThread(new Runnable() {
 

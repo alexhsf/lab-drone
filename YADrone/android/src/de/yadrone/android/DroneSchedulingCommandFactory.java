@@ -29,7 +29,7 @@ import com.shigeodayo.ardrone.command.PCMDMagCommand;
 import com.shigeodayo.ardrone.command.PMODECommand;
 import com.shigeodayo.ardrone.command.PlayAnimationCommand;
 import com.shigeodayo.ardrone.command.RawCaptureCommand;
-import com.shigeodayo.ardrone.command.StopCommand;
+import com.shigeodayo.ardrone.command.FreezeCommand;
 import com.shigeodayo.ardrone.command.TakeOffCommand;
 import com.shigeodayo.ardrone.command.VideoChannel;
 import com.shigeodayo.ardrone.command.VideoChannelCommand;
@@ -370,7 +370,7 @@ public class DroneSchedulingCommandFactory {
 	}
 
 	private static ATCommand getStopCommand(Object value) {
-		return new StopCommand();
+		return new FreezeCommand();
 	}
 
 	private static ATCommand getTakeOffCommand(Object value) {

@@ -52,13 +52,13 @@ public class VideoManager extends AbstractTCPManager {
 	public void run() {
 		if (decoder == null)
 			return;
-
+		connect(ARDroneUtils.VIDEO_PORT);
 		ticklePort(ARDroneUtils.VIDEO_PORT);
 		manager.setVideoData(true);
 		ticklePort(ARDroneUtils.VIDEO_PORT);
 		manager.setVideoBitrateControl(VideoBitRateMode.DISABLED);
 		decoder.decode(getInputStream(), listener);
-
+		close();
 	}
 
 	/*

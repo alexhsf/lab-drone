@@ -24,11 +24,8 @@ public interface ARDroneInterface {
 	
 	//TODO: cleanup, if kept, factory method should be created for ARDroneInterface
 	
-	//connection
-	public boolean connect();
-	public void disconnect();
-
 	public void start();
+	public void stop();
 	
 	//camera
 	public void setHorizontalCamera();//setFrontCameraStreaming()
@@ -49,7 +46,7 @@ public interface ARDroneInterface {
 	public void down();
 	public void goRight();
 	public void goLeft();
-	public void stop();
+	public void freeze();
 	
 	//getter
 	public int getSpeed();

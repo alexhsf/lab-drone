@@ -42,12 +42,6 @@ public class Move3DTest extends JFrame {
 
 	private void initialize() {
 		ardrone = new ARDrone("192.168.1.1", new XugglerDecoder());
-		System.out.println("connect drone controller");
-		ardrone.connect();
-		System.out.println("connect drone navdata");
-		//ardrone.connectNav();
-		System.out.println("connect drone video");
-		//ardrone.connectVideo();
 		System.out.println("start drone");
 		ardrone.start();
 
@@ -128,7 +122,7 @@ public class Move3DTest extends JFrame {
 
 		addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
-				ardrone.stop();
+				ardrone.freeze();
 			}
 
 			public void keyPressed(KeyEvent e) {
@@ -148,7 +142,7 @@ public class Move3DTest extends JFrame {
 					ardrone.landing();
 					break;
 				case KeyEvent.VK_S:
-					ardrone.stop();
+					ardrone.freeze();
 					break;
 				case KeyEvent.VK_LEFT:
 					if (shiftflag) {

@@ -152,7 +152,7 @@ public class CCFrame extends JFrame implements StateListener, ImageListener, Att
 			}
 
 			public void windowClosing(WindowEvent e) {
-				drone.disconnect();
+				drone.stop();
 				attitude.stop();
 				System.exit(0);
 			}

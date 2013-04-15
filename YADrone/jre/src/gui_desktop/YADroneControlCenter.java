@@ -35,12 +35,6 @@ public class YADroneControlCenter
 		try
 		{
 			ardrone=new ARDrone("192.168.1.1", new XugglerDecoder());
-			System.out.println("connect drone controller");
-			ardrone.connect();
-			System.out.println("connect drone navdata");
-			//ardrone.connectNav();
-			System.out.println("connect drone video");
-			//ardrone.connectVideo();
 			System.out.println("start drone");
 			ardrone.start();
 			
@@ -52,7 +46,7 @@ public class YADroneControlCenter
 			exc.printStackTrace();
 			
 			if (ardrone != null)
-				ardrone.disconnect();
+				ardrone.stop();
 			System.exit(-1);
 		}
 	}
