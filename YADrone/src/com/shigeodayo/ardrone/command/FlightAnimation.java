@@ -8,8 +8,8 @@ public enum FlightAnimation {
 
 	private int defaultDuration;
 
-	private FlightAnimation(int defaultTimeout) {
-		this.defaultDuration = defaultTimeout;
+	private FlightAnimation(int defaultDuration) {
+		this.defaultDuration = defaultDuration;
 	}
 
 	/**
