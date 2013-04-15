@@ -23,11 +23,17 @@ import android.widget.Toast;
 import com.shigeodayo.ardrone.ARDrone;
 import com.shigeodayo.ardrone.command.CommandManager;
 import com.shigeodayo.ardrone.command.FlightAnimation;
+import com.shigeodayo.ardrone.navdata.AcceleroListener;
+import com.shigeodayo.ardrone.navdata.AcceleroPhysData;
+import com.shigeodayo.ardrone.navdata.AcceleroRawData;
+import com.shigeodayo.ardrone.navdata.Altitude;
+import com.shigeodayo.ardrone.navdata.AltitudeListener;
 import com.shigeodayo.ardrone.navdata.ControlState;
 import com.shigeodayo.ardrone.navdata.DroneState;
 import com.shigeodayo.ardrone.navdata.NavDataManager;
 import com.shigeodayo.ardrone.navdata.StateListener;
 import com.shigeodayo.ardrone.navdata.TrackerData;
+import com.shigeodayo.ardrone.navdata.VelocityListener;
 import com.shigeodayo.ardrone.navdata.VisionData;
 import com.shigeodayo.ardrone.navdata.VisionListener;
 import com.shigeodayo.ardrone.navdata.VisionPerformance;
@@ -49,7 +55,8 @@ public class ControlActivity extends BaseActivity implements StateListener {
 
 		// setStates(0xAAAAAAAA);
 		nd.setVisionListener(new VisionListener() {
-			private final FlightAnimation[] anims = new FlightAnimation[] { FlightAnimation.FLIP_AHEAD, FlightAnimation.FLIP_BEHIND, FlightAnimation.FLIP_LEFT, FlightAnimation.FLIP_RIGHT }; 
+			private final FlightAnimation[] anims = new FlightAnimation[] { FlightAnimation.FLIP_AHEAD,
+					FlightAnimation.FLIP_BEHIND, FlightAnimation.FLIP_LEFT, FlightAnimation.FLIP_RIGHT };
 			private int nanim = 0;
 			private long tlast = 0;
 			private long timeout = 0;
@@ -59,9 +66,9 @@ public class ControlActivity extends BaseActivity implements StateListener {
 			}
 
 			private void next() {
-				nanim = (nanim + 1) % anims.length;				
-			}			
-			
+				nanim = (nanim + 1) % anims.length;
+			}
+
 			@Override
 			public void trackersSend(TrackerData d) {
 				// TODO Auto-generated method stub
@@ -109,7 +116,42 @@ public class ControlActivity extends BaseActivity implements StateListener {
 			@Override
 			public void typeDetected(int detection_camera_type) {
 				// TODO Auto-generated method stub
-				
+
+			}
+		});
+
+		nd.setAltitudeListener(new AltitudeListener() {
+
+			@Override
+			public void receivedExtendedAltitude(Altitude d) {
+				// System.out.println(d);
+			}
+
+			@Override
+			public void receivedAltitude(int altitude) {
+				System.out.println("Alt: " + altitude);
+			}
+		});
+
+		nd.setVelocityListener(new VelocityListener() {
+
+			@Override
+			public void velocityChanged(float vx, float vy, float vz) {
+				System.out.println("Vel: " + "vx=" + vx + "vy=" + vy + "vz=" + vz);
+			}
+		});
+
+		nd.setAcceleroListener(new AcceleroListener() {
+
+			@Override
+			public void receivedRawData(AcceleroRawData d) {
+				System.out.println("AccR: " + d);
+
+			}
+
+			@Override
+			public void receivedPhysData(AcceleroPhysData d) {
+				System.out.println("AccP: " + d);
 			}
 		});
 
