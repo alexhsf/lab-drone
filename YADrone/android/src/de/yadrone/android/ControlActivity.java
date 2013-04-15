@@ -1,12 +1,8 @@
 package de.yadrone.android;
 
-import java.util.ArrayList;
-
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,6 +36,10 @@ import com.shigeodayo.ardrone.navdata.VisionPerformance;
 import com.shigeodayo.ardrone.navdata.VisionTag;
 
 public class ControlActivity extends BaseActivity implements StateListener {
+
+	public ControlActivity() {
+		super(R.id.menuitem_control);
+	}
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -346,12 +346,6 @@ public class ControlActivity extends BaseActivity implements StateListener {
 			}
 		});
 
-	}
-
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_control, menu);
-		return true;
 	}
 
 	@Override

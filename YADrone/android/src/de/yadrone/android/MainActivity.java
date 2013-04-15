@@ -1,7 +1,5 @@
 package de.yadrone.android;
 
-import java.text.RuleBasedCollator;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,8 +8,6 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.widget.TextView;
 
 import com.shigeodayo.ardrone.ARDrone;
@@ -31,6 +27,10 @@ import com.shigeodayo.ardrone.navdata.VisionPerformance;
 import com.shigeodayo.ardrone.navdata.VisionTag;
 
 public class MainActivity extends BaseActivity implements VisionListener {
+
+	public MainActivity() {
+		super(R.id.menuitem_main);
+	}
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -158,12 +158,6 @@ public class MainActivity extends BaseActivity implements VisionListener {
 		}
 
 		return super.onKeyDown(keyCode, event);
-	}
-
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_main, menu);
-		return true;
 	}
 
 	@Override
