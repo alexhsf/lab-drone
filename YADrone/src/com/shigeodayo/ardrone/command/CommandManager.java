@@ -399,14 +399,6 @@ public class CommandManager extends AbstractManager {
 	 */
 	@Override
 	public void run() {
-		// workaround: navdata should be bootstrapped?
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
 		ATCommand c;
 		ATCommand cs = null;
 		final ATCommand cAck = new ResetControlAckCommand();
@@ -422,7 +414,6 @@ public class CommandManager extends AbstractManager {
 					// if there is a sticky command, we can wait until we need to deliver it.
 					long t = System.currentTimeMillis();
 					dt = t - t0;
-					dt = (dt < 0 ? 0 : 50 - dt);
 				}
 				c = q.poll(dt, TimeUnit.MILLISECONDS);
 				// System.out.println(c);
@@ -443,20 +434,21 @@ public class CommandManager extends AbstractManager {
 						cs = null;
 					}
 				}
-				// if (c.needControlAck()) {
-				// waitForControlAck(false);
-				// sendCommand(c);
-				// waitForControlAck(true);
-				// sendCommand(cAck);
-				// } else {
-				sendCommand(c);
-				// }
+				if (c.needControlAck()) {
+					waitForControlAck(false);
+					sendCommand(c);
+					waitForControlAck(true);
+					sendCommand(cAck);
+				} else {
+					sendCommand(c);
+				}
 			} catch (InterruptedException e) {
 				doStop = true;
 			} catch (Throwable t) {
 				t.printStackTrace();
 			}
 		}
+		System.out.println("Stopped " + getClass().getSimpleName());
 	}
 
 	private void initARDrone() {
@@ -465,7 +457,6 @@ public class CommandManager extends AbstractManager {
 		sendMisc(2, 20, 2000, 3000);
 		stop();
 		landing();
-		System.out.println("Initialize completed!");
 	}
 
 	private synchronized void sendCommand(ATCommand c) throws InterruptedException, IOException {
@@ -498,12 +489,14 @@ public class CommandManager extends AbstractManager {
 
 	private void waitForControlAck(boolean b) throws InterruptedException {
 		if (controlAck != b) {
+			int n = 1;
 			synchronized (controlAckLock) {
-				while (controlAck != b) {
+				while (n > 0 && controlAck != b) {
 					controlAckLock.wait(50);
+					n--;
 				}
 			}
-			if (controlAck != b) {
+			if (n == 0 && controlAck != b) {
 				System.err.println("Control ack timeout " + String.valueOf(b));
 			}
 		}
