@@ -120,40 +120,40 @@ public class ControlActivity extends BaseActivity implements StateListener {
 			}
 		});
 
-		nd.setAltitudeListener(new AltitudeListener() {
-
-			@Override
-			public void receivedExtendedAltitude(Altitude d) {
-				// System.out.println(d);
-			}
-
-			@Override
-			public void receivedAltitude(int altitude) {
-				System.out.println("Alt: " + altitude);
-			}
-		});
-
-		nd.setVelocityListener(new VelocityListener() {
-
-			@Override
-			public void velocityChanged(float vx, float vy, float vz) {
-				System.out.println("Vel: " + "vx=" + vx + "vy=" + vy + "vz=" + vz);
-			}
-		});
-
-		nd.setAcceleroListener(new AcceleroListener() {
-
-			@Override
-			public void receivedRawData(AcceleroRawData d) {
-				System.out.println("AccR: " + d);
-
-			}
-
-			@Override
-			public void receivedPhysData(AcceleroPhysData d) {
-				System.out.println("AccP: " + d);
-			}
-		});
+//		nd.setAltitudeListener(new AltitudeListener() {
+//
+//			@Override
+//			public void receivedExtendedAltitude(Altitude d) {
+//				// System.out.println(d);
+//			}
+//
+//			@Override
+//			public void receivedAltitude(int altitude) {
+//				System.out.println("Alt: " + altitude);
+//			}
+//		});
+//
+//		nd.setVelocityListener(new VelocityListener() {
+//
+//			@Override
+//			public void velocityChanged(float vx, float vy, float vz) {
+//				System.out.println("Vel: " + "vx=" + vx + "vy=" + vy + "vz=" + vz);
+//			}
+//		});
+//
+//		nd.setAcceleroListener(new AcceleroListener() {
+//
+//			@Override
+//			public void receivedRawData(AcceleroRawData d) {
+//				System.out.println("AccR: " + d);
+//
+//			}
+//
+//			@Override
+//			public void receivedPhysData(AcceleroPhysData d) {
+//				System.out.println("AccP: " + d);
+//			}
+//		});
 
 		Toast.makeText(this, "Touch and hold the buttons", Toast.LENGTH_SHORT).show();
 	}

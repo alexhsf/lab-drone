@@ -51,7 +51,7 @@
 			   "combined_yaw_enabled" : false,
 			   "left_right_tilt" : 0,
                "front_back_tilt" : 0,
-			   "vertical_speed" : 0.25,
+			   "vertical_speed" : 0.15,
 			   "angular_speed" : 0
 			},
 			"Duration" : 2000
@@ -116,7 +116,7 @@
 			   "combined_yaw_enabled" : false,
 			   "left_right_tilt" : 0,
                "front_back_tilt" : 0,
-			   "vertical_speed" : 0.20,
+			   "vertical_speed" : 0.10,
 			   "angular_speed" : 0
 			},
 			"Duration" : 2000

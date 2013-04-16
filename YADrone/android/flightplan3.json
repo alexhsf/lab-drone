@@ -8,49 +8,215 @@
 			}
 		},
 		{
+			"Configure" :
+			{
+				"control:flight_without_shell" : false
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:altitude_max" : 3500
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:altitude_min" : 500
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:control_vz_max" : 1000
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:euler_angle_max" : "0.25"
+			}
+		},
+		{
 			"FlatTrim" : ""
 		},
 		{
-			"TakeOff" : ""
+			"TakeOff" : "",
+			"Duration" : 1000
 		},
 		{
-			"Move" :
+			"Comment":"Omhoog",
+			"PCMDMag" :
 			{
+			   "hover" : false,
+			   "absolute_control": true,
+			   "magneto_psi": -0.025,
+			   "magneto_psi_accuracy": 0,
 			   "combined_yaw_enabled" : false,
-			   "left_right_tilt" : 0.1,
-               "front_back_tilt" : -0.1,
-			   "vertical_speed" : -0.4,
-			   "angular_speed" : 0.05
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0.25,
+			   "angular_speed" : 0.3
 			},
 			"Duration" : 2000
 		},
 		{
-			"Stop" : ""
+			"FlightAnimation" :
+			{
+			   "animation" : "YAW_DANCE",
+			   "duration" : 5000
+			},
+			"Duration" : 5500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"PCMDMag" :
+			{
+			   "hover" : false,
+			   "absolute_control": true,
+			   "magneto_psi": -0.025,
+			   "magneto_psi_accuracy": 0,
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : -0.125,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0.3
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
 		},
 		{
 			"FlightAnimation" :
 			{
-               "animation" : "FLIP_LEFT",
-               "duration" : 10
+			   "animation" : "YAW_SHAKE",
+			   "duration" : 2000
 			},
-			"Repetitions" : 2,
-			"Duration" : 4000
+			"Duration" : 2500
 		},
 		{
-			"Hover" : ""
+			"Stop" : "",
+			"Duration" : 1000
 		},
 		{
-			"Move" :
+			"PCMDMag" :
 			{
+			   "hover" : false,
+			   "absolute_control": true,
+			   "magneto_psi": -0.025,
+			   "magneto_psi_accuracy": 0,
 			   "combined_yaw_enabled" : false,
-			   "left_right_tilt" : -0.1,
-               "front_back_tilt" : 0.1,
-			   "vertical_speed" : 0.4,
-			   "angular_speed" : -0.05
-			}
+			   "left_right_tilt" : -0.125,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0.3
+			},
+			"Duration" : 2000
 		},
 		{
-			"Stop" : ""
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"PCMDMag" :
+			{
+			   "hover" : false,
+			   "absolute_control": true,
+			   "magneto_psi": -0.025,
+			   "magneto_psi_accuracy": 0,
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0.20,
+			   "angular_speed" : 0.3
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"FlightAnimation" :
+			{
+			   "animation" : "FLIP_BEHIND",
+			   "duration" : 15
+			},
+			"Duration" : 1000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"PCMDMag" :
+			{
+			   "hover" : false,
+			   "absolute_control": true,
+			   "magneto_psi": -0.025,
+			   "magneto_psi_accuracy": 0,
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0.125,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0.3
+			},
+			"Duration" : 1500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"FlightAnimation" :
+			{
+			   "animation" : "DOUBLE_PHI_THETA_MIXED",
+			   "duration" : 5000
+			},
+			"Duration" : 5500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"PCMDMag" :
+			{
+			   "hover" : false,
+			   "absolute_control": true,
+			   "magneto_psi": -0.025,
+			   "magneto_psi_accuracy": 0,
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0.125,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0.3
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"PCMDMag" :
+			{
+			   "hover" : false,
+			   "absolute_control": true,
+			   "magneto_psi": -0.025,
+			   "magneto_psi_accuracy": 0,
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 1
+			},
+			"Duration" : 3000
 		},
 		{
 			"Land" : ""

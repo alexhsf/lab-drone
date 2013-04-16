@@ -36,9 +36,9 @@
     </string-array>
 
     <!-- FlightPlanActivity -->
-    <string name="take_off_and_land">Take-off and Land</string>
-    <string name="take_off_spin_and_land">Take off, spin and land</string>
-    <string name="take_off_fly_2_meter_and_land">Take off, fly 2 meter and land</string>
-    <string name="take_off_fly_2m_spin_fly_back_and_land">Take off, fly 2m, spin, fly back and land</string>
+    <string name="flightplan1">Flightplan1</string>
+    <string name="flightplan2">Flightplan2</string>
+    <string name="flightplan3">Flightplan3</string>
+    <string name="flightplan4">Flightplan4</string>
 
 </resources>
