@@ -31,7 +31,8 @@ public class BaseActivity extends Activity implements BatteryListener {
 	private Ringtone mBatteryAlarmSound;
 	private int mBatteryAlarmLevel;
 	private Date mLastPlayed;
-
+	private ToneGenerator mTone;
+	
 	public BaseActivity(int menuitem_id) {
 		super();
 		this.menuitem_id = menuitem_id;
@@ -121,8 +122,10 @@ public class BaseActivity extends Activity implements BatteryListener {
 		Log.i("BatteryLevel", String.format("%1$d %%", percentage));
 		if (percentage < mBatteryAlarmLevel) {
 			Date now = new Date();
-			if (now.getTime() - mLastPlayed.getTime() > 10000) {
-				mBatteryAlarmSound.play();
+			if (now.getTime() - mLastPlayed.getTime() > 5000) {
+//				mBatteryAlarmSound.play();
+				int durationMs = 500;
+				mTone.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, durationMs);
 				mLastPlayed = now;
 			}
 		}
@@ -130,7 +133,7 @@ public class BaseActivity extends Activity implements BatteryListener {
 
 	@Override
 	public void voltageChanged(int vbat_raw) {
-		Log.i("BatteryLevel", String.format("%1$d Volt", vbat_raw));
+		Log.i("BatteryLevel", String.format("%1$d mV", vbat_raw));
 	}
 
 	private String configureDrone(ARDrone drone) {
@@ -162,17 +165,18 @@ public class BaseActivity extends Activity implements BatteryListener {
 		text.append(String.format("Set hull type to %1$s\n", hullType));
 		// drone.setHullType(hullType);
 
-		String flightLocation = sharedPrefs.getString("pref_flight_location", "Ïndoor");
+		String flightLocation = sharedPrefs.getString("pref_flight_location", "Indoor");
 		text.append(String.format("Set flight location to %1$s\n", flightLocation));
 		// drone.setFlightLocation(flightLocation);
+
+		String batteryAlarmLevel = sharedPrefs.getString("pref_battery_alarm_level", "20");
+		mBatteryAlarmLevel = Integer.parseInt(batteryAlarmLevel);
+		text.append(String.format("Set batterly alarm level to %1$d\n", mBatteryAlarmLevel));
 
 		return text.toString();
 	}
 
 	private String setupBatteryAlarm(ARDrone drone) {
-		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		mBatteryAlarmLevel = Integer.parseInt(sharedPrefs.getString("battery_alarm_level", "10"));
-
 		final Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
 		mBatteryAlarmSound = RingtoneManager.getRingtone((Activity) this, ringtoneUri);
 		mLastPlayed = new Date();
@@ -180,9 +184,7 @@ public class BaseActivity extends Activity implements BatteryListener {
 		// mBatteryAlarmSound.stop();
 
 		int volume = 50;
-		int durationMs = 500;
-		ToneGenerator tone = new ToneGenerator(AudioManager.STREAM_ALARM, volume);
-		tone.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, durationMs);
+		mTone = new ToneGenerator(AudioManager.STREAM_ALARM, volume);
 
 		// Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
 		// MediaPlayer mediaPlayer = new MediaPlayer();
@@ -218,8 +220,8 @@ public class BaseActivity extends Activity implements BatteryListener {
 
 		NavDataManager nav = drone.getNavDataManager();
 		nav.setBatteryListener(this);
-		return String.format(Locale.US, "Battery alarm settings:\nLevel = %1$d %%\nTitle = %2$s\n", mBatteryAlarmLevel,
-				mBatteryAlarmSound.getTitle(this));
+//		return String.format(Locale.US, "Battery alarm sound = %1$s\n", mBatteryAlarmSound.getTitle(this));
+		return "";
 	}
 
 }
