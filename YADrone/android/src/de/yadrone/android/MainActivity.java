@@ -64,7 +64,7 @@ public class MainActivity extends BaseActivity implements VisionListener {
 
 			NavDataManager nav = drone.getNavDataManager();
 			// nav.setStateListener(this);
-			nav.setVisionListener(this);
+			// nav.setVisionListener(this);
 
 		} catch (Exception exc) {
 			exc.printStackTrace();
