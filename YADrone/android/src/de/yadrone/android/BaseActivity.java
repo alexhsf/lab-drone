@@ -4,8 +4,6 @@ import java.util.Date;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -26,7 +24,8 @@ public class BaseActivity extends Activity implements BatteryListener {
 	
 	private int mBatteryAlarmLevel;
 	private Date mLastBatteryLevelUpdate;
-	private ToneGenerator mTone;
+//	private ToneGenerator mTone;
+	protected SoundPlayer soundPlayer;
 	
 	public BaseActivity(int menuitem_id) {
 		super();
@@ -35,7 +34,8 @@ public class BaseActivity extends Activity implements BatteryListener {
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
+		soundPlayer = new SoundPlayer(this);
 		mCreationInfo = new StringBuilder();
 
 		YADroneApplication app = (YADroneApplication) getApplication();
@@ -119,9 +119,11 @@ public class BaseActivity extends Activity implements BatteryListener {
 		if (now.getTime() - mLastBatteryLevelUpdate.getTime() > updateInterval) {
 			Log.i("BatteryLevel", String.format("%1$d %%", percentage));
 			if (percentage < mBatteryAlarmLevel) {
+				// TODO: still issue when flightplan and battery low try to play simultaneously
+				soundPlayer.loadAndPlaySound(R.raw.battery_low);
 //				mBatteryAlarmSound.play();
-				int durationMs = 500;
-				mTone.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, durationMs);
+//				int durationMs = 500;
+//				mTone.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, durationMs);
 			}
 			mLastBatteryLevelUpdate = now;
 		}
@@ -176,8 +178,8 @@ public class BaseActivity extends Activity implements BatteryListener {
 		// Set time stamp to 1-1-1970, to make sure that the battery level is updated on next listening event
 		mLastBatteryLevelUpdate = new Date(0);
 
-		int volume = 50;
-		mTone = new ToneGenerator(AudioManager.STREAM_ALARM, volume);
+//		int volume = 50;
+//		mTone = new ToneGenerator(AudioManager.STREAM_ALARM, volume);
 
 		NavDataManager nav = drone.getNavDataManager();
 		nav.setBatteryListener(this);

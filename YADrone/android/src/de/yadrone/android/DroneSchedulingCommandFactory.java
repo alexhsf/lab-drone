@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.res.Resources;
 import android.util.Log;
 
 import com.shigeodayo.ardrone.command.ATCommand;
@@ -44,6 +45,8 @@ public class DroneSchedulingCommandFactory {
 			ATCommand command = null;
 			int duration = parameters.optInt("Duration", 0);
 			int repetitions = parameters.optInt("Repetitions", 1);
+			String sound = parameters.optString("Sound");
+			// TODO: convert the sound string to a resId
 			try {
 				Object commandValues = parameters.optJSONObject(key);
 				if (key.equals("Configure")) {
@@ -99,7 +102,7 @@ public class DroneSchedulingCommandFactory {
 					command = getVisionParametersCommand(commandValues);
 				}
 				if (command != null) {
-					schedulingCommand = new DroneSchedulingCommand(command, duration, repetitions);
+					schedulingCommand = new DroneSchedulingCommand(command, duration, repetitions, sound);
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();

@@ -1,10 +1,10 @@
 package de.yadrone.android;
 
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.media.SoundPool.OnLoadCompleteListener;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 
 public class FlightPlanActivity extends BaseActivity {
@@ -19,6 +19,10 @@ public class FlightPlanActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_flightplan);
+
+		this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		
+		soundPlayer.loadAndPlaySound(R.raw.going_left);
 	}
 
 	public void onButtonClick(View view) {
@@ -47,4 +51,5 @@ public class FlightPlanActivity extends BaseActivity {
 			startActivity(intent);
 		}
 	}
+
 }

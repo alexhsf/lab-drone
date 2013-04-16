@@ -77,7 +77,7 @@ public class FlightPlanProgressActivity extends BaseActivity {
 		for (DroneSchedulingCommand command : mFlightPlan) {
 			try {
 				Log.d("FlyRoute", command.toString());
-				command.execute(drone);
+				command.execute(soundPlayer, drone);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				break;
