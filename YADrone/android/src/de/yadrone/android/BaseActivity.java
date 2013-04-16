@@ -1,16 +1,11 @@
 package de.yadrone.android;
 
 import java.util.Date;
-import java.util.Locale;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
 import android.media.ToneGenerator;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -28,9 +23,9 @@ public class BaseActivity extends Activity implements BatteryListener {
 
 	protected int menuitem_id;
 	protected StringBuilder mCreationInfo;
-	private Ringtone mBatteryAlarmSound;
+	
 	private int mBatteryAlarmLevel;
-	private Date mLastPlayed;
+	private Date mLastBatteryLevelUpdate;
 	private ToneGenerator mTone;
 	
 	public BaseActivity(int menuitem_id) {
@@ -119,21 +114,22 @@ public class BaseActivity extends Activity implements BatteryListener {
 
 	@Override
 	public void batteryLevelChanged(int percentage) {
-		Log.i("BatteryLevel", String.format("%1$d %%", percentage));
-		if (percentage < mBatteryAlarmLevel) {
-			Date now = new Date();
-			if (now.getTime() - mLastPlayed.getTime() > 5000) {
+		int updateInterval = 5000;
+		Date now = new Date();
+		if (now.getTime() - mLastBatteryLevelUpdate.getTime() > updateInterval) {
+			Log.i("BatteryLevel", String.format("%1$d %%", percentage));
+			if (percentage < mBatteryAlarmLevel) {
 //				mBatteryAlarmSound.play();
 				int durationMs = 500;
 				mTone.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, durationMs);
-				mLastPlayed = now;
 			}
+			mLastBatteryLevelUpdate = now;
 		}
 	}
 
 	@Override
 	public void voltageChanged(int vbat_raw) {
-		Log.i("BatteryLevel", String.format("%1$d mV", vbat_raw));
+//		Log.i("BatteryLevel", String.format("%1$d mV", vbat_raw));
 	}
 
 	private String configureDrone(ARDrone drone) {
@@ -141,86 +137,50 @@ public class BaseActivity extends Activity implements BatteryListener {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 		String ssid = sharedPrefs.getString("pref_ssid", "foo");
-		text.append(String.format("Set SSID to %1$s\n", ssid));
+		text.append(String.format("SSID                = %1$s\n", ssid));
 		// drone.setSsid(ssid);
 
 		double maxAltitude = Double.parseDouble(sharedPrefs.getString("pref_altitude", "3"));
-		text.append(String.format("Set max. Altitude to %1$f m\n", maxAltitude));
+		text.append(String.format("Max. Altitude       = %1$f m\n", maxAltitude));
 		drone.setMaxAltitude(2000);
 		drone.setMinAltitude(1000);
 
 		double maxVerticalSpeed = Double.parseDouble(sharedPrefs.getString("pref_vertical_speed", "1"));
-		text.append(String.format("Set max. verticalspeed to %1$f m/s\n", maxVerticalSpeed));
+		text.append(String.format("Max. vertical speed = %1$f m/s\n", maxVerticalSpeed));
 		// drone.setMaxVerticalSpeed(maxVerticalSpeed);
 
 		double maxYaw = Double.parseDouble(sharedPrefs.getString("pref_max_yaw", "1"));
-		text.append(String.format("Set max. yaw to %1$f degrees\n", maxYaw));
+		text.append(String.format("Max. yaw            = %1$f degrees\n", maxYaw));
 		// drone.setMaxYaw(maxYaw);
 
 		double maxTilt = Double.parseDouble(sharedPrefs.getString("pref_max_tilt", "1"));
-		text.append(String.format("Set max. tilt to %1$f degrees\n", maxTilt));
+		text.append(String.format("Max. tilt           = %1$f degrees\n", maxTilt));
 		// drone.setMaxTilt(maxTilt);
 
 		String hullType = sharedPrefs.getString("pref_hull_type", "Indoor");
-		text.append(String.format("Set hull type to %1$s\n", hullType));
+		text.append(String.format("Hull type           = %1$s\n", hullType));
 		// drone.setHullType(hullType);
 
 		String flightLocation = sharedPrefs.getString("pref_flight_location", "Indoor");
-		text.append(String.format("Set flight location to %1$s\n", flightLocation));
+		text.append(String.format("Flight location     = %1$s\n", flightLocation));
 		// drone.setFlightLocation(flightLocation);
 
 		String batteryAlarmLevel = sharedPrefs.getString("pref_battery_alarm_level", "20");
 		mBatteryAlarmLevel = Integer.parseInt(batteryAlarmLevel);
-		text.append(String.format("Set batterly alarm level to %1$d\n", mBatteryAlarmLevel));
+		text.append(String.format("Battery alarm level = %1$d\n", mBatteryAlarmLevel));
 
 		return text.toString();
 	}
 
 	private String setupBatteryAlarm(ARDrone drone) {
-		final Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-		mBatteryAlarmSound = RingtoneManager.getRingtone((Activity) this, ringtoneUri);
-		mLastPlayed = new Date();
-		// mBatteryAlarmSound.play();
-		// mBatteryAlarmSound.stop();
+		// Set time stamp to 1-1-1970, to make sure that the battery level is updated on next listening event
+		mLastBatteryLevelUpdate = new Date(0);
 
 		int volume = 50;
 		mTone = new ToneGenerator(AudioManager.STREAM_ALARM, volume);
 
-		// Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-		// MediaPlayer mediaPlayer = new MediaPlayer();
-		// try {
-		// mediaPlayer.setDataSource(this, alert);
-		// final AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-		// if (audioManager.getStreamVolume(AudioManager.STREAM_ALARM) != 0) {
-		// mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-		// mediaPlayer.setLooping(false);
-		// mediaPlayer.prepare();
-		// mediaPlayer.start();
-		// mediaPlayer.setOnCompletionListener(new OnCompletionListener() {
-		//
-		// @Override
-		// public void onCompletion(MediaPlayer mp) {
-		// mp.stop();
-		// }
-		// });
-		// }
-		// } catch (IllegalArgumentException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// } catch (SecurityException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// } catch (IllegalStateException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-
 		NavDataManager nav = drone.getNavDataManager();
 		nav.setBatteryListener(this);
-//		return String.format(Locale.US, "Battery alarm sound = %1$s\n", mBatteryAlarmSound.getTitle(this));
 		return "";
 	}
 
