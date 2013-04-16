@@ -14,7 +14,7 @@ import com.shigeodayo.ardrone.command.CommandManager;
 
 public class VideoActivity extends BaseActivity {
 
-	public VideoActivity(int menuitem_id) {
+	public VideoActivity() {
 		super(R.id.menuitem_video);
 	}
 
