@@ -1,9 +1,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:orientation="vertical"
     tools:context=".RemoteActivity" >
+
+    <TextView
+        android:id="@+id/remoteText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remote View"/>
+	<TextView
+        android:id="@+id/remoteText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remote Data"/>
+    <android.opengl.GLSurfaceView
+        android:id="@+id/myGLView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    
+    
 </LinearLayout>

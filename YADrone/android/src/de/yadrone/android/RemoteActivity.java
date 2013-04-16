@@ -9,14 +9,17 @@ import javax.microedition.khronos.opengles.GL10;
 
 import com.shigeodayo.ardrone.ARDrone;
 import com.shigeodayo.ardrone.command.CommandManager;
+import com.shigeodayo.ardrone.navdata.GyroListener;
+import com.shigeodayo.ardrone.navdata.GyroPhysData;
+import com.shigeodayo.ardrone.navdata.GyroRawData;
 import com.shigeodayo.ardrone.navdata.NavDataManager;
 
-import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
+import android.widget.TextView;
 
 //public class RemoteActivity extends BaseActivity {
 	
@@ -36,25 +39,54 @@ public class RemoteActivity extends BaseActivity {
     private GLSurfaceView mGLSurfaceView;
     private SensorManager mSensorManager;
     private MyRenderer mRenderer;
+    
+    private short[] mDroneData; 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        
         // Get an instance of the SensorManager
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-
-        // Create our Preview view and set it as the content of our
-        // Activity
         mRenderer = new MyRenderer();
-        mGLSurfaceView = new GLSurfaceView(this);
+        
+        // Use existing view
+        setContentView(R.layout.activity_remote);
+        mGLSurfaceView = (GLSurfaceView) findViewById(R.id.myGLView);
         mGLSurfaceView.setRenderer(mRenderer);
-        setContentView(mGLSurfaceView);
+        
+        //setContentView(R.layout.activity_remote);
+        
         
 		YADroneApplication app = (YADroneApplication) getApplication();
 		final ARDrone drone = app.getARDrone();
 		final CommandManager cm = drone.getCommandManager();
 		final NavDataManager nd = drone.getNavDataManager();
+		nd.setGyroListener(new GyroListener() {
+			@Override
+			public void receivedRawData(GyroRawData d) {
+				// TODO Auto-generated method stub
+				mDroneData = d.getRawGyros();
+				TextView t = (TextView) findViewById(R.id.remoteText1);
+				String s = "A " + 
+						String.format("%d", d.getRawGyros().length) + ": " +
+						String.format("%.1f", d.getRawGyros()[0]) + ", " + 
+						String.format("%.1f", d.getRawGyros()[1]) + ", " + 
+						String.format("%.1f", d.getRawGyros()[2]);
+				t.setText(s);
+			}
+
+			@Override
+			public void receivedPhysData(GyroPhysData d) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void receivedOffsets(float[] offset_g) {
+				// TODO Auto-generated method stub
+			}
+		});
     }
 
     @Override
@@ -113,6 +145,14 @@ public class RemoteActivity extends BaseActivity {
                 // rotation-vector, which is what we want.
                 SensorManager.getRotationMatrixFromVector(
                         mRotationMatrix , event.values);
+                
+				TextView t = (TextView) findViewById(R.id.remoteText2);
+				String s = "A " + 
+						String.format("%d", event.values.length) + ": " +
+						String.format("%.1f", event.values[0]) + ", " + 
+						String.format("%.1f", event.values[1]) + ", " + 
+						String.format("%.1f", event.values[2]);
+				t.setText(s);
             }
         }
 
