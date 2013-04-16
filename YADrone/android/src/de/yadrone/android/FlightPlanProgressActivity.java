@@ -10,7 +10,7 @@ import com.shigeodayo.ardrone.ARDrone;
 
 public class FlightPlanProgressActivity extends BaseActivity {
 
-	public FlightPlanProgressActivity(int menuitem_id) {
+	public FlightPlanProgressActivity() {
 		super(0);
 	}
 
