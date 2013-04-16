@@ -29,13 +29,13 @@ public class FlightPlanActivity extends BaseActivity {
 			flightPathUri = "flightplan1.json";
 			break;
 		case R.id.buttonTakeOffSpinAndLand:
-			flightPathUri = "flightplan2.json";
+			flightPathUri = "ftp://192.168.1.1/boxes/test/flightplan2.json";
 			break;
 		case R.id.buttonTakeOffFly2MetersLand:
-			flightPathUri = "flightplan3.json";
+			flightPathUri = "ftp://192.168.1.1/boxes/test/flightplan3.json";
 			break;
 		case R.id.buttonTakeOffFly2mSpinFlyBackLand:
-			flightPathUri = "ftp://192.168.1.1//boxes/test/flightplan2.json";
+			flightPathUri = "ftp://192.168.1.1/boxes/test/flightplan4.json";
 			break;
 		default:
 			flightPathUri = "";

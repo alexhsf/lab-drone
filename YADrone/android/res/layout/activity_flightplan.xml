@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
-        android:text="@string/take_off_and_land"
+        android:text="@string/flightplan1"
         android:onClick="onButtonClick" />
 
     <Button
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
-        android:text="@string/take_off_spin_and_land"
+        android:text="@string/flightplan2"
         android:onClick="onButtonClick" />
 
     <Button
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
-        android:text="@string/take_off_fly_2_meter_and_land"
+        android:text="@string/flightplan3"
         android:onClick="onButtonClick" />
 
     <Button
@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
-        android:text="@string/take_off_fly_2m_spin_fly_back_and_land"
+        android:text="@string/flightplan4"
         android:onClick="onButtonClick" />
 
 </LinearLayout>
