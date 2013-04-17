@@ -1,6 +1,7 @@
 package de.yadrone.android;
 
 import java.util.Date;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,17 +17,19 @@ import com.shigeodayo.ardrone.configuration.ConfigurationListener;
 import com.shigeodayo.ardrone.configuration.ConfigurationManager;
 import com.shigeodayo.ardrone.navdata.BatteryListener;
 import com.shigeodayo.ardrone.navdata.NavDataManager;
+//import android.media.Ringtone;
+//import android.media.RingtoneManager;
+//import android.net.Uri;
 
 public class BaseActivity extends Activity implements BatteryListener {
 
 	protected int menuitem_id;
 	protected StringBuilder mCreationInfo;
-	
 	private int mBatteryAlarmLevel;
 	private Date mLastBatteryLevelUpdate;
-//	private ToneGenerator mTone;
+	// private ToneGenerator mTone;
 	protected SoundPlayer soundPlayer;
-	
+
 	public BaseActivity(int menuitem_id) {
 		super();
 		this.menuitem_id = menuitem_id;
@@ -34,7 +37,7 @@ public class BaseActivity extends Activity implements BatteryListener {
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		soundPlayer = new SoundPlayer(this);
 		mCreationInfo = new StringBuilder();
 
@@ -121,9 +124,9 @@ public class BaseActivity extends Activity implements BatteryListener {
 			if (percentage < mBatteryAlarmLevel) {
 				// TODO: still issue when flightplan and battery low try to play simultaneously
 				soundPlayer.loadAndPlaySound(R.raw.battery_low);
-//				mBatteryAlarmSound.play();
-//				int durationMs = 500;
-//				mTone.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, durationMs);
+				// mBatteryAlarmSound.play();
+				// int durationMs = 500;
+				// mTone.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, durationMs);
 			}
 			mLastBatteryLevelUpdate = now;
 		}
@@ -131,7 +134,7 @@ public class BaseActivity extends Activity implements BatteryListener {
 
 	@Override
 	public void voltageChanged(int vbat_raw) {
-//		Log.i("BatteryLevel", String.format("%1$d mV", vbat_raw));
+		// Log.i("BatteryLevel", String.format("%1$d mV", vbat_raw));
 	}
 
 	private String configureDrone(ARDrone drone) {
@@ -178,12 +181,11 @@ public class BaseActivity extends Activity implements BatteryListener {
 		// Set time stamp to 1-1-1970, to make sure that the battery level is updated on next listening event
 		mLastBatteryLevelUpdate = new Date(0);
 
-//		int volume = 50;
-//		mTone = new ToneGenerator(AudioManager.STREAM_ALARM, volume);
+		// int volume = 50;
+		// mTone = new ToneGenerator(AudioManager.STREAM_ALARM, volume);
 
 		NavDataManager nav = drone.getNavDataManager();
 		nav.setBatteryListener(this);
 		return "";
 	}
-
 }

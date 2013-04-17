@@ -33,10 +33,10 @@ public class PhotoActivity extends BaseActivity {
 			public void onClick(View v) {
 				try {
 					cm.startRecordingNavData("20130415_163200");
-					cm.recordPictures(1, 10, "20130415_163200");
-					//cm.stopRecordingNavData();
+					cm.recordPictures(1, 1, "20130415_163200");
 
-					Thread.sleep(1000);
+					Thread.sleep(2000);
+					cm.stopRecordingNavData();
 
 					final Bitmap bmp = cm.getRecordedPicture("20130415_163200");
 
