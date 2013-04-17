@@ -1,16 +1,15 @@
 package de.yadrone.android;
 
 import java.util.Date;
-import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
+//import android.media.Ringtone;
+//import android.media.RingtoneManager;
 import android.media.ToneGenerator;
-import android.net.Uri;
+//import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -28,11 +27,11 @@ public class BaseActivity extends Activity implements BatteryListener {
 
 	protected int menuitem_id;
 	protected StringBuilder mCreationInfo;
-	private Ringtone mBatteryAlarmSound;
+	// private Ringtone mBatteryAlarmSound;
 	private int mBatteryAlarmLevel;
 	private Date mLastPlayed;
 	private ToneGenerator mTone;
-	
+
 	public BaseActivity(int menuitem_id) {
 		super();
 		this.menuitem_id = menuitem_id;
@@ -123,7 +122,7 @@ public class BaseActivity extends Activity implements BatteryListener {
 		if (percentage < mBatteryAlarmLevel) {
 			Date now = new Date();
 			if (now.getTime() - mLastPlayed.getTime() > 5000) {
-//				mBatteryAlarmSound.play();
+				// mBatteryAlarmSound.play();
 				int durationMs = 500;
 				mTone.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, durationMs);
 				mLastPlayed = now;
@@ -177,8 +176,8 @@ public class BaseActivity extends Activity implements BatteryListener {
 	}
 
 	private String setupBatteryAlarm(ARDrone drone) {
-		final Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-		mBatteryAlarmSound = RingtoneManager.getRingtone((Activity) this, ringtoneUri);
+		// final Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+		// mBatteryAlarmSound = RingtoneManager.getRingtone((Activity) this, ringtoneUri);
 		mLastPlayed = new Date();
 		// mBatteryAlarmSound.play();
 		// mBatteryAlarmSound.stop();
@@ -220,7 +219,7 @@ public class BaseActivity extends Activity implements BatteryListener {
 
 		NavDataManager nav = drone.getNavDataManager();
 		nav.setBatteryListener(this);
-//		return String.format(Locale.US, "Battery alarm sound = %1$s\n", mBatteryAlarmSound.getTitle(this));
+		// return String.format(Locale.US, "Battery alarm sound = %1$s\n", mBatteryAlarmSound.getTitle(this));
 		return "";
 	}
 
