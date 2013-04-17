@@ -389,7 +389,7 @@ public class CommandManager extends AbstractManager {
 		}
 
 		public void run() {
-			String base = "/boxes/tmp_flight_" + id + "/picture_" + id.substring(0, id.length() - 2);
+			String base = "/boxes/flight_" + id + "/picture_" + id.substring(0, id.length() - 2);
 			try {
 				for (int n = 0; n < 60; n++) {
 					String name = base + String.format("%02d", n) + ".jpg";
