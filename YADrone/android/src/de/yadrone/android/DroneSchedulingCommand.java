@@ -17,17 +17,23 @@ public class DroneSchedulingCommand {
 	private ATCommand mCommand;
 	private int mDuration;
 	private int mRepetitions;
+	private String mSound; 
 
-	DroneSchedulingCommand(ATCommand command, int duration, int repetitions) {
+	DroneSchedulingCommand(ATCommand command, int duration, int repetitions, String sound) {
 		this.mCommand = command;
 		this.mDuration = duration;
 		this.mRepetitions = repetitions;
+		this.mSound = sound;
 	}
 
-	public void execute(ARDrone drone) throws InterruptedException {
+	public void execute(SoundPlayer soundPlayer, ARDrone drone) throws InterruptedException {
 		final CommandManager cm = drone.getCommandManager();
 		final NavDataManager nm = drone.getNavDataManager();
 
+		if (!mSound.isEmpty()) {
+			// Enable when mSound contains the resId for the sound. 
+//			soundPlayer.loadAndPlaySound(mSound);
+		}
 		int repetitions = mRepetitions > 0 ? mRepetitions : 1;
 		for (int i = 0; i < repetitions; i++) {
 			Log.d("FlyRoute", mCommand.toString());
