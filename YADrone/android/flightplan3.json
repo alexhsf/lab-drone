@@ -41,11 +41,14 @@
 			"FlatTrim" : ""
 		},
 		{
+			"Comment":"Opstijgen",
+			"Sound" : "taking_off",
 			"TakeOff" : "",
 			"Duration" : 1000
 		},
 		{
 			"Comment":"Omhoog",
+			"Sound" : "going_up",
 			"PCMDMag" :
 			{
 			   "hover" : false,
@@ -61,6 +64,8 @@
 			"Duration" : 2000
 		},
 		{
+			"Comment":"Yaw Dance",
+			"Sound": "yaw_dance",
 			"FlightAnimation" :
 			{
 			   "animation" : "YAW_DANCE",
@@ -73,6 +78,8 @@
 			"Duration" : 1000
 		},
 		{
+			"Comment":"Voorwaarts",
+			"Sound" : "going_forward",
 			"PCMDMag" :
 			{
 			   "hover" : false,
@@ -92,6 +99,8 @@
 			"Duration" : 1000
 		},
 		{
+			"Comment" : "Yaw Shake",
+			"Sound" : "yaw_shake",
 			"FlightAnimation" :
 			{
 			   "animation" : "YAW_SHAKE",
@@ -104,6 +113,8 @@
 			"Duration" : 1000
 		},
 		{
+			"Comment" : "Naar links",
+			"Sound" : "going_left",
 			"PCMDMag" :
 			{
 			   "hover" : false,
@@ -123,6 +134,8 @@
 			"Duration" : 1000
 		},
 		{
+			"Comment" : "Omhoog",
+			"Sound" : "going_up",
 			"PCMDMag" :
 			{
 			   "hover" : false,
@@ -142,6 +155,8 @@
 			"Duration" : 1000
 		},
 		{
+			"Comment" : "Flip Behind",
+			"Sound" : "flip_behind",
 			"FlightAnimation" :
 			{
 			   "animation" : "FLIP_BEHIND",
@@ -154,6 +169,8 @@
 			"Duration" : 1000
 		},
 		{
+			"Comment" : "Achterwaarts",
+			"Sound" : "going_backward",
 			"PCMDMag" :
 			{
 			   "hover" : false,
@@ -173,6 +190,8 @@
 			"Duration" : 1000
 		},
 		{
+			"Comment" : "Double Phi Theta Mixed",
+			"Sound" : "double_phi_theta_mixed",
 			"FlightAnimation" :
 			{
 			   "animation" : "DOUBLE_PHI_THETA_MIXED",
@@ -185,6 +204,8 @@
 			"Duration" : 1000
 		},
 		{
+			"Comment" : "Naar rechts",
+			"Sound" : "going_right",
 			"PCMDMag" :
 			{
 			   "hover" : false,
@@ -204,6 +225,8 @@
 			"Duration" : 1000
 		},
 		{
+			"Comment" : "Rechts roterend",
+			"Sound" : "rotate_right",
 			"PCMDMag" :
 			{
 			   "hover" : false,
@@ -219,6 +242,8 @@
 			"Duration" : 3000
 		},
 		{
+			"Comment" : "Landen",
+			"Sound" : "landing",
 			"Land" : ""
 		}
 	]

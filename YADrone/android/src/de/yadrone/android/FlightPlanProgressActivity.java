@@ -15,7 +15,6 @@ public class FlightPlanProgressActivity extends BaseActivity {
 	}
 
 	private String mFlightPlanUri;
-	// private DroneCommandScheduler mScheduler;
 	private List<DroneSchedulingCommand> mFlightPlan;
 	private Thread mThread;
 
@@ -61,8 +60,6 @@ public class FlightPlanProgressActivity extends BaseActivity {
 	}
 
 	private void FlyRoute() {
-		YADroneApplication app = (YADroneApplication) getApplication();
-		final ARDrone drone = app.getARDrone();
 		// NavDataManager nd = drone.getNavDataManager();
 		// nd.setVelocityListener(new VelocityListener() {
 		//
@@ -77,7 +74,7 @@ public class FlightPlanProgressActivity extends BaseActivity {
 		for (DroneSchedulingCommand command : mFlightPlan) {
 			try {
 				Log.d("FlyRoute", command.toString());
-				command.execute(soundPlayer, drone);
+				command.execute(this);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				break;

@@ -1,7 +1,6 @@
 package de.yadrone.android;
 
-import java.util.List;
-
+import android.media.AudioManager;
 import android.util.Log;
 
 import com.shigeodayo.ardrone.ARDrone;
@@ -26,13 +25,19 @@ public class DroneSchedulingCommand {
 		this.mSound = sound;
 	}
 
-	public void execute(SoundPlayer soundPlayer, ARDrone drone) throws InterruptedException {
+	public void execute(BaseActivity activity) throws InterruptedException {
+		YADroneApplication app = (YADroneApplication) activity.getApplication();
+		ARDrone drone = app.getARDrone();
+		
 		final CommandManager cm = drone.getCommandManager();
 		final NavDataManager nm = drone.getNavDataManager();
 
 		if (!mSound.isEmpty()) {
-			// Enable when mSound contains the resId for the sound. 
-//			soundPlayer.loadAndPlaySound(mSound);
+			int resId = activity.getResources().getIdentifier(mSound,"raw", activity.getPackageName());
+			if (resId != 0) {
+				activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+				activity.soundPlayer.loadAndPlaySound(resId);
+			}
 		}
 		int repetitions = mRepetitions > 0 ? mRepetitions : 1;
 		for (int i = 0; i < repetitions; i++) {
