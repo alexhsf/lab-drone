@@ -62,11 +62,13 @@ public abstract class AbstractManager implements Runnable {
 
 	public void stop() {
 		System.out.println("Stopping " + getClass().getSimpleName());
-		thread.interrupt();
-		doStop = true;
-		thread = null;
+		if (thread != null) {
+			thread.interrupt();
+			doStop = true;
+			thread = null;
+		}
 	}
-	
+
 	protected void ticklePort(int port) {
 		byte[] buf = { 0x01, 0x00, 0x00, 0x00 };
 		DatagramPacket packet = new DatagramPacket(buf, buf.length, inetaddr, port);
