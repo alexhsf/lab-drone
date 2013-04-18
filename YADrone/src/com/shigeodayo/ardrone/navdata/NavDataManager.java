@@ -213,6 +213,7 @@ public class NavDataManager extends AbstractManager {
 
 	@Override
 	public void run() {
+		System.out.println("Started " + getClass().getSimpleName());
 		connect(ARDroneUtils.NAV_PORT);
 		ticklePort(ARDroneUtils.NAV_PORT);
 		boolean bootstrapping = true;
@@ -236,7 +237,7 @@ public class NavDataManager extends AbstractManager {
 					manager.setControlAck(controlAck);
 					if (s.isNavDataBootstrap()) {
 						// presumably iso setting the demo option we can already ask for the options we want here
-						manager.setNavDataDemo(false);
+						manager.setNavDataDemo(true);
 						System.out.println("Navdata Bootstrapped");
 					} else {
 						System.out.println("Navdata was already bootstrapped");
@@ -258,6 +259,7 @@ public class NavDataManager extends AbstractManager {
 
 				// TODO bootstrapping probably be handled by commandmanager
 				if (!bootstrapping && maskChanged) {
+					manager.setNavDataDemo(false);
 					manager.setNavDataOptions(mask);
 					maskChanged = false;
 				}

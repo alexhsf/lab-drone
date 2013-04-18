@@ -18,12 +18,16 @@ import android.widget.Toast;
 
 import com.shigeodayo.ardrone.ARDrone;
 import com.shigeodayo.ardrone.command.CommandManager;
+import com.shigeodayo.ardrone.command.DetectionType;
+import com.shigeodayo.ardrone.command.EnemyColor;
 import com.shigeodayo.ardrone.command.FlightAnimation;
+import com.shigeodayo.ardrone.command.VisionTagType;
 import com.shigeodayo.ardrone.navdata.AcceleroListener;
 import com.shigeodayo.ardrone.navdata.AcceleroPhysData;
 import com.shigeodayo.ardrone.navdata.AcceleroRawData;
 import com.shigeodayo.ardrone.navdata.Altitude;
 import com.shigeodayo.ardrone.navdata.AltitudeListener;
+import com.shigeodayo.ardrone.navdata.CadType;
 import com.shigeodayo.ardrone.navdata.ControlState;
 import com.shigeodayo.ardrone.navdata.DroneState;
 import com.shigeodayo.ardrone.navdata.NavDataManager;
@@ -53,6 +57,13 @@ public class ControlActivity extends BaseActivity implements StateListener {
 		initButtons(cm);
 		initStateView(nd);
 
+		cm.setEnemyColors(EnemyColor.ORANGE_BLUE);
+		cm.setDetectionType(CadType.MULTIPLE_DETECTION_MODE);
+		cm.setDetectionType(DetectionType.VERTICAL, new VisionTagType[] { VisionTagType.ORIENTED_ROUNDEL,
+				VisionTagType.BLACK_ROUNDEL, VisionTagType.ROUNDEL });
+		cm.setDetectionType(DetectionType.HORIZONTAL, new VisionTagType[] { VisionTagType.SHELL_TAG_V2,
+				VisionTagType.STRIPE, VisionTagType.TOWER_SIDE });
+
 		// setStates(0xAAAAAAAA);
 		nd.setVisionListener(new VisionListener() {
 			private final FlightAnimation[] anims = new FlightAnimation[] { FlightAnimation.FLIP_AHEAD,
@@ -80,12 +91,22 @@ public class ControlActivity extends BaseActivity implements StateListener {
 				long dt = t - tlast;
 				System.out.println("TAGS DETECTED: " + tags.length + " dt: " + dt);
 				if (t - tlast > timeout) {
-					FlightAnimation a = current();
+					// FlightAnimation a = current();
+					VisionTag tag = tags[0];
+					FlightAnimation a = null;
+					if (tag.getSource() == DetectionType.HORIZONTAL) {
+						a = FlightAnimation.FLIP_AHEAD;
+					} else if (tag.getSource() == DetectionType.VERTICAL) {
+						a = FlightAnimation.PHI_DANCE;
+					}
+
 					System.out.println("ANIMATION: " + a);
-					cm.animate(a);
+					if (a != null) {
+						cm.animate(a);
+					}
 					timeout = a.getDefaultDuration() + 1000;
 					tlast = t;
-					next();
+					// next();
 				}
 			}
 
@@ -120,40 +141,40 @@ public class ControlActivity extends BaseActivity implements StateListener {
 			}
 		});
 
-//		nd.setAltitudeListener(new AltitudeListener() {
-//
-//			@Override
-//			public void receivedExtendedAltitude(Altitude d) {
-//				// System.out.println(d);
-//			}
-//
-//			@Override
-//			public void receivedAltitude(int altitude) {
-//				System.out.println("Alt: " + altitude);
-//			}
-//		});
-//
-//		nd.setVelocityListener(new VelocityListener() {
-//
-//			@Override
-//			public void velocityChanged(float vx, float vy, float vz) {
-//				System.out.println("Vel: " + "vx=" + vx + "vy=" + vy + "vz=" + vz);
-//			}
-//		});
-//
-//		nd.setAcceleroListener(new AcceleroListener() {
-//
-//			@Override
-//			public void receivedRawData(AcceleroRawData d) {
-//				System.out.println("AccR: " + d);
-//
-//			}
-//
-//			@Override
-//			public void receivedPhysData(AcceleroPhysData d) {
-//				System.out.println("AccP: " + d);
-//			}
-//		});
+		// nd.setAltitudeListener(new AltitudeListener() {
+		//
+		// @Override
+		// public void receivedExtendedAltitude(Altitude d) {
+		// // System.out.println(d);
+		// }
+		//
+		// @Override
+		// public void receivedAltitude(int altitude) {
+		// System.out.println("Alt: " + altitude);
+		// }
+		// });
+		//
+		// nd.setVelocityListener(new VelocityListener() {
+		//
+		// @Override
+		// public void velocityChanged(float vx, float vy, float vz) {
+		// System.out.println("Vel: " + "vx=" + vx + "vy=" + vy + "vz=" + vz);
+		// }
+		// });
+		//
+		// nd.setAcceleroListener(new AcceleroListener() {
+		//
+		// @Override
+		// public void receivedRawData(AcceleroRawData d) {
+		// System.out.println("AccR: " + d);
+		//
+		// }
+		//
+		// @Override
+		// public void receivedPhysData(AcceleroPhysData d) {
+		// System.out.println("AccP: " + d);
+		// }
+		// });
 
 		Toast.makeText(this, "Touch and hold the buttons", Toast.LENGTH_SHORT).show();
 	}

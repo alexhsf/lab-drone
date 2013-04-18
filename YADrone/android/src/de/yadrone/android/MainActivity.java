@@ -26,7 +26,7 @@ import com.shigeodayo.ardrone.navdata.VisionListener;
 import com.shigeodayo.ardrone.navdata.VisionPerformance;
 import com.shigeodayo.ardrone.navdata.VisionTag;
 
-public class MainActivity extends BaseActivity implements VisionListener {
+public class MainActivity extends BaseActivity {
 
 	public MainActivity() {
 		super(R.id.menuitem_main);
@@ -44,34 +44,26 @@ public class MainActivity extends BaseActivity implements VisionListener {
 
 		YADroneApplication app = (YADroneApplication) getApplication();
 		final ARDrone drone = app.getARDrone();
+		drone.start();
 
-		try {
-			CommandManager cmd = drone.getCommandManager();
-			cmd.setAutonomousFlight(false);
-
-			// Do we need video to enable horizontal detection?
-			// cmd.setVideoData(true);
-			cmd.setEnemyColors(EnemyColor.ORANGE_BLUE);
-			cmd.setDetectionType(CadType.MULTIPLE_DETECTION_MODE);
-			cmd.setDetectionType(DetectionType.VERTICAL, new VisionTagType[] { VisionTagType.ORIENTED_ROUNDEL,
-					VisionTagType.BLACK_ROUNDEL, VisionTagType.ROUNDEL });
-			cmd.setDetectionType(DetectionType.HORIZONTAL, new VisionTagType[] { VisionTagType.SHELL_TAG_V2,
-					VisionTagType.STRIPE, VisionTagType.TOWER_SIDE });
-
-			// cmd.setFlyingMode(FlyingMode.HOVER_ON_TOP_OF_ORIENTED_ROUNDEL);
-			cmd.setFlyingMode(FlyingMode.FREE_FLIGHT);
-			cmd.setHoveringRange(500);
-
-			NavDataManager nav = drone.getNavDataManager();
-			// nav.setStateListener(this);
-			// nav.setVisionListener(this);
-
-		} catch (Exception exc) {
-			exc.printStackTrace();
-
-			if (drone != null)
-				drone.stop();
-		}
+//
+//		try {
+//			// CommandManager cmd = drone.getCommandManager();
+//			// cmd.setAutonomousFlight(false);
+//
+//			// Do we need video to enable horizontal detection?
+//			// cmd.setVideoData(true);
+//
+//			// cmd.setFlyingMode(FlyingMode.HOVER_ON_TOP_OF_ORIENTED_ROUNDEL);
+//			// cmd.setFlyingMode(FlyingMode.FREE_FLIGHT);
+//			///cmd.setHoveringRange(500);
+//
+//		} catch (Exception exc) {
+//			exc.printStackTrace();
+//
+//			if (drone != null)
+//				drone.stop();
+//		}
 
 	}
 
@@ -100,44 +92,6 @@ public class MainActivity extends BaseActivity implements VisionListener {
 		}
 
 		return super.onKeyDown(keyCode, event);
-	}
-
-	@Override
-	public void tagsDetected(VisionTag[] tags) {
-		System.out.println("tagsDetected: ");
-		for (int n = 0; n < tags.length; n++) {
-			System.out.println("tagsDetected: " + tags[n]);
-		}
-	}
-
-	@Override
-	public void trackersSend(TrackerData d) {
-		// System.out.println(d);
-	}
-
-	@Override
-	public void receivedPerformanceData(VisionPerformance d) {
-		// System.out.println("Visionperf: " + d);
-	}
-
-	@Override
-	public void receivedRawData(float[] vision_raw) {
-		// System.out.println("Visionrawdata: " + vision_raw);
-	}
-
-	@Override
-	public void receivedData(VisionData d) {
-		// System.out.println(d);
-	}
-
-	@Override
-	public void receivedVisionOf(float[] of_dx, float[] of_dy) {
-		// System.out.println("Visionof: " + of_dx + " " + of_dy);
-	}
-
-	@Override
-	public void typeDetected(int type) {
-		System.out.println("type detected: " + type);
 	}
 
 }

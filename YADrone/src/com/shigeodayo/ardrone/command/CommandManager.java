@@ -452,6 +452,7 @@ public class CommandManager extends AbstractManager {
 	 */
 	@Override
 	public void run() {
+		System.out.println("Started " + getClass().getSimpleName());
 		connect(ARDroneUtils.PORT);
 		ATCommand c;
 		ATCommand cs = null;
@@ -515,7 +516,9 @@ public class CommandManager extends AbstractManager {
 	}
 
 	private synchronized void sendCommand(ATCommand c) throws InterruptedException, IOException {
-		System.out.println(c.getCommandString(seq));
+		if (!(c instanceof KeepAliveCommand)) {
+			System.out.println(c.getCommandString(seq));
+		}
 		byte[] buffer = c.getPacket(seq++);
 		DatagramPacket packet = new DatagramPacket(buffer, buffer.length, inetaddr, ARDroneUtils.PORT);
 		socket.send(packet);
