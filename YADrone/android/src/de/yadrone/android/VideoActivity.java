@@ -8,14 +8,15 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 
 import com.shigeodayo.ardrone.ARDrone;
 import com.shigeodayo.ardrone.command.CommandManager;
-import com.shigeodayo.ardrone.configuration.ConfigurationManager;
 
 public class VideoActivity extends BaseActivity {
+
+	public VideoActivity() {
+		super(R.id.menuitem_video);
+	}
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -31,8 +32,6 @@ public class VideoActivity extends BaseActivity {
 				// new StreamProxy(cmdManager).start();
 				final CommandManager cmdm = drone.getCommandManager();
 				new VideoProxy(cmdm).start();
-
-				ConfigurationManager cfgm = drone.getConfigurationManager();
 
 				runOnUiThread(new Runnable() {
 
@@ -57,12 +56,6 @@ public class VideoActivity extends BaseActivity {
 
 		});
 		t.start();
-	}
-
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_video, menu);
-		return true;
 	}
 
 	// starts the video playback
@@ -102,8 +95,7 @@ public class VideoActivity extends BaseActivity {
 	}
 
 	/*
-	 * Arno: See if VLC is installed, if so find out current name. If not
-	 * installed, open Google Play.
+	 * Arno: See if VLC is installed, if so find out current name. If not installed, open Google Play.
 	 */
 	private String getPackageNameForVLC(String vlcCurrentPackageName) {
 		String vlcpkgnameprefix = "org.videolan.vlc";

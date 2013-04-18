@@ -18,9 +18,15 @@ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PRO
 package com.shigeodayo.ardrone.command;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.shigeodayo.ardrone.manager.AbstractManager;
 import com.shigeodayo.ardrone.navdata.CadType;
@@ -363,17 +369,64 @@ public class CommandManager extends AbstractManager {
 		q.add(new ConfigureCommand("userbox:userbox_cmd", UserBox.STOP.ordinal()));
 	}
 
-	public void recordPictures(int delay, int nshots, String dirname) {
+	public void recordPictures(int delay, int nshots, String id) {
 		q.add(new ConfigureCommand("userbox:userbox_cmd", String.valueOf(UserBox.SCREENSHOT.ordinal()) + ","
-				+ String.valueOf(delay) + "," + String.valueOf(nshots) + "," + dirname));
+				+ String.valueOf(delay) + "," + String.valueOf(nshots) + "," + id));
 	}
 
 	public void getRecordedNavData() {
 		// TODO
 	}
 
-	public void getRecordedPicture() {
-		// TODO
+	private static class BitmapRetriever implements Runnable {
+		private String id;
+		private InetAddress address;
+		private Bitmap bmp;
+
+		public BitmapRetriever(String id, InetAddress address) {
+			this.id = id;
+			this.address = address;
+		}
+
+		public void run() {
+			String base = "/boxes/flight_" + id + "/picture_" + id.substring(0, id.length() - 2);
+			try {
+				for (int n = 0; n < 60; n++) {
+					String name = base + String.format("%02d", n) + ".jpg";
+					System.out.println("PHOTOBASE: " + name);
+					URL url = new URL("ftp", address.getHostAddress(), name);
+					try {
+						InputStream is = url.openStream();
+						if (is != null) {
+							bmp = BitmapFactory.decodeStream(is);
+							return;
+						}
+					} catch (IOException e) {
+						// ignore
+					}
+				}
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		public Bitmap getBitmap() {
+			return bmp;
+		}
+
+	};
+
+	public Bitmap getRecordedPicture(final String id) throws IOException {
+		BitmapRetriever r = new BitmapRetriever(id, inetaddr);
+		Thread t = new Thread(r);
+		t.start();
+		try {
+			t.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println(r.getBitmap());
+		return r.getBitmap();
 	}
 
 	// AT*MISC undocumented, but needed to initialize

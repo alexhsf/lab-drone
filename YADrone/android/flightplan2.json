@@ -16,7 +16,7 @@
 		{
 			"Configure" :
 			{
-				"control:altitude_max" : 3000
+				"control:altitude_max" : 3500
 			}
 		},
 		{
@@ -42,7 +42,73 @@
 		},
 		{
 			"TakeOff" : "",
-			"Duration" : 5000
+			"Duration" : 1000
+		},
+		{
+			"Comment":"Omhoog",
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0.15,
+			   "angular_speed" : 0
+			},
+			"Duration" : 2000
+		},
+		{
+			"FlightAnimation" :
+			{
+			   "animation" : "YAW_DANCE",
+			   "duration" : 5000
+			},
+			"Duration" : 5500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : -0.125,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"FlightAnimation" :
+			{
+			   "animation" : "YAW_SHAKE",
+			   "duration" : 2000
+			},
+			"Duration" : 2500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : -0.125,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
 		},
 		{
 			"Move" :
@@ -50,24 +116,78 @@
 			   "combined_yaw_enabled" : false,
 			   "left_right_tilt" : 0,
                "front_back_tilt" : 0,
-			   "vertical_speed" : 0.5,
+			   "vertical_speed" : 0.10,
 			   "angular_speed" : 0
 			},
-			"Duration" : 3000
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"FlightAnimation" :
+			{
+			   "animation" : "FLIP_BEHIND",
+			   "duration" : 15
+			},
+			"Duration" : 1000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
 		},
 		{
 			"Move" :
 			{
 			   "combined_yaw_enabled" : false,
 			   "left_right_tilt" : 0,
-               "front_back_tilt" : 0.1,
+               "front_back_tilt" : 0.125,
 			   "vertical_speed" : 0,
 			   "angular_speed" : 0
 			},
-			"Duration" : 3000
+			"Duration" : 1500
 		},
 		{
 			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"FlightAnimation" :
+			{
+			   "animation" : "DOUBLE_PHI_THETA_MIXED",
+			   "duration" : 5000
+			},
+			"Duration" : 5500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0.125,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 1
+			},
 			"Duration" : 3000
 		},
 		{

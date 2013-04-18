@@ -8,6 +8,7 @@
     <string name="menu_flightplan">Flight plan</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_video">Video</string>
+    <string name="menu_photo">Photo</string>
     <string name="menu_remote">Remote</string>
     
     <!-- DronePreferenceActivity -->
@@ -26,16 +27,18 @@
     <string name="pref_hull_type_summ">Mounted Hull Type is set to %1$s</string>
     <string name="pref_flight_location">Flight Location</string>
     <string name="pref_flight_location_summ">Flight Location is set to %1$s</string>
-
+    <string name="pref_battery_alarm_level">Battery Alarm Level</string>
+    <string name="pref_battery_alarm_level_summ">Battery Alarm Level is set to %1$s %%</string>
+    
     <string-array name="in_out_door_array">
         <item>Indoor</item>
         <item>Outdoor</item>
     </string-array>
 
     <!-- FlightPlanActivity -->
-    <string name="take_off_and_land">Take-off and Land</string>
-    <string name="take_off_spin_and_land">Take off, spin and land</string>
-    <string name="take_off_fly_2_meter_and_land">Take off, fly 2 meter and land</string>
-    <string name="take_off_fly_2m_spin_fly_back_and_land">Take off, fly 2m, spin, fly back and land</string>
+    <string name="flightplan1">Flightplan1</string>
+    <string name="flightplan2">Flightplan2</string>
+    <string name="flightplan3">Flightplan3</string>
+    <string name="flightplan4">Flightplan4</string>
 
 </resources>

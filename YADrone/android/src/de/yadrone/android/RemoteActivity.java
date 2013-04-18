@@ -21,8 +21,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.widget.TextView;
-
-//public class RemoteActivity extends BaseActivity {
 	
 //	Public void doSomething()
 //	NavDataManager nd = drone.getNavDataManager();
@@ -37,7 +35,12 @@ import android.widget.TextView;
 //	});
 
 public class RemoteActivity extends BaseActivity {
-    private GLSurfaceView mGLSurfaceView;
+	
+	public RemoteActivity() {
+		super(R.id.menuitem_remote);
+	}
+
+	private GLSurfaceView mGLSurfaceView;
     private SensorManager mSensorManager;
     private MyRenderer mRenderer;
     
@@ -245,7 +248,10 @@ public class RemoteActivity extends BaseActivity {
             }            
         }
 
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        }
+		@Override
+		public void onAccuracyChanged(Sensor arg0, int arg1) {
+			// TODO Auto-generated method stub
+			
+		}
     }
 }

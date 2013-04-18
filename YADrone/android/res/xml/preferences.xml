@@ -48,4 +48,11 @@
         android:entryValues="@array/in_out_door_array"
         android:entries="@array/in_out_door_array" />
 
+    <EditTextPreference
+        android:key="pref_battery_alarm_level"
+        android:title="@string/pref_battery_alarm_level"
+        android:summary="@string/pref_battery_alarm_level_summ"
+        android:defaultValue="50" 
+        android:numeric="decimal" />
+    
 </PreferenceScreen>

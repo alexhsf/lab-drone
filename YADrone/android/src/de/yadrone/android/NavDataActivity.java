@@ -13,6 +13,10 @@ import com.shigeodayo.ardrone.navdata.StateListener;
 
 public class NavDataActivity extends BaseActivity {
 
+	public NavDataActivity() {
+		super(R.id.menuitem_navdata);
+	}
+
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_navdata);
@@ -52,12 +56,6 @@ public class NavDataActivity extends BaseActivity {
 		NavDataManager nm;
 		nm = drone.getNavDataManager();
 		nm.setStateListener(null);
-	}
-
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_navdata, menu);
-		return true;
 	}
 
 }

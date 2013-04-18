@@ -41,6 +41,10 @@
              android:name=".VideoActivity"
              android:label="@string/title_activity_yadrone" />
         
+        <activity 
+            android:name=".PhotoActivity" 
+            android:label="@string/title_activity_yadrone"/>
+         
         <activity
             android:name=".FlightPlanActivity"
             android:label="@string/title_activity_yadrone" />

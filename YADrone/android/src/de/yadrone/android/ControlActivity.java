@@ -1,12 +1,8 @@
 package de.yadrone.android;
 
-import java.util.ArrayList;
-
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,6 +36,10 @@ import com.shigeodayo.ardrone.navdata.VisionPerformance;
 import com.shigeodayo.ardrone.navdata.VisionTag;
 
 public class ControlActivity extends BaseActivity implements StateListener {
+
+	public ControlActivity() {
+		super(R.id.menuitem_control);
+	}
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -120,40 +120,40 @@ public class ControlActivity extends BaseActivity implements StateListener {
 			}
 		});
 
-		nd.setAltitudeListener(new AltitudeListener() {
-
-			@Override
-			public void receivedExtendedAltitude(Altitude d) {
-				// System.out.println(d);
-			}
-
-			@Override
-			public void receivedAltitude(int altitude) {
-				System.out.println("Alt: " + altitude);
-			}
-		});
-
-		nd.setVelocityListener(new VelocityListener() {
-
-			@Override
-			public void velocityChanged(float vx, float vy, float vz) {
-				System.out.println("Vel: " + "vx=" + vx + "vy=" + vy + "vz=" + vz);
-			}
-		});
-
-		nd.setAcceleroListener(new AcceleroListener() {
-
-			@Override
-			public void receivedRawData(AcceleroRawData d) {
-				System.out.println("AccR: " + d);
-
-			}
-
-			@Override
-			public void receivedPhysData(AcceleroPhysData d) {
-				System.out.println("AccP: " + d);
-			}
-		});
+//		nd.setAltitudeListener(new AltitudeListener() {
+//
+//			@Override
+//			public void receivedExtendedAltitude(Altitude d) {
+//				// System.out.println(d);
+//			}
+//
+//			@Override
+//			public void receivedAltitude(int altitude) {
+//				System.out.println("Alt: " + altitude);
+//			}
+//		});
+//
+//		nd.setVelocityListener(new VelocityListener() {
+//
+//			@Override
+//			public void velocityChanged(float vx, float vy, float vz) {
+//				System.out.println("Vel: " + "vx=" + vx + "vy=" + vy + "vz=" + vz);
+//			}
+//		});
+//
+//		nd.setAcceleroListener(new AcceleroListener() {
+//
+//			@Override
+//			public void receivedRawData(AcceleroRawData d) {
+//				System.out.println("AccR: " + d);
+//
+//			}
+//
+//			@Override
+//			public void receivedPhysData(AcceleroPhysData d) {
+//				System.out.println("AccP: " + d);
+//			}
+//		});
 
 		Toast.makeText(this, "Touch and hold the buttons", Toast.LENGTH_SHORT).show();
 	}
@@ -346,12 +346,6 @@ public class ControlActivity extends BaseActivity implements StateListener {
 			}
 		});
 
-	}
-
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_control, menu);
-		return true;
 	}
 
 	@Override

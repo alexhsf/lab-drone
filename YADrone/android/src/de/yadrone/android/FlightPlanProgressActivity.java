@@ -2,18 +2,19 @@ package de.yadrone.android;
 
 import java.util.List;
 
-import com.shigeodayo.ardrone.ARDrone;
-import com.shigeodayo.ardrone.navdata.NavDataManager;
-import com.shigeodayo.ardrone.navdata.VelocityListener;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.shigeodayo.ardrone.ARDrone;
+
 public class FlightPlanProgressActivity extends BaseActivity {
 
+	public FlightPlanProgressActivity() {
+		super(0);
+	}
+
 	private String mFlightPlanUri;
-	// private DroneCommandScheduler mScheduler;
 	private List<DroneSchedulingCommand> mFlightPlan;
 	private Thread mThread;
 
@@ -25,10 +26,10 @@ public class FlightPlanProgressActivity extends BaseActivity {
 		// Get the flight plan from the intent
 		Intent intent = getIntent();
 		mFlightPlanUri = intent.getStringExtra(FlightPlanActivity.FLIGHTPLAN_URI);
-		LoadFlightPlan();
 
 		mThread = new Thread() {
 			public void run() {
+				LoadFlightPlan();
 				FlyRoute();
 			}
 		};
@@ -59,35 +60,26 @@ public class FlightPlanProgressActivity extends BaseActivity {
 	}
 
 	private void FlyRoute() {
-		YADroneApplication app = (YADroneApplication) getApplication();
-		final ARDrone drone = app.getARDrone();
-//		NavDataManager nd = drone.getNavDataManager();
-//		nd.setVelocityListener(new VelocityListener() {
-//
-//			@Override
-//			public void velocityChanged(float vx, float vy, float vz) {
-//				if (vx != 0f || vy != 0f || vz != 0f) {
-//					System.out.println("Velocity vx:" + vx + " vy:" + vy + " vz: " + vz);
-//				}
-//			}
-//		});
+		// NavDataManager nd = drone.getNavDataManager();
+		// nd.setVelocityListener(new VelocityListener() {
+		//
+		// @Override
+		// public void velocityChanged(float vx, float vy, float vz) {
+		// if (vx != 0f || vy != 0f || vz != 0f) {
+		// System.out.println("Velocity vx:" + vx + " vy:" + vy + " vz: " + vz);
+		// }
+		// }
+		// });
 
 		for (DroneSchedulingCommand command : mFlightPlan) {
 			try {
 				Log.d("FlyRoute", command.toString());
-				command.execute(drone.getCommandManager());
+				command.execute(this);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				break;
 			}
 		}
 	}
-
-	// public boolean onCreateOptionsMenu(Menu menu)
-	// {
-	// MenuInflater inflater = getMenuInflater();
-	// inflater.inflate(R.menu.menu_flightplan, menu);
-	// return true;
-	// }
 
 }

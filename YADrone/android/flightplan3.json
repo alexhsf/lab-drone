@@ -8,51 +8,242 @@
 			}
 		},
 		{
+			"Configure" :
+			{
+				"control:flight_without_shell" : false
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:altitude_max" : 3500
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:altitude_min" : 500
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:control_vz_max" : 1000
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:euler_angle_max" : "0.25"
+			}
+		},
+		{
 			"FlatTrim" : ""
 		},
 		{
-			"TakeOff" : ""
+			"Comment":"Opstijgen",
+			"Sound" : "taking_off",
+			"TakeOff" : "",
+			"Duration" : 1000
 		},
 		{
-			"Move" :
+			"Comment":"Omhoog",
+			"Sound" : "going_up",
+			"PCMDMag" :
 			{
+			   "hover" : false,
+			   "absolute_control": true,
+			   "magneto_psi": -0.025,
+			   "magneto_psi_accuracy": 0,
 			   "combined_yaw_enabled" : false,
-			   "left_right_tilt" : 0.1,
-               "front_back_tilt" : -0.1,
-			   "vertical_speed" : -0.4,
-			   "angular_speed" : 0.05
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0.25,
+			   "angular_speed" : 0.3
 			},
 			"Duration" : 2000
 		},
 		{
-			"Stop" : ""
-		},
-		{
+			"Comment":"Yaw Dance",
+			"Sound": "yaw_dance",
 			"FlightAnimation" :
 			{
-               "animation" : "FLIP_LEFT",
-               "duration" : 10
+			   "animation" : "YAW_DANCE",
+			   "duration" : 5000
 			},
-			"Repetitions" : 2,
-			"Duration" : 4000
+			"Duration" : 5500
 		},
 		{
-			"Hover" : ""
+			"Stop" : "",
+			"Duration" : 1000
 		},
 		{
-			"Move" :
+			"Comment":"Voorwaarts",
+			"Sound" : "going_forward",
+			"PCMDMag" :
 			{
+			   "hover" : false,
+			   "absolute_control": true,
+			   "magneto_psi": -0.025,
+			   "magneto_psi_accuracy": 0,
 			   "combined_yaw_enabled" : false,
-			   "left_right_tilt" : -0.1,
-               "front_back_tilt" : 0.1,
-			   "vertical_speed" : 0.4,
-			   "angular_speed" : -0.05
-			}
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : -0.125,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0.3
+			},
+			"Duration" : 2000
 		},
 		{
-			"Stop" : ""
+			"Stop" : "",
+			"Duration" : 1000
 		},
 		{
+			"Comment" : "Yaw Shake",
+			"Sound" : "yaw_shake",
+			"FlightAnimation" :
+			{
+			   "animation" : "YAW_SHAKE",
+			   "duration" : 2000
+			},
+			"Duration" : 2500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Comment" : "Naar links",
+			"Sound" : "going_left",
+			"PCMDMag" :
+			{
+			   "hover" : false,
+			   "absolute_control": true,
+			   "magneto_psi": -0.025,
+			   "magneto_psi_accuracy": 0,
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : -0.125,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0.3
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Comment" : "Omhoog",
+			"Sound" : "going_up",
+			"PCMDMag" :
+			{
+			   "hover" : false,
+			   "absolute_control": true,
+			   "magneto_psi": -0.025,
+			   "magneto_psi_accuracy": 0,
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0.20,
+			   "angular_speed" : 0.3
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Comment" : "Flip Behind",
+			"Sound" : "flip_behind",
+			"FlightAnimation" :
+			{
+			   "animation" : "FLIP_BEHIND",
+			   "duration" : 15
+			},
+			"Duration" : 1000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Comment" : "Achterwaarts",
+			"Sound" : "going_backward",
+			"PCMDMag" :
+			{
+			   "hover" : false,
+			   "absolute_control": true,
+			   "magneto_psi": -0.025,
+			   "magneto_psi_accuracy": 0,
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0.125,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0.3
+			},
+			"Duration" : 1500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Comment" : "Double Phi Theta Mixed",
+			"Sound" : "double_phi_theta_mixed",
+			"FlightAnimation" :
+			{
+			   "animation" : "DOUBLE_PHI_THETA_MIXED",
+			   "duration" : 5000
+			},
+			"Duration" : 5500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Comment" : "Naar rechts",
+			"Sound" : "going_right",
+			"PCMDMag" :
+			{
+			   "hover" : false,
+			   "absolute_control": true,
+			   "magneto_psi": -0.025,
+			   "magneto_psi_accuracy": 0,
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0.125,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0.3
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Comment" : "Rechts roterend",
+			"Sound" : "rotate_right",
+			"PCMDMag" :
+			{
+			   "hover" : false,
+			   "absolute_control": true,
+			   "magneto_psi": -0.025,
+			   "magneto_psi_accuracy": 0,
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 1
+			},
+			"Duration" : 3000
+		},
+		{
+			"Comment" : "Landen",
+			"Sound" : "landing",
 			"Land" : ""
 		}
 	]
