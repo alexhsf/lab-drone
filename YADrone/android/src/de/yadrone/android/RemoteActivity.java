@@ -10,9 +10,6 @@ import javax.microedition.khronos.opengles.GL10;
 import com.shigeodayo.ardrone.ARDrone;
 import com.shigeodayo.ardrone.command.CommandManager;
 import com.shigeodayo.ardrone.navdata.AttitudeListener;
-import com.shigeodayo.ardrone.navdata.GyroListener;
-import com.shigeodayo.ardrone.navdata.GyroPhysData;
-import com.shigeodayo.ardrone.navdata.GyroRawData;
 import com.shigeodayo.ardrone.navdata.NavDataManager;
 
 import android.hardware.Sensor;
@@ -52,20 +49,21 @@ public class RemoteActivity extends BaseActivity {
         
         // Get an instance of the SensorManager
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-        mRenderer = new MyRenderer();
         
-        // Use existing view
+        // Use existing view and set to OpenGL ES 2.0
         setContentView(R.layout.activity_remote);
         mGLSurfaceView = (GLSurfaceView) findViewById(R.id.myGLView);
+        //mGLSurfaceView.setEGLContextClientVersion(2);
+        //mGLSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        
+        mRenderer = new MyRenderer();
         mGLSurfaceView.setRenderer(mRenderer);
-        
-        //setContentView(R.layout.activity_remote);
-        
         
 		YADroneApplication app = (YADroneApplication) getApplication();
 		final ARDrone drone = app.getARDrone();
 		final CommandManager cm = drone.getCommandManager();
 		final NavDataManager nd = drone.getNavDataManager();
+		
 		nd.setAttitudeListener(new AttitudeListener() {
 
 			@Override
@@ -112,12 +110,15 @@ public class RemoteActivity extends BaseActivity {
     class MyRenderer implements GLSurfaceView.Renderer, SensorEventListener {
         private Cube mCube;
         private Sensor mRotationVectorSensor;
+        private Sensor mAccelerationSensor;
         private final float[] mRotationMatrix = new float[16];
+        private final float[] mSizeVector = new float[3];
 
         public MyRenderer() {
             // find the rotation-vector sensor
             mRotationVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-
+            mAccelerationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+            
             mCube = new Cube();
             // initialize the rotation matrix to identity
             mRotationMatrix[ 0] = 1;
@@ -130,6 +131,7 @@ public class RemoteActivity extends BaseActivity {
             // enable our sensor when the activity is resumed, ask for
             // 10 ms updates.
             mSensorManager.registerListener(this, mRotationVectorSensor, 10000);
+            mSensorManager.registerListener(this, mAccelerationSensor, 10000);
         }
 
         public void stop() {
@@ -155,6 +157,19 @@ public class RemoteActivity extends BaseActivity {
 						String.format("%.1f", event.values[2]);
 				t.setText(s);
             }
+            if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
+            	mSizeVector[0] = Math.abs(event.values[0] + mSizeVector[0] /2) + 1;
+            	mSizeVector[1] = Math.abs(event.values[1] + mSizeVector[1] /2) + 1;
+            	mSizeVector[2] = Math.abs(event.values[2] + mSizeVector[2] /2) + 1;
+                
+				TextView t = (TextView) findViewById(R.id.remoteText3);
+				String s = "S " + 
+						String.format("%d", event.values.length) + ": " +
+						String.format("%.1f", mSizeVector[0]) + ", " + 
+						String.format("%.1f", mSizeVector[1]) + ", " + 
+						String.format("%.1f", mSizeVector[2]);
+				t.setText(s);
+            }
         }
 
         public void onDrawFrame(GL10 gl) {
@@ -167,6 +182,8 @@ public class RemoteActivity extends BaseActivity {
             gl.glTranslatef(0, 0, -3.0f);
             gl.glMultMatrixf(mRotationMatrix, 0);
 
+            
+            
             // draw our object
             gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
             gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
@@ -181,7 +198,7 @@ public class RemoteActivity extends BaseActivity {
             float ratio = (float) width / height;
             gl.glMatrixMode(GL10.GL_PROJECTION);
             gl.glLoadIdentity();
-            gl.glFrustumf(-ratio, ratio, -1, 1, 1, 10);
+            gl.glFrustumf(-ratio, ratio, -1, 1, 1, 10); //-1, 1, 3, 7 is default
         }
 
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -200,9 +217,9 @@ public class RemoteActivity extends BaseActivity {
             public Cube() {
                 final float vertices[] = {
                         -1, -1, -1,     1, -1, -1,
-                         1,  1, -1,      -1,  1, -1,
-                        -1, -1,  1,      1, -1,  1,
-                         1,  1,  1,     -1,  1,  1,
+                         1,  1, -1,    -1,  1, -1,
+                        -1, -1,  1,     1, -1,  1,
+                         1,  1,  1,    -1,  1,  1,
                 };
 
                 final float colors[] = {

@@ -16,6 +16,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Remote Data"/>
+	<TextView
+        android:id="@+id/remoteText3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remote Speed"/>
     <android.opengl.GLSurfaceView
         android:id="@+id/myGLView"
         android:layout_width="wrap_content"
