@@ -9,6 +9,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import com.shigeodayo.ardrone.ARDrone;
 import com.shigeodayo.ardrone.command.CommandManager;
+import com.shigeodayo.ardrone.navdata.AttitudeListener;
 import com.shigeodayo.ardrone.navdata.GyroListener;
 import com.shigeodayo.ardrone.navdata.GyroPhysData;
 import com.shigeodayo.ardrone.navdata.GyroRawData;
@@ -62,30 +63,27 @@ public class RemoteActivity extends BaseActivity {
 		final ARDrone drone = app.getARDrone();
 		final CommandManager cm = drone.getCommandManager();
 		final NavDataManager nd = drone.getNavDataManager();
-		nd.setGyroListener(new GyroListener() {
+		nd.setAttitudeListener(new AttitudeListener() {
+
 			@Override
-			public void receivedRawData(GyroRawData d) {
-				// TODO Auto-generated method stub
-				mDroneData = d.getRawGyros();
+			public void attitudeUpdated(float pitch, float roll, float yaw) {
+				mDroneData[0] = (short) pitch;
+				mDroneData[1] = (short) roll;
+				mDroneData[2] = (short) yaw;
+				
 				TextView t = (TextView) findViewById(R.id.remoteText1);
-				String s = "A " + 
-						String.format("%d", d.getRawGyros().length) + ": " +
-						String.format("%.1f", d.getRawGyros()[0]) + ", " + 
-						String.format("%.1f", d.getRawGyros()[1]) + ", " + 
-						String.format("%.1f", d.getRawGyros()[2]);
+				String s = "Drone: " + 
+					String.format("%.1f", pitch) + ", " + 
+					String.format("%.1f", roll) + ", " + 
+					String.format("%.1f", yaw);
 				t.setText(s);
 			}
 
 			@Override
-			public void receivedPhysData(GyroPhysData d) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void attitudeUpdated(float pitch, float roll) {}
 
 			@Override
-			public void receivedOffsets(float[] offset_g) {
-				// TODO Auto-generated method stub
-			}
+			public void windCompensation(float pitch, float roll) {}
 		});
     }
 
