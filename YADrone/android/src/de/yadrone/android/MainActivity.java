@@ -15,6 +15,9 @@ import com.shigeodayo.ardrone.command.CommandManager;
 import com.shigeodayo.ardrone.command.DetectionType;
 import com.shigeodayo.ardrone.command.EnemyColor;
 import com.shigeodayo.ardrone.command.FlyingMode;
+import com.shigeodayo.ardrone.command.H264;
+import com.shigeodayo.ardrone.command.VideoBitRateMode;
+import com.shigeodayo.ardrone.command.VideoCodec;
 import com.shigeodayo.ardrone.command.VisionTagType;
 import com.shigeodayo.ardrone.configuration.ConfigurationListener;
 import com.shigeodayo.ardrone.configuration.ConfigurationManager;
@@ -46,24 +49,31 @@ public class MainActivity extends BaseActivity {
 		final ARDrone drone = app.getARDrone();
 		drone.start();
 
-//
-//		try {
-//			// CommandManager cmd = drone.getCommandManager();
-//			// cmd.setAutonomousFlight(false);
-//
-//			// Do we need video to enable horizontal detection?
-//			// cmd.setVideoData(true);
-//
-//			// cmd.setFlyingMode(FlyingMode.HOVER_ON_TOP_OF_ORIENTED_ROUNDEL);
-//			// cmd.setFlyingMode(FlyingMode.FREE_FLIGHT);
-//			///cmd.setHoveringRange(500);
-//
-//		} catch (Exception exc) {
-//			exc.printStackTrace();
-//
-//			if (drone != null)
-//				drone.stop();
-//		}
+		CommandManager cm = drone.getCommandManager();
+		cm.setVideoData(true);
+		cm.setVideoCodecFps(H264.MIN_FPS);
+		cm.setVideoCodec(VideoCodec.H264_360P);
+		cm.setVideoBitrateControl(VideoBitRateMode.DYNAMIC);
+		//cm.setVideoBitrate(H264.MAX_BITRATE);
+
+	//
+		// try {
+		// // CommandManager cmd = drone.getCommandManager();
+		// // cmd.setAutonomousFlight(false);
+		//
+		// // Do we need video to enable horizontal detection?
+		// // cmd.setVideoData(true);
+		//
+		// // cmd.setFlyingMode(FlyingMode.HOVER_ON_TOP_OF_ORIENTED_ROUNDEL);
+		// // cmd.setFlyingMode(FlyingMode.FREE_FLIGHT);
+		// ///cmd.setHoveringRange(500);
+		//
+		// } catch (Exception exc) {
+		// exc.printStackTrace();
+		//
+		// if (drone != null)
+		// drone.stop();
+		// }
 
 	}
 
