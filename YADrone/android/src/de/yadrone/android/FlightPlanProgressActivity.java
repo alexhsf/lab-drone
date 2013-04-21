@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.shigeodayo.ardrone.ARDrone;
-
 public class FlightPlanProgressActivity extends BaseActivity {
 
 	public FlightPlanProgressActivity() {

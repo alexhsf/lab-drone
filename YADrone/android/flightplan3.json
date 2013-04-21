@@ -47,6 +47,13 @@
 			"Duration" : 1000
 		},
 		{
+			"Calibrate" :
+			{
+				"Device" : "MAGNETOMETER"
+			},
+			"Duration" : 10000
+		},
+		{
 			"Comment":"Omhoog",
 			"Sound" : "going_up",
 			"PCMDMag" :

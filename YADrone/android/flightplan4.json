@@ -1,47 +1,246 @@
 {
-	"configuration" : 
-	{
-		"max_vertical_speed" : "3",
-		"max_yaw" : "2",
-		"max_tilt" : "2.5"
-	},
-	"flightplan" :
+	"FlightPlan" :
 	[
 		{
-			"cmd" : "connect"
+			"Configure" :
+			{
+				"control:outdoor" : false
+			}
 		},
 		{
-			"delay", "500"
+			"Configure" :
+			{
+				"control:flight_without_shell" : false
+			}
 		},
 		{
-			"cmd" : "take_off"
+			"Configure" :
+			{
+				"control:altitude_max" : 3500
+			}
 		},
 		{
-			"delay", "1000"
+			"Configure" :
+			{
+				"control:altitude_min" : 500
+			}
 		},
 		{
-			"cmd", "forward",
-			"distance" : "2000"
+			"Configure" :
+			{
+				"control:control_vz_max" : 1000
+			}
 		},
 		{
-			"delay", "1000"
+			"Configure" :
+			{
+				"control:euler_angle_max" : "0.25"
+			}
 		},
 		{
-			"cmd", "spin",
-			"angle" : "180"
+			"Configure" :
+			{
+				"userbox:userbox_cmd" :
+				{
+					"Command" : "START",
+					"DirName" : "somewhere"
+				}
+			}
 		},
 		{
-			"delay", "1000"
+			"Configure" :
+			{
+				"userbox:userbox_cmd" :
+				{
+					"Command" : "CANCEL",
+					"DirName" : "somewhere"
+				}
+			}
 		},
 		{
-			"cmd", "forward",
-			"distance" : "2000"
+			"Configure" :
+			{
+				"userbox:userbox_cmd" :
+				{
+					"Command" : "STOP",
+					"DirName" : "somewhere"
+				}
+			}
 		},
 		{
-			"delay", "1000"
+			"Configure" :
+			{
+				"userbox:userbox_cmd" :
+				{
+					"Command" : "SCREENSHOT",
+					"Delay" : 100,
+					"Shots" : 10,
+					"DirName" : "somewhere_else"
+				}
+			}
 		},
 		{
-			"cmd"  : "land"
+			"FlatTrim" : ""
+		},
+		{
+			"TakeOff" : "",
+			"Duration" : 1000
+		},
+		{
+			"Calibrate" :
+			{
+				"Device" : "MAGNETOMETER"
+			},
+			"Duration" : 10000
+		},
+		{
+			"Comment":"Omhoog",
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0.15,
+			   "angular_speed" : 0
+			},
+			"Duration" : 2000
+		},
+		{
+			"FlightAnimation" :
+			{
+			   "animation" : "YAW_DANCE",
+			   "duration" : 5000
+			},
+			"Duration" : 5500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : -0.125,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"FlightAnimation" :
+			{
+			   "animation" : "YAW_SHAKE",
+			   "duration" : 2000
+			},
+			"Duration" : 2500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : -0.125,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0.10,
+			   "angular_speed" : 0
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"FlightAnimation" :
+			{
+			   "animation" : "FLIP_BEHIND",
+			   "duration" : 15
+			},
+			"Duration" : 1000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0.125,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0
+			},
+			"Duration" : 1500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"FlightAnimation" :
+			{
+			   "animation" : "DOUBLE_PHI_THETA_MIXED",
+			   "duration" : 5000
+			},
+			"Duration" : 5500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0.125,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 1
+			},
+			"Duration" : 3000
+		},
+		{
+			"Land" : ""
 		}
 	]
 }

@@ -45,6 +45,13 @@
 			"Duration" : 1000
 		},
 		{
+			"Calibrate" :
+			{
+				"Device" : "MAGNETOMETER"
+			},
+			"Duration" : 10000
+		},
+		{
 			"Comment":"Omhoog",
 			"Move" :
 			{

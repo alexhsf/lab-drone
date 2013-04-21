@@ -22,16 +22,16 @@ public class FlightPlanActivity extends BaseActivity {
 		// Do something in response to button
 		String flightPathUri;
 		switch (view.getId()) {
-		case R.id.buttonTakeOffAndLand:
+		case R.id.button1:
 			flightPathUri = "flightplan1.json";
 			break;
-		case R.id.buttonTakeOffSpinAndLand:
+		case R.id.button2:
 			flightPathUri = "ftp://192.168.1.1/boxes/test/flightplan2.json";
 			break;
-		case R.id.buttonTakeOffFly2MetersLand:
+		case R.id.button3:
 			flightPathUri = "ftp://192.168.1.1/boxes/test/flightplan3.json";
 			break;
-		case R.id.buttonTakeOffFly2mSpinFlyBackLand:
+		case R.id.button4:
 			flightPathUri = "ftp://192.168.1.1/boxes/test/flightplan4.json";
 			break;
 		default:

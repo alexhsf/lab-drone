@@ -6,7 +6,7 @@
     android:orientation="vertical" >
 
     <Button
-        android:id="@+id/buttonTakeOffAndLand"
+        android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -15,7 +15,7 @@
         android:onClick="onButtonClick" />
 
     <Button
-        android:id="@+id/buttonTakeOffSpinAndLand"
+        android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -24,7 +24,7 @@
         android:onClick="onButtonClick" />
 
     <Button
-        android:id="@+id/buttonTakeOffFly2MetersLand"
+        android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -33,7 +33,7 @@
         android:onClick="onButtonClick" />
 
     <Button
-        android:id="@+id/buttonTakeOffFly2mSpinFlyBackLand"
+        android:id="@+id/button4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

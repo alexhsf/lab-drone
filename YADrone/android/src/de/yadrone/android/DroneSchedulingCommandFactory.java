@@ -9,9 +9,11 @@ import android.content.res.Resources;
 import android.util.Log;
 
 import com.shigeodayo.ardrone.command.ATCommand;
+import com.shigeodayo.ardrone.command.CalibrationCommand;
 import com.shigeodayo.ardrone.command.ConfigureCommand;
 import com.shigeodayo.ardrone.command.ControlCommand;
 import com.shigeodayo.ardrone.command.ControlMode;
+import com.shigeodayo.ardrone.command.Device;
 import com.shigeodayo.ardrone.command.EmergencyCommand;
 import com.shigeodayo.ardrone.command.FlatTrimCommand;
 import com.shigeodayo.ardrone.command.FlightAnimation;
@@ -32,6 +34,7 @@ import com.shigeodayo.ardrone.command.PlayAnimationCommand;
 import com.shigeodayo.ardrone.command.RawCaptureCommand;
 import com.shigeodayo.ardrone.command.FreezeCommand;
 import com.shigeodayo.ardrone.command.TakeOffCommand;
+import com.shigeodayo.ardrone.command.UserBox;
 import com.shigeodayo.ardrone.command.VideoChannel;
 import com.shigeodayo.ardrone.command.VideoChannelCommand;
 import com.shigeodayo.ardrone.command.VisionOptionCommand;
@@ -46,10 +49,11 @@ public class DroneSchedulingCommandFactory {
 			int duration = parameters.optInt("Duration", 0);
 			int repetitions = parameters.optInt("Repetitions", 1);
 			String sound = parameters.optString("Sound");
-			// TODO: convert the sound string to a resId
 			try {
 				Object commandValues = parameters.optJSONObject(key);
-				if (key.equals("Configure")) {
+				if (key.equals("Calibrate")) {
+					command = getCalibrateCommand(commandValues);
+				} else if (key.equals("Configure")) {
 					command = getConfigureCommand(commandValues);
 				} else if (key.equals("Control")) {
 					command = getControlCommand(commandValues);
@@ -113,6 +117,19 @@ public class DroneSchedulingCommandFactory {
 		return schedulingCommand;
 	}
 
+	private static ATCommand getCalibrateCommand(Object value) throws JSONException {
+		ATCommand command = null;
+		if (value instanceof JSONObject) {
+			JSONObject parameters = (JSONObject) value;
+			if (parameters.length() == 1) {
+				String deviceString = parameters.getString("Device");
+				Device device = Device.valueOf(deviceString);
+				command = new CalibrationCommand(device);
+			}
+		}
+		return command;
+	}
+
 	private static ATCommand getConfigureCommand(Object value) throws JSONException {
 		ATCommand command = null;
 		if (value instanceof JSONObject) {
@@ -145,6 +162,8 @@ public class DroneSchedulingCommandFactory {
 							configKey.equals("control:euler_angle_max")) { // Float as string!
 						String configValue = parameters.getString(configKey);
 						command = new ConfigureCommand(configKey, configValue);
+					} else if (configKey.equals("userbox:userbox_cmd")) {
+						command = getUserBoxCommand(configKey, parameters.getJSONObject(configKey));
 					}
 				}
 			} else {
@@ -160,6 +179,27 @@ public class DroneSchedulingCommandFactory {
 		// SLA EVEN OVER "userbox:userbox_cmd", String.valueOf(UserBox.SCREENSHOT.ordinal()) + ","
 		// + String.valueOf(delay) + "," + String.valueOf(nshots) + "," + dirname
 
+		return command;
+	}
+
+	private static ATCommand getUserBoxCommand(String configKey, JSONObject parameters) throws JSONException {
+		ATCommand command = null;
+		String options = null;
+		String userBoxCmd = parameters.getString("Command");
+		if (userBoxCmd.equals("START")) {
+			String dirName = parameters.getString("DirName");
+			options = String.valueOf(UserBox.valueOf(userBoxCmd).ordinal()) + ", " + dirName;
+		} else if (userBoxCmd.equals("CANCEL") || userBoxCmd.equals("STOP")) {
+			options = String.valueOf(UserBox.valueOf(userBoxCmd).ordinal());
+		} else if (userBoxCmd.equals("SCREENSHOT")) {
+			String dirName = parameters.getString("DirName");
+			int delay = parameters.getInt("Delay");
+			int shots = parameters.getInt("Shots");
+			options = String.valueOf(UserBox.valueOf(userBoxCmd).ordinal()) + ", " + String.valueOf(delay) + ", " + String.valueOf(shots) + ", " + dirName;
+		}
+		if (options != null) {
+			command = new ConfigureCommand(configKey, options);
+		}
 		return command;
 	}
 

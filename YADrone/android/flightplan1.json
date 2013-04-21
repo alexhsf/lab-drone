@@ -9,6 +9,13 @@
 			"Duration" : 5000
 		},
 		{
+			"Calibrate" :
+			{
+				"Device" : "MAGNETOMETER"
+			},
+			"Duration" : 10000
+		},
+		{
 			"Land" : ""
 		}
 	]
