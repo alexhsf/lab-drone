@@ -21,19 +21,15 @@ import com.shigeodayo.ardrone.command.CommandManager;
 import com.shigeodayo.ardrone.command.DetectionType;
 import com.shigeodayo.ardrone.command.EnemyColor;
 import com.shigeodayo.ardrone.command.FlightAnimation;
+import com.shigeodayo.ardrone.command.LEDAnimation;
+import com.shigeodayo.ardrone.command.VideoChannel;
 import com.shigeodayo.ardrone.command.VisionTagType;
-import com.shigeodayo.ardrone.navdata.AcceleroListener;
-import com.shigeodayo.ardrone.navdata.AcceleroPhysData;
-import com.shigeodayo.ardrone.navdata.AcceleroRawData;
-import com.shigeodayo.ardrone.navdata.Altitude;
-import com.shigeodayo.ardrone.navdata.AltitudeListener;
 import com.shigeodayo.ardrone.navdata.CadType;
 import com.shigeodayo.ardrone.navdata.ControlState;
 import com.shigeodayo.ardrone.navdata.DroneState;
 import com.shigeodayo.ardrone.navdata.NavDataManager;
 import com.shigeodayo.ardrone.navdata.StateListener;
 import com.shigeodayo.ardrone.navdata.TrackerData;
-import com.shigeodayo.ardrone.navdata.VelocityListener;
 import com.shigeodayo.ardrone.navdata.VisionData;
 import com.shigeodayo.ardrone.navdata.VisionListener;
 import com.shigeodayo.ardrone.navdata.VisionPerformance;
@@ -227,6 +223,15 @@ public class ControlActivity extends BaseActivity implements StateListener {
 			}
 		});
 
+		Button led = (Button) findViewById(R.id.cmd_led);
+		led.setOnClickListener(new OnClickListener() {
+			LEDAnimation anim = LEDAnimation.BLANK;			
+			public void onClick(View v) {
+				anim = anim.getNext();
+				cm.setLedsAnimation(anim, 1, 5);
+			}
+		});		
+		
 		Button left = (Button) findViewById(R.id.cmd_left);
 		left.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
@@ -303,6 +308,13 @@ public class ControlActivity extends BaseActivity implements StateListener {
 		landing.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				cm.landing();
+			}
+		});
+
+		Button zap = (Button) findViewById(R.id.cmd_zap);
+		zap.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				cm.setVideoChannel(VideoChannel.NEXT);
 			}
 		});
 
