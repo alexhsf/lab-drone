@@ -13,16 +13,14 @@
     
     <!-- DronePreferenceActivity -->
     <string name="set_drone_preferences">Set the Drone preferences</string>
-    <string name="pref_ssid">SSID of the drone</string>
-    <string name="pref_ssid_summ">SSID of drone: %1$s</string>
-    <string name="pref_altitude">Max altitude (m)</string>
-    <string name="pref_altitude_summ">Height is limited to %1$s m</string>
-    <string name="pref_vertical_speed">Max vert speed (m/s)</string>
-    <string name="pref_vertical_speed_summ">Vertical speed is limited to %1$s m/s</string>
-    <string name="pref_max_yaw">Max yaw (degrees)</string>
-    <string name="pref_max_yaw_summ">Yaw is limited to %1$s degrees</string>
-    <string name="pref_max_tilt">Max tilt (degrees)</string>
-    <string name="pref_max_tilt_summ">Tilt is limited to %1$s degrees</string>
+    <string name="pref_min_altitude">Min altitude (mm)</string>
+    <string name="pref_min_altitude_summ">Minimum altitude is set to %1$s mm</string>
+    <string name="pref_max_altitude">Max altitude (mm)</string>
+    <string name="pref_max_altitude_summ">Maximum altitude is set to %1$s mm</string>
+    <string name="pref_vertical_speed">Max vert speed (mm/s)</string>
+    <string name="pref_vertical_speed_summ">Vertical speed is limited to %1$s mm/s</string>
+    <string name="pref_max_euler_angle">Max Euler angle (radians)</string>
+    <string name="pref_max_euler_angle_summ">Euler angle is limited to %1$s radians</string>
     <string name="pref_hull_type">Hull Type</string>
     <string name="pref_hull_type_summ">Mounted Hull Type is set to %1$s</string>
     <string name="pref_flight_location">Flight Location</string>
@@ -36,10 +34,6 @@
     </string-array>
 
     <!-- FlightPlanActivity -->
-    <string name="flightplan1">Flightplan1</string>
-    <string name="flightplan2">Flightplan2</string>
-    <string name="flightplan3">Flightplan3</string>
-    <string name="flightplan4">Flightplan4</string>
     <string name="flight_plan_source_toggle_button_text"></string>
 
 </resources>

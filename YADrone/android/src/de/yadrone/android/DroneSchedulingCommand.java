@@ -1,6 +1,8 @@
 package de.yadrone.android;
 
+import android.annotation.TargetApi;
 import android.media.AudioManager;
+import android.os.Build;
 import android.util.Log;
 
 import com.shigeodayo.ardrone.ARDrone;
@@ -32,7 +34,7 @@ public class DroneSchedulingCommand {
 		final CommandManager cm = drone.getCommandManager();
 		final NavDataManager nm = drone.getNavDataManager();
 
-		if (!mSound.isEmpty()) {
+		if (mSound.length() > 0) {
 			int resId = activity.getResources().getIdentifier(mSound,"raw", activity.getPackageName());
 			if (resId != 0) {
 				activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);

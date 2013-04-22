@@ -16,11 +16,10 @@ public class DronePreferenceActivity extends PreferenceActivity implements OnSha
 
         addPreferencesFromResource(R.xml.preferences);
 
-        updateSummaryWithParameterValue("pref_ssid");
-        updateSummaryWithParameterValue("pref_altitude");
+        updateSummaryWithParameterValue("pref_min_altitude");
+        updateSummaryWithParameterValue("pref_max_altitude");
         updateSummaryWithParameterValue("pref_vertical_speed");
-        updateSummaryWithParameterValue("pref_max_yaw");
-        updateSummaryWithParameterValue("pref_max_tilt");
+        updateSummaryWithParameterValue("pref_max_euler_angle");
         updateSummaryWithParameterValue("pref_hull_type");
         updateSummaryWithParameterValue("pref_flight_location");
         updateSummaryWithParameterValue("pref_battery_alarm_level");
@@ -38,17 +37,6 @@ public class DronePreferenceActivity extends PreferenceActivity implements OnSha
 
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     	updateSummaryWithParameterValue(key);
-    	
-//    	YADroneApplication app = (YADroneApplication)getApplication();
-//    	final ARDrone drone = app.getARDrone();
-//    	
-//        Preference pref = findPreference(key);
-//		if (key.equals("pref_altitude"))
-//		{
-//			EditTextPreference etp = (EditTextPreference) pref;
-//			String preferenceValue = etp.getText();
-//			drone.setMaxAltitude(Integer.parseInt(preferenceValue));
-//		}
     }
     
     private void updateSummaryWithParameterValue(String key)
@@ -57,29 +45,21 @@ public class DronePreferenceActivity extends PreferenceActivity implements OnSha
     	if (pref instanceof EditTextPreference)
     	{
     		int id;
-    		if (key.equals("pref_ssid"))
+    		if (key.equals("pref_min_altitude"))
     		{
-        		id = R.string.pref_ssid_summ;
+        		id = R.string.pref_min_altitude_summ;
     		}
-    		else if (key.equals("pref_altitude"))
+    		else if (key.equals("pref_max_altitude"))
     		{
-    			id = R.string.pref_altitude_summ;
+    			id = R.string.pref_max_altitude_summ;
     		}
     		else if (key.equals("pref_vertical_speed"))
     		{
     			id = R.string.pref_vertical_speed_summ;
     		}
-    		else if (key.equals("pref_max_yaw"))
+    		else if (key.equals("pref_max_euler_angle"))
     		{
-    			id = R.string.pref_max_yaw_summ;
-    		}
-    		else if (key.equals("pref_max_yaw"))
-    		{
-    			id = R.string.pref_max_yaw_summ;
-    		}
-    		else if (key.equals("pref_max_tilt"))
-    		{
-    			id = R.string.pref_max_tilt_summ;
+    			id = R.string.pref_max_euler_angle_summ;
     		}
     		else if (key.equals("pref_battery_alarm_level"))
     		{
