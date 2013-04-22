@@ -40,5 +40,6 @@
     <string name="flightplan2">Flightplan2</string>
     <string name="flightplan3">Flightplan3</string>
     <string name="flightplan4">Flightplan4</string>
+    <string name="flight_plan_source_toggle_button_text"></string>
 
 </resources>
