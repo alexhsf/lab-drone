@@ -1,5 +1,6 @@
 package de.yadrone.android;
 
+import android.R.bool;
 import android.os.Bundle;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -9,8 +10,10 @@ import javax.microedition.khronos.opengles.GL10;
 
 import com.shigeodayo.ardrone.ARDrone;
 import com.shigeodayo.ardrone.command.CommandManager;
+import com.shigeodayo.ardrone.command.PCMDMagCommand;
 import com.shigeodayo.ardrone.navdata.AttitudeListener;
 import com.shigeodayo.ardrone.navdata.NavDataManager;
+import com.shigeodayo.ardrone.command.PCMDMagCommand;
 
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -157,29 +160,41 @@ public class RemoteActivity extends BaseActivity {
 				
 				if (System.currentTimeMillis() - mLastCommand > 500)
 				{
-					s = "Move ";
+					boolean usePCM = false;
 					
-					if (event.values[1] > 0.1)
+					if (usePCM)
 					{
-						mCommandManager.forward((int) (event.values[1] * event.values[1] * 800));
-						s = s + "Fwd: " + (int) (event.values[1] * event.values[1] * 800);
+						if ((Math.abs(event.values[0]) > 0.1) | (Math.abs(event.values[1]) > 0.1))
+						{
+							new PCMDMagCommand(false, false, true, event.values[0], event.values[1], 25, 5, 0, 0);
+							s = "PCM: F, T, F, " + event.values[0] + ", " + event.values[1] + ", 25, 5, 0, 0";
+						}
 					}
-					else if (event.values[1] < -0.1)
+					else
 					{
-						mCommandManager.backward((int) (event.values[1] * event.values[1] * 800));
-						s = s + "Bck: " + (int) (event.values[1] * event.values[1] * 800);
-					}
-
-					
-					if (event.values[0] < -0.1)
-					{
-						mCommandManager.goLeft((int) (event.values[0] * event.values[0] * 800));
-						s = s + " L: " + (int) (event.values[0] * event.values[0] * 800);
-					}
-					else if (event.values[0] > 0.1)
-					{
-						mCommandManager.goRight((int) (event.values[0] * event.values[0] * 800));
-						s = s + " R: " + (int) (event.values[0] * event.values[0] * 800);
+						s = "Move ";
+						if (event.values[1] > 0.1)
+						{
+							mCommandManager.forward((int) (event.values[1] * event.values[1] * 400));
+							s = s + "Fwd: " + (int) (event.values[1] * event.values[1] * 400);
+						}
+						else if (event.values[1] < -0.1)
+						{
+							mCommandManager.backward((int) (event.values[1] * event.values[1] * 400));
+							s = s + "Bck: " + (int) (event.values[1] * event.values[1] * 400);
+						}
+	
+						
+						if (event.values[0] < -0.1)
+						{
+							mCommandManager.goLeft((int) (event.values[0] * event.values[0] * 400));
+							s = s + " L: " + (int) (event.values[0] * event.values[0] * 400);
+						}
+						else if (event.values[0] > 0.1)
+						{
+							mCommandManager.goRight((int) (event.values[0] * event.values[0] * 400));
+							s = s + " R: " + (int) (event.values[0] * event.values[0] * 400);
+						}
 					}
 					
 					if ((Math.abs(event.values[0]) <= 0.1) && (Math.abs(event.values[1]) <= 0.1))
@@ -187,11 +202,11 @@ public class RemoteActivity extends BaseActivity {
 						mCommandManager.freeze();
 						s = "Freeze";
 					};
-
-					mLastCommand = System.currentTimeMillis();
 					
 					TextView u = (TextView) findViewById(R.id.remoteText1);
 					u.setText(s);
+					
+					mLastCommand = System.currentTimeMillis();
 				}
             }
             
