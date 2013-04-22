@@ -8,9 +8,16 @@
 
     <ImageButton
         android:id="@+id/photoButton"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.48"
         android:contentDescription="The photo taken by the drone"
         android:src="@drawable/ic_launcher" />
+
+    <Gallery
+        android:id="@+id/photoGallery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.52" />
 
 </LinearLayout>

@@ -17,16 +17,19 @@ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PRO
  */
 package com.shigeodayo.ardrone.command;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPReply;
 
 import com.shigeodayo.ardrone.manager.AbstractManager;
 import com.shigeodayo.ardrone.navdata.CadType;
@@ -378,55 +381,70 @@ public class CommandManager extends AbstractManager {
 		// TODO
 	}
 
-	private static class BitmapRetriever implements Runnable {
+	private class URLRetriever {
 		private String id;
 		private InetAddress address;
-		private Bitmap bmp;
+		private final String user = "anonymous";
+		private final String pass = "";
 
-		public BitmapRetriever(String id, InetAddress address) {
+		public URLRetriever(String id, InetAddress address) {
 			this.id = id;
 			this.address = address;
 		}
 
-		public void run() {
-			String base = "/boxes/flight_" + id + "/picture_" + id.substring(0, id.length() - 2);
-			try {
-				for (int n = 0; n < 60; n++) {
-					String name = base + String.format("%02d", n) + ".jpg";
-					System.out.println("PHOTOBASE: " + name);
-					URL url = new URL("ftp", address.getHostAddress(), name);
+		public String getDir() {
+			return "/boxes/flight_" + id;
+		}
+
+		private FTPFile[] getFileList() throws IOException {
+			FTPFile[] files;
+
+			FTPClient ftp = new FTPClient();
+			ftp.connect(address);
+
+			int reply = ftp.getReplyCode();
+			if (!FTPReply.isPositiveCompletion(reply)) {
+				ftp.disconnect();
+				throw new IOException("FTP server refused connection.");
+			}
+
+			ftp.enterLocalPassiveMode();
+
+			ftp.login(user, pass);
+
+			files = ftp.listFiles(getDir(), new JPEGFilter());
+
+			ftp.logout();
+
+			return files;
+		}
+
+		public URL[] getURLs() throws IOException {
+			FTPFile[] files = getFileList();
+			URL[] urls = new URL[0];
+			if (files != null) {
+				urls = new URL[files.length];
+				for (int n = 0; n < files.length; n++) {
 					try {
-						InputStream is = url.openStream();
-						if (is != null) {
-							bmp = BitmapFactory.decodeStream(is);
-							return;
-						}
-					} catch (IOException e) {
-						// ignore
+						// TODO how to put username and password into ftp URL?
+						// urls[n] = new URL("ftp", user + ":" + pass + "@" + address.getHostName(), getDir() +
+						// File.separator + files[n].getName());
+						urls[n] = new URL("ftp://" + user + ":" + pass + "@" + address.getHostName() + getDir()
+								+ File.separator + files[n].getName());
+						System.out.println("PICTURE: " + urls[n]);
+					} catch (MalformedURLException e) {
+						e.printStackTrace();
 					}
 				}
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
 			}
+			return urls;
 		}
+	}
 
-		public Bitmap getBitmap() {
-			return bmp;
-		}
-
-	};
-
-	public Bitmap getRecordedPicture(final String id) throws IOException {
-		BitmapRetriever r = new BitmapRetriever(id, inetaddr);
-		Thread t = new Thread(r);
-		t.start();
-		try {
-			t.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println(r.getBitmap());
-		return r.getBitmap();
+	// TODO: better have this implemented by a listener
+	public URL[] getRecordedPictures(final String id) throws IOException {
+		URLRetriever r = new URLRetriever(id, inetaddr);
+		return r.getURLs();
 	}
 
 	// AT*MISC undocumented, but needed to initialize
