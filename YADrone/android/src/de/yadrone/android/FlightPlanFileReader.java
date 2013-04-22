@@ -16,7 +16,8 @@ public class FlightPlanFileReader implements IFlightPlanReader {
 	public String getFlightPlan(String filename) {
 		String jsonFlightPlan = "";
 		if (isExternalStorageReadable()) {
-			File jsonFile = getAlbumStorageDir(filename);
+//			File jsonFile = getAlbumStorageDir(filename);
+			File jsonFile = new File(filename);
 			if (jsonFile.canRead() && jsonFile.exists()) {
 				jsonFlightPlan = readFile(jsonFile);
 			}
