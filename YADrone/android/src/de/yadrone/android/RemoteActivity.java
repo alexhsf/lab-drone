@@ -1,5 +1,6 @@
 package de.yadrone.android;
 
+import android.R.bool;
 import android.os.Bundle;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -9,27 +10,19 @@ import javax.microedition.khronos.opengles.GL10;
 
 import com.shigeodayo.ardrone.ARDrone;
 import com.shigeodayo.ardrone.command.CommandManager;
+import com.shigeodayo.ardrone.command.PCMDMagCommand;
 import com.shigeodayo.ardrone.navdata.AttitudeListener;
 import com.shigeodayo.ardrone.navdata.NavDataManager;
+import com.shigeodayo.ardrone.command.PCMDMagCommand;
 
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.widget.TextView;
-	
-//	Public void doSomething()
-//	NavDataManager nd = drone.getNavDataManager();
-//	nd.setVelocityListener(new VelocityListener() {
-//
-//		@Override
-//		public void velocityChanged(float vx, float vy, float vz) {
-//			if (vx != 0f || vy != 0f || vz != 0f) {
-//				System.out.println("Velocity vx:" + vx + " vy:" + vy + " vz: " + vz);
-//			}
-//		}
-//	});
 
 public class RemoteActivity extends BaseActivity {
 	
@@ -39,9 +32,13 @@ public class RemoteActivity extends BaseActivity {
 
 	private GLSurfaceView mGLSurfaceView;
     private SensorManager mSensorManager;
+    private CommandManager mCommandManager;
+    private NavDataManager mNavDataManager;
     private MyRenderer mRenderer;
     
     private short[] mDroneData; 
+    private float[] mMovement;
+    private long mLastCommand;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,31 +58,31 @@ public class RemoteActivity extends BaseActivity {
         
 		YADroneApplication app = (YADroneApplication) getApplication();
 		final ARDrone drone = app.getARDrone();
-		final CommandManager cm = drone.getCommandManager();
-		final NavDataManager nd = drone.getNavDataManager();
+		mNavDataManager = drone.getNavDataManager();
+		mCommandManager = drone.getCommandManager();
 		
-		nd.setAttitudeListener(new AttitudeListener() {
-
-			@Override
-			public void attitudeUpdated(float pitch, float roll, float yaw) {
-				mDroneData[0] = (short) pitch;
-				mDroneData[1] = (short) roll;
-				mDroneData[2] = (short) yaw;
-				
-				TextView t = (TextView) findViewById(R.id.remoteText1);
-				String s = "Drone: " + 
-					String.format("%.1f", pitch) + ", " + 
-					String.format("%.1f", roll) + ", " + 
-					String.format("%.1f", yaw);
-				t.setText(s);
-			}
-
-			@Override
-			public void attitudeUpdated(float pitch, float roll) {}
-
-			@Override
-			public void windCompensation(float pitch, float roll) {}
-		});
+//		mNavDataManager.setAttitudeListener(new AttitudeListener() {
+//
+//			@Override
+//			public void attitudeUpdated(float pitch, float roll, float yaw) {
+//				mDroneData[0] = (short) pitch;
+//				mDroneData[1] = (short) roll;
+//				mDroneData[2] = (short) yaw;
+//				
+//				TextView t = (TextView) findViewById(R.id.remoteText1);
+//				String s = "Drone: " + 
+//					String.format("%.1f", pitch) + ", " + 
+//					String.format("%.1f", roll) + ", " + 
+//					String.format("%.1f", yaw);
+//				t.setText(s);
+//			}
+//
+//			@Override
+//			public void attitudeUpdated(float pitch, float roll) {}
+//
+//			@Override
+//			public void windCompensation(float pitch, float roll) {}
+//		});
     }
 
     @Override
@@ -95,6 +92,8 @@ public class RemoteActivity extends BaseActivity {
         super.onResume();
         mRenderer.start();
         mGLSurfaceView.onResume();
+        
+        mCommandManager.takeOff();
     }
 
     @Override
@@ -104,6 +103,8 @@ public class RemoteActivity extends BaseActivity {
         super.onPause();
         mRenderer.stop();
         mGLSurfaceView.onPause();
+        
+        mCommandManager.landing();
     }
 
 
@@ -130,8 +131,8 @@ public class RemoteActivity extends BaseActivity {
         public void start() {
             // enable our sensor when the activity is resumed, ask for
             // 10 ms updates.
-            mSensorManager.registerListener(this, mRotationVectorSensor, 10000);
-            mSensorManager.registerListener(this, mAccelerationSensor, 10000);
+            mSensorManager.registerListener(this, mRotationVectorSensor, SensorManager.SENSOR_DELAY_GAME);
+            mSensorManager.registerListener(this, mAccelerationSensor, SensorManager.SENSOR_DELAY_UI);
         }
 
         public void stop() {
@@ -156,7 +157,59 @@ public class RemoteActivity extends BaseActivity {
 						String.format("%.1f", event.values[1]) + ", " + 
 						String.format("%.1f", event.values[2]);
 				t.setText(s);
+				
+				if (System.currentTimeMillis() - mLastCommand > 500)
+				{
+					boolean usePCM = false;
+					
+					if (usePCM)
+					{
+						if ((Math.abs(event.values[0]) > 0.1) | (Math.abs(event.values[1]) > 0.1))
+						{
+							new PCMDMagCommand(false, false, true, event.values[0], event.values[1], 25, 5, 0, 0);
+							s = "PCM: F, T, F, " + event.values[0] + ", " + event.values[1] + ", 25, 5, 0, 0";
+						}
+					}
+					else
+					{
+						s = "Move ";
+						if (event.values[1] > 0.1)
+						{
+							mCommandManager.forward((int) (event.values[1] * event.values[1] * 400));
+							s = s + "Fwd: " + (int) (event.values[1] * event.values[1] * 400);
+						}
+						else if (event.values[1] < -0.1)
+						{
+							mCommandManager.backward((int) (event.values[1] * event.values[1] * 400));
+							s = s + "Bck: " + (int) (event.values[1] * event.values[1] * 400);
+						}
+	
+						
+						if (event.values[0] < -0.1)
+						{
+							mCommandManager.goLeft((int) (event.values[0] * event.values[0] * 400));
+							s = s + " L: " + (int) (event.values[0] * event.values[0] * 400);
+						}
+						else if (event.values[0] > 0.1)
+						{
+							mCommandManager.goRight((int) (event.values[0] * event.values[0] * 400));
+							s = s + " R: " + (int) (event.values[0] * event.values[0] * 400);
+						}
+					}
+					
+					if ((Math.abs(event.values[0]) <= 0.1) && (Math.abs(event.values[1]) <= 0.1))
+					{
+						mCommandManager.freeze();
+						s = "Freeze";
+					};
+					
+					TextView u = (TextView) findViewById(R.id.remoteText1);
+					u.setText(s);
+					
+					mLastCommand = System.currentTimeMillis();
+				}
             }
+            
             if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
             	mSizeVector[0] = Math.abs(event.values[0] + mSizeVector[0] /2) + 1;
             	mSizeVector[1] = Math.abs(event.values[1] + mSizeVector[1] /2) + 1;
@@ -181,8 +234,6 @@ public class RemoteActivity extends BaseActivity {
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -3.0f);
             gl.glMultMatrixf(mRotationMatrix, 0);
-
-            
             
             // draw our object
             gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
@@ -268,7 +319,6 @@ public class RemoteActivity extends BaseActivity {
 		@Override
 		public void onAccuracyChanged(Sensor arg0, int arg1) {
 			// TODO Auto-generated method stub
-			
 		}
     }
 }

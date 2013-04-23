@@ -59,7 +59,8 @@
         
         <activity 
             android:name=".RemoteActivity" 
-            android:label="@string/title_activity_yadrone"/>
+            android:label="@string/title_activity_yadrone"
+            android:screenOrientation="portrait"/>
     
     </application>
 

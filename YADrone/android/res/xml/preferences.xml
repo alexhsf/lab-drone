@@ -1,37 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <EditTextPreference
-        android:key="pref_ssid"
-        android:title="@string/pref_ssid"
-        android:summary="@string/pref_ssid_summ"
-        android:defaultValue="" />
     
+    <!-- Minimum altitude in mm (integer, best left at default, or 50)-->
     <EditTextPreference
-        android:key="pref_altitude"
-        android:title="@string/pref_altitude"
-        android:summary="@string/pref_altitude_summ"
+        android:key="pref_min_altitude"
+        android:title="@string/pref_min_altitude"
+        android:summary="@string/pref_min_altitude_summ"
         android:defaultValue="3" 
         android:numeric="integer" />
     
+    <!-- Maximum altitude in mm (integer in range 500 - 5000) -->
+    <EditTextPreference
+        android:key="pref_max_altitude"
+        android:title="@string/pref_max_altitude"
+        android:summary="@string/pref_max_altitude_summ"
+        android:defaultValue="3" 
+        android:numeric="integer" />
+    
+    <!-- Max vertical speed in mm (integer in range 200 - 2000) -->
     <EditTextPreference
         android:key="pref_vertical_speed"
         android:title="@string/pref_vertical_speed"
         android:summary="@string/pref_vertical_speed_summ"
         android:defaultValue="4" 
-        android:numeric="decimal" />
+        android:numeric="integer" />
     
+    <!--  Floating point value in radians (0 - 0.52) -->
     <EditTextPreference
-        android:key="pref_max_yaw"
-        android:title="@string/pref_max_yaw"
-        android:summary="@string/pref_max_yaw_summ"
+        android:key="pref_max_euler_angle"
+        android:title="@string/pref_max_euler_angle"
+        android:summary="@string/pref_max_euler_angle_summ"
         android:defaultValue="5" 
-        android:inputType="number|numberDecimal" />
-    
-    <EditTextPreference
-        android:key="pref_max_tilt"
-        android:title="@string/pref_max_tilt"
-        android:summary="@string/pref_max_tilt_summ"
-        android:defaultValue="6" 
         android:inputType="number|numberDecimal" />
     
     <ListPreference 
@@ -53,6 +52,6 @@
         android:title="@string/pref_battery_alarm_level"
         android:summary="@string/pref_battery_alarm_level_summ"
         android:defaultValue="50" 
-        android:numeric="decimal" />
+        android:numeric="integer" />
     
 </PreferenceScreen>

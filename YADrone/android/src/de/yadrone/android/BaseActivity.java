@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.shigeodayo.ardrone.ARDrone;
+import com.shigeodayo.ardrone.command.CommandManager;
 import com.shigeodayo.ardrone.configuration.ConfigurationListener;
 import com.shigeodayo.ardrone.configuration.ConfigurationManager;
 import com.shigeodayo.ardrone.navdata.BatteryListener;
@@ -140,40 +141,35 @@ public class BaseActivity extends Activity implements BatteryListener {
 	private String configureDrone(ARDrone drone) {
 		StringBuilder text = new StringBuilder();
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		CommandManager cm =drone.getCommandManager(); 
 
-		String ssid = sharedPrefs.getString("pref_ssid", "foo");
-		text.append(String.format("SSID                = %1$s\n", ssid));
-		// drone.setSsid(ssid);
+		int minAltitude = Integer.parseInt(sharedPrefs.getString("pref_min_altitude", "50"));
+		text.append(String.format("Min. Altitude       = %1$d mm\n", minAltitude));
+		cm.setMinAltitude(minAltitude);
 
-		double maxAltitude = Double.parseDouble(sharedPrefs.getString("pref_altitude", "3"));
-		text.append(String.format("Max. Altitude       = %1$f m\n", maxAltitude));
-		drone.setMaxAltitude(2000);
-		drone.setMinAltitude(1000);
+		int maxAltitude = Integer.parseInt(sharedPrefs.getString("pref_max_altitude", "2000"));
+		text.append(String.format("Max. Altitude       = %1$d mm\n", maxAltitude));
+		cm.setMaxAltitude(maxAltitude);
 
-		double maxVerticalSpeed = Double.parseDouble(sharedPrefs.getString("pref_vertical_speed", "1"));
-		text.append(String.format("Max. vertical speed = %1$f m/s\n", maxVerticalSpeed));
-		// drone.setMaxVerticalSpeed(maxVerticalSpeed);
+		int maxVerticalSpeed = Integer.parseInt(sharedPrefs.getString("pref_vertical_speed", "1000"));
+		text.append(String.format("Max. vertical speed = %1$d mm/s\n", maxVerticalSpeed));
+		cm.setMaxVz(maxVerticalSpeed);
 
-		double maxYaw = Double.parseDouble(sharedPrefs.getString("pref_max_yaw", "1"));
-		text.append(String.format("Max. yaw            = %1$f degrees\n", maxYaw));
-		// drone.setMaxYaw(maxYaw);
-
-		double maxTilt = Double.parseDouble(sharedPrefs.getString("pref_max_tilt", "1"));
-		text.append(String.format("Max. tilt           = %1$f degrees\n", maxTilt));
-		// drone.setMaxTilt(maxTilt);
+		float maxEulerAngle = (float)Double.parseDouble(sharedPrefs.getString("pref_max_euler_angle", "0.25"));
+		text.append(String.format("Max. Euler angle    = %1$f radians\n", maxEulerAngle));
+		cm.setMaxEulerAngle(maxEulerAngle);
 
 		String hullType = sharedPrefs.getString("pref_hull_type", "Indoor");
 		text.append(String.format("Hull type           = %1$s\n", hullType));
-		// drone.setHullType(hullType);
-
 		String flightLocation = sharedPrefs.getString("pref_flight_location", "Indoor");
 		text.append(String.format("Flight location     = %1$s\n", flightLocation));
-		// drone.setFlightLocation(flightLocation);
+		cm.setOutdoor(flightLocation.equals("Outdoor"), hullType.equals("Outdoor"));
 
 		String batteryAlarmLevel = sharedPrefs.getString("pref_battery_alarm_level", "20");
 		mBatteryAlarmLevel = Integer.parseInt(batteryAlarmLevel);
 		text.append(String.format("Battery alarm level = %1$d\n", mBatteryAlarmLevel));
-
+		
 		return text.toString();
 	}
 
