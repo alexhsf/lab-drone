@@ -1,12 +1,13 @@
 package de.yadrone.android;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,7 +23,6 @@ import com.shigeodayo.ardrone.command.CommandManager;
 
 public class PhotoActivity extends BaseActivity {
 
-	private static final String label = "20130415_163200";
 	private ImageButton button = null;
 	private ImageAdapter imageAdapter;
 
@@ -46,16 +46,14 @@ public class PhotoActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				try {
-					cm.startRecordingNavData(label);
-
+					Date d = new Date();
+					SimpleDateFormat s = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
+					final String label = s.format(d);
+					// cm.startRecordingNavData(label);
 					cm.recordPictures(2, 5, label);
-
 					Thread.sleep(12000);
-
 					cm.stopRecordingNavData();
-
 					updateImages();
-
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -78,20 +76,21 @@ public class PhotoActivity extends BaseActivity {
 	public void updateImages() {
 		new Thread("ImageRetriever") {
 			public void run() {
-				URL[] urls;
+				//URL[] urls;
 				try {
 					YADroneApplication app = (YADroneApplication) getApplication();
 					ARDrone drone = app.getARDrone();
 					final CommandManager cm = drone.getCommandManager();
-					urls = cm.getRecordedPictures(label);
-
-					final Bitmap bmps[] = new Bitmap[urls.length];
-					for (int n = 0; n < urls.length; n++) {
-						InputStream is = urls[n].openStream();
-						if (is != null) {
-							bmps[n] = BitmapFactory.decodeStream(is);
-						}
-					}
+					final Bitmap bmps[] = cm.getRecordedPictures();
+					// urls = cm.getRecordedPictures();
+					//
+					// final Bitmap bmps[] = new Bitmap[urls.length];
+					// for (int n = 0; n < urls.length; n++) {
+					// InputStream is = urls[n].openStream();
+					// if (is != null) {
+					// bmps[n] = BitmapFactory.decodeStream(is);
+					// }
+					// }
 					imageAdapter.setImages(bmps);
 					runOnUiThread(new Runnable() {
 						@Override

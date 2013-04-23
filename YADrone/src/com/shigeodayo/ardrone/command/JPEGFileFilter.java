@@ -3,7 +3,7 @@ package com.shigeodayo.ardrone.command;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileFilter;
 
-final class JPEGFilter implements FTPFileFilter {
+final class JPEGFileFilter implements FTPFileFilter {
 
 	// TODO: refactor into utility class
 	public static boolean endsWithIgnoreCase(final String s, final String suffix) {

@@ -17,19 +17,24 @@ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PRO
  */
 package com.shigeodayo.ardrone.command;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.shigeodayo.ardrone.manager.AbstractManager;
 import com.shigeodayo.ardrone.navdata.CadType;
@@ -381,24 +386,71 @@ public class CommandManager extends AbstractManager {
 		// TODO
 	}
 
-	private class URLRetriever {
-		private String id;
+	private static class URLRetriever {
+		private String user;
+		private String pass;
 		private InetAddress address;
-		private final String user = "anonymous";
-		private final String pass = "";
 
-		public URLRetriever(String id, InetAddress address) {
-			this.id = id;
+		public URLRetriever(InetAddress address, String user, String pass) {
 			this.address = address;
+			this.user = user;
+			this.pass = pass;
 		}
 
 		public String getDir() {
-			return "/boxes/flight_" + id;
+			return "/boxes/";
 		}
 
-		private FTPFile[] getFileList() throws IOException {
-			FTPFile[] files;
+		public URL[] getURLs() throws IOException {
+			FTPClient ftp = login();
 
+			ArrayList<URL> urls = new ArrayList<URL>();
+			FTPFile[] dirs = ftp.listFiles("", new UserboxFileFilter());
+			for (FTPFile dir : dirs) {
+				FTPFile[] files = ftp.listFiles(dir.getName(), new JPEGFileFilter());
+				for (FTPFile file : files) {
+					try {
+						URL url = new URL("ftp://" + user + ":" + pass + "@" + address.getHostName() + getDir()
+								+ dir.getName() + File.separator + file.getName());
+						System.out.println("PICTURE: " + url);
+						urls.add(url);
+					} catch (MalformedURLException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+			logout(ftp);
+
+			return urls.toArray(new URL[urls.size()]);
+		}
+
+		public Bitmap[] getBitmaps() throws IOException {
+			FTPClient ftp = login();
+
+			ArrayList<Bitmap> bmps = new ArrayList<Bitmap>();
+			FTPFile[] dirs = ftp.listFiles("", new UserboxFileFilter());
+			for (FTPFile dir : dirs) {
+				FTPFile[] files = ftp.listFiles(dir.getName(), new JPEGFileFilter());
+				for (FTPFile file : files) {
+					try {
+						InputStream is = ftp.retrieveFileStream(dir.getName() + File.separator + file.getName());
+						Bitmap bmp = BitmapFactory.decodeStream(is);
+						bmps.add(bmp);
+						is.close();
+						ftp.completePendingCommand();
+					} catch (MalformedURLException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+			logout(ftp);
+
+			return bmps.toArray(new Bitmap[bmps.size()]);
+		}
+
+		private FTPClient login() throws SocketException, IOException {
 			FTPClient ftp = new FTPClient();
 			ftp.connect(address);
 
@@ -412,38 +464,24 @@ public class CommandManager extends AbstractManager {
 
 			ftp.login(user, pass);
 
-			files = ftp.listFiles(getDir(), new JPEGFilter());
+			ftp.changeWorkingDirectory(getDir());
 
+			return ftp;
+		}
+
+		private void logout(FTPClient ftp) throws IOException {
 			ftp.logout();
-
-			return files;
 		}
 
-		public URL[] getURLs() throws IOException {
-			FTPFile[] files = getFileList();
-			URL[] urls = new URL[0];
-			if (files != null) {
-				urls = new URL[files.length];
-				for (int n = 0; n < files.length; n++) {
-					try {
-						// TODO how to put username and password into ftp URL?
-						// urls[n] = new URL("ftp", user + ":" + pass + "@" + address.getHostName(), getDir() +
-						// File.separator + files[n].getName());
-						urls[n] = new URL("ftp://" + user + ":" + pass + "@" + address.getHostName() + getDir()
-								+ File.separator + files[n].getName());
-						System.out.println("PICTURE: " + urls[n]);
-					} catch (MalformedURLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-			return urls;
-		}
 	}
 
-	// TODO: better have this implemented by a listener
-	public URL[] getRecordedPictures(final String id) throws IOException {
-		URLRetriever r = new URLRetriever(id, inetaddr);
+	public Bitmap[] getRecordedPictures() throws IOException {
+		URLRetriever r = new URLRetriever(inetaddr, "anonymous", "");
+		return r.getBitmaps();
+	}
+
+	public URL[] getRecordedURLs() throws IOException {
+		URLRetriever r = new URLRetriever(inetaddr, "anonymous", "");
 		return r.getURLs();
 	}
 
