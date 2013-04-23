@@ -17,7 +17,6 @@ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PRO
  */
 package com.shigeodayo.ardrone.command;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,11 +25,15 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPFileFilter;
 import org.apache.commons.net.ftp.FTPReply;
 
 import android.graphics.Bitmap;
@@ -373,17 +376,22 @@ public class CommandManager extends AbstractManager {
 		q.add(new ConfigureCommand("userbox:userbox_cmd", UserBox.CANCEL.ordinal()));
 	}
 
-	public void stopRecordingNavData() {
+	public void stopRecording() {
 		q.add(new ConfigureCommand("userbox:userbox_cmd", UserBox.STOP.ordinal()));
 	}
 
-	public void recordPictures(int delay, int nshots, String id) {
+	private static final SimpleDateFormat USERBOXFORMAT = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
+
+	public void startRecordingPictures(int delay, int nshots) {
+		Date d = new Date();
+		final String label = USERBOXFORMAT.format(d);
 		q.add(new ConfigureCommand("userbox:userbox_cmd", String.valueOf(UserBox.SCREENSHOT.ordinal()) + ","
-				+ String.valueOf(delay) + "," + String.valueOf(nshots) + "," + id));
+				+ String.valueOf(delay) + "," + String.valueOf(nshots) + "," + label));
 	}
 
-	public void getRecordedNavData() {
-		// TODO
+	public URL[] getRecordedNavDataURLs() throws IOException {
+		URLRetriever r = new URLRetriever(inetaddr, "anonymous", "");
+		return r.getURLs(new NavDataFileFilter());
 	}
 
 	private static class URLRetriever {
@@ -397,20 +405,20 @@ public class CommandManager extends AbstractManager {
 			this.pass = pass;
 		}
 
-		public String getDir() {
+		public String getUserBoxDir() {
 			return "/boxes/";
 		}
 
-		public URL[] getURLs() throws IOException {
+		public URL[] getURLs(FTPFileFilter filter) throws IOException {
 			FTPClient ftp = login();
 
 			ArrayList<URL> urls = new ArrayList<URL>();
 			FTPFile[] dirs = ftp.listFiles("", new UserboxFileFilter());
 			for (FTPFile dir : dirs) {
-				FTPFile[] files = ftp.listFiles(dir.getName(), new JPEGFileFilter());
+				FTPFile[] files = ftp.listFiles(getUserBoxDir() + dir.getName(), filter);
 				for (FTPFile file : files) {
 					try {
-						URL url = new URL("ftp://" + user + ":" + pass + "@" + address.getHostName() + getDir()
+						URL url = new URL("ftp://" + user + ":" + pass + "@" + address.getHostName() + getUserBoxDir()
 								+ dir.getName() + File.separator + file.getName());
 						System.out.println("PICTURE: " + url);
 						urls.add(url);
@@ -429,12 +437,13 @@ public class CommandManager extends AbstractManager {
 			FTPClient ftp = login();
 
 			ArrayList<Bitmap> bmps = new ArrayList<Bitmap>();
-			FTPFile[] dirs = ftp.listFiles("", new UserboxFileFilter());
+			FTPFile[] dirs = ftp.listFiles(getUserBoxDir(), new UserboxFileFilter());
 			for (FTPFile dir : dirs) {
-				FTPFile[] files = ftp.listFiles(dir.getName(), new JPEGFileFilter());
+				FTPFile[] files = ftp.listFiles(getUserBoxDir() + dir.getName(), new JPEGFileFilter());
 				for (FTPFile file : files) {
 					try {
-						InputStream is = ftp.retrieveFileStream(dir.getName() + File.separator + file.getName());
+						InputStream is = ftp.retrieveFileStream(getUserBoxDir() + dir.getName() + File.separator
+								+ file.getName());
 						Bitmap bmp = BitmapFactory.decodeStream(is);
 						bmps.add(bmp);
 						is.close();
@@ -461,10 +470,7 @@ public class CommandManager extends AbstractManager {
 			}
 
 			ftp.enterLocalPassiveMode();
-
 			ftp.login(user, pass);
-
-			ftp.changeWorkingDirectory(getDir());
 
 			return ftp;
 		}
@@ -480,9 +486,9 @@ public class CommandManager extends AbstractManager {
 		return r.getBitmaps();
 	}
 
-	public URL[] getRecordedURLs() throws IOException {
+	public URL[] getRecordedPictureURLs() throws IOException {
 		URLRetriever r = new URLRetriever(inetaddr, "anonymous", "");
-		return r.getURLs();
+		return r.getURLs(new JPEGFileFilter());
 	}
 
 	// AT*MISC undocumented, but needed to initialize

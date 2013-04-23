@@ -1,9 +1,8 @@
 package com.shigeodayo.ardrone.command;
 
 import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.FTPFileFilter;
 
-final class JPEGFileFilter implements FTPFileFilter {
+final class JPEGFileFilter extends FileFilter {
 
 	// TODO: refactor into utility class
 	public static boolean endsWithIgnoreCase(final String s, final String suffix) {
@@ -16,7 +15,6 @@ final class JPEGFileFilter implements FTPFileFilter {
 	@Override
 	public boolean accept(final FTPFile f) {
 		final String nm = f.getName();
-		final int t = f.getType();
-		return t == FTPFile.FILE_TYPE && endsWithIgnoreCase(nm, ".jpg");
+		return super.accept(f) && endsWithIgnoreCase(nm, ".jpg");
 	}
 }

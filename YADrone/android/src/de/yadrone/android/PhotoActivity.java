@@ -45,14 +45,10 @@ public class PhotoActivity extends BaseActivity {
 
 			@Override
 			public void onClick(View v) {
-				try {
-					Date d = new Date();
-					SimpleDateFormat s = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
-					final String label = s.format(d);
-					// cm.startRecordingNavData(label);
-					cm.recordPictures(2, 5, label);
+				try {					
+					cm.startRecordingPictures(2, 5);
 					Thread.sleep(12000);
-					cm.stopRecordingNavData();
+					cm.stopRecording();
 					updateImages();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
