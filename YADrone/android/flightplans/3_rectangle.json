@@ -1,0 +1,177 @@
+{
+	"FlightPlan" :
+	[
+		{
+			"Configure" :
+			{
+				"control:outdoor" : false
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:flight_without_shell" : false
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:altitude_max" : 3500
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:altitude_min" : 500
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:control_vz_max" : 1000
+			}
+		},
+		{
+			"Configure" :
+			{
+				"control:euler_angle_max" : 0.25
+			}
+		},
+		{
+			"Configure" :
+			{
+				"userbox:userbox_cmd" : 
+				{
+					"Command" : "SCREENSHOT",
+					"DirName" : "20130423_122026",
+					"Delay" : 3,
+					"Shots" : 6
+				}
+			}
+		},
+		{
+			"FlatTrim" : ""
+		},
+		{
+			"TakeOff" : "",
+			"Duration" : 1000
+		},
+		{
+			"Comment":"Omhoog",
+			"Sound" : "going_up",
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0.15,
+			   "angular_speed" : 0
+			},
+			"Duration" : 1000
+		},
+		{
+			"Sound" : "going_forward",
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : -0.125,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0
+			},
+			"Duration" : 1000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Sound" : "going_left",
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : -0.125,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0
+			},
+			"Duration" : 1000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Sound" : "going_backward",
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0.10,
+			   "angular_speed" : 0
+			},
+			"Duration" : 1000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Sound" : "going_backward",
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0,
+               "front_back_tilt" : 0.125,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0
+			},
+			"Duration" : 1500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Sound" : "going_right",
+			"Move" :
+			{
+			   "combined_yaw_enabled" : false,
+			   "left_right_tilt" : 0.125,
+               "front_back_tilt" : 0,
+			   "vertical_speed" : 0,
+			   "angular_speed" : 0
+			},
+			"Duration" : 2000
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"FlightAnimation" :
+			{
+			   "animation" : "TURNAROUND",
+			   "duration" : 5000
+			},
+			"Duration" : 5500
+		},
+		{
+			"Stop" : "",
+			"Duration" : 1000
+		},
+		{
+			"Land" : ""
+		},
+		{
+			"Configure" :
+			{
+				"userbox:userbox_cmd" : 
+				{
+					"Command" : "STOP"
+				}
+			}
+		}		
+	]
+}
