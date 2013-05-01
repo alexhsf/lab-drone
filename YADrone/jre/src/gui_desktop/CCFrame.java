@@ -291,6 +291,9 @@ public class CCFrame extends JFrame implements StateListener, ImageListener, Att
 
 	@Override
 	public void attitudeUpdated(float pitch, float roll, float yaw) {
+		pitch = pitch/1000;
+		roll = roll/1000;
+		yaw = yaw/1000;
 		if (attitude != null)
 			attitude.setAttitude(pitch, roll, yaw);
 		if (attitudeChart != null)
