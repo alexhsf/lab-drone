@@ -1004,6 +1004,8 @@ public class NavDataManager extends AbstractManager {
 
 			float v[] = getFloat(b, 3);
 
+			@SuppressWarnings("unused")
+			long num_frames = getUInt32(b);
 			/* Deprecated ! Don't use ! */
 			@SuppressWarnings("unused")
 			float detection_camera_rot[] = getFloat(b, 9);
