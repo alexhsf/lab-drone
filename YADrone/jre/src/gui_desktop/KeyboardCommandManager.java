@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import com.shigeodayo.ardrone.ARDrone;
+import com.shigeodayo.ardrone.command.CommandManager;
 
 public class KeyboardCommandManager implements KeyListener, ISpeedListener {
 	private ARDrone ardrone;
@@ -69,6 +70,10 @@ public class KeyboardCommandManager implements KeyListener, ISpeedListener {
 			break;
 		case KeyEvent.VK_S:
 			ardrone.freeze();
+			break;
+		case KeyEvent.VK_T:
+			CommandManager cm = ardrone.getCommandManager();
+			cm.flatTrim();
 			break;
 		case KeyEvent.VK_LEFT:
 			if (shiftflag) {
